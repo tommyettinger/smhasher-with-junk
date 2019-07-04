@@ -1,15 +1,36 @@
 # Prerequisites
 *.d
+*~
+/.svn
+/build
+/build32
+libSMHasherSupport.a
+/TAGS
 
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+SMHasher
 
 # Precompiled Headers
 *.gch
 *.pch
+README.speed
+YoshimitsuTRIAD/
+Yoshimura/
+crcutil-1.0/
+crcutil/
+doc/FarmHash128.fast
+falkhash/
+fast-hash/
+fsbench-0.14/
+fsbench-density/
+*.bak
+prof.h
+/zlib/
+/clhash/
 
 # Compiled Dynamic libraries
 *.so
@@ -30,3 +51,5 @@
 *.exe
 *.out
 *.app
+# Apple artefact
+.DS_Store
