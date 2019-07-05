@@ -8,8 +8,8 @@
 #define waterhash_version_3
 #include <stdint.h>
 #include <math.h>
-const uint64_t _waterp0 = 0xa0761d65ull, _waterp1 = 0xe7037ed1ull, _waterp2 = 0x8ebc6af1ull;
-const uint64_t _waterp3 = 0x589965cdull, _waterp4 = 0x1d8e4e27ull, _waterp5 = 0xeb44accbull;
+const uint64_t _waterp0 = 0xa0761d6478bd642full, _waterp1 = 0xe7037ed1a0b428dbull, _waterp2 = 0x8ebc6af09c88c6e3ull;
+const uint64_t _waterp3 = 0x589965cc75374cc3ull, _waterp4 = 0x1d8e4e27c47d124full, _waterp5 = 0xeb44accab455d165ull;
 
 static inline uint64_t _watermum(const uint64_t A, const uint64_t B) {
     uint64_t r = A * B;
@@ -19,17 +19,21 @@ static inline uint64_t _watermum(const uint64_t A, const uint64_t B) {
 static inline uint64_t _waterr08(const uint8_t *p){ uint8_t  v; memcpy(&v, p, 1); return v; }
 static inline uint64_t _waterr16(const uint8_t *p){ uint16_t v; memcpy(&v, p, 2); return v; }
 static inline uint64_t _waterr32(const uint8_t *p){ uint32_t v; memcpy(&v, p, 4); return v; }
-static inline uint32_t waterhash(const void* key, uint32_t len, uint64_t seed){
+static inline uint32_t waterhash(const void* key, size_t len, uint64_t seed){
     const uint8_t *p = (const uint8_t*)key;
     uint32_t i;
+	seed += _waterp1;
+	//seed ^= seed >> 41 ^ seed << 53;
+	seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
     for (i = 0; i + 16 <= len; i += 16, p += 16)
     {
         seed = _watermum(
 			_watermum(_waterr32(p) ^ _waterp1, _waterr32(p + 4) ^ _waterp2) + seed,
 			_watermum(_waterr32(p + 8) ^ _waterp3, _waterr32(p + 12) ^ _waterp4));
     }
-	seed += _waterp5;
+	//seed += _waterp5;
 	switch (len & 15) {
+	case 0:  seed = _watermum(_waterp1 ^ seed, _waterp4 + seed); break;
 	case 1:  seed = _watermum(_waterp2 ^ seed, _waterr08(p) ^ _waterp1); break;
 	case 2:  seed = _watermum(_waterp3 ^ seed, _waterr16(p) ^ _waterp4); break;
 	case 3:  seed = _watermum(_waterr16(p) ^ seed, _waterr08(p + 2) ^ _waterp2); break;

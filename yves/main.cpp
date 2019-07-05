@@ -333,6 +333,8 @@ HashInfo g_hashes[] =
   64, 64, 64, 0x3653DA37, NULL, wyhash_test},
   { "waterhash", "waterhash 32bit result",
   64, 64, 32, 0xC97DE72F, NULL, waterhash_test},
+  { "wheathash", "wheathash 64bit result",
+  64, 64, 64, 0x5EB8ACE1, NULL, wheathash_test},
 #endif
 
   // CityHash

@@ -53,3 +53,11 @@ prof.h
 *.app
 # Apple artefact
 .DS_Store
+
+yves/CMakeFiles/
+
+yves/Makefile
+
+yves/CMakeCache\.txt
+
+yves/cmake_install\.cmake

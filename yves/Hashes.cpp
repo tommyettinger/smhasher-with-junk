@@ -531,3 +531,9 @@ waterhash_test(const void *input, int len, const void *seed, void *out)
 {
   *(uint32_t *) out = waterhash((const unsigned char *)input, (size_t) len, *((const uint64_t *)seed));
 }
+
+void
+wheathash_test(const void *input, int len, const void *seed, void *out)
+{
+  *(uint64_t *) out = wheathash((const unsigned char *)input, (size_t) len, *((const uint64_t *)seed));
+}

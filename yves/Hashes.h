@@ -310,3 +310,6 @@ void wyhash_test( const void * key, int len, const void * seed, void * out );
 
 #include "waterhash.h"
 void waterhash_test( const void * key, int len, const void * seed, void * out );
+
+#include "wheathash.h"
+void wheathash_test( const void * key, int len, const void * seed, void * out );
