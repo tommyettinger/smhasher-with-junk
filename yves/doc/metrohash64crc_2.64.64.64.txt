@@ -1,0 +1,659 @@
+ok 1 - Found Hash # metrohash64crc_2
+###################################################################
+### Testing metrohash64crc_2 - no seed_state
+### - MetroHash64crc_2 for x64 -
+### seedbits: 64 statebits: 64 hashbits: 64
+###################################################################
+ok 2 - Verification code # metrohash64crc_2
+# metrohash64crc_2     - Verification value 0x54FA2B08 : Passed.
+### Sanity Tests ###
+# Sanity check simple key bit flips and consistency - hashbytes=8..........
+ok 3 - SanityTest # metrohash64crc_2
+# Sanity check null suffixes change the hash (simple)..........
+ok 4 - Appended Zeroes Test # metrohash64crc_2
+ok 5 - Sanity Test # metrohash64crc_2
+### Speed Tests ###
+## Bulk speed test - 262144-byte keys
+# Alignment  7 -  8.592 bytes/cycle - 24581.92 MiB/sec @ 3 ghz
+# Alignment  6 -  8.598 bytes/cycle - 24598.85 MiB/sec @ 3 ghz
+# Alignment  5 -  8.596 bytes/cycle - 24592.70 MiB/sec @ 3 ghz
+# Alignment  4 -  8.597 bytes/cycle - 24596.83 MiB/sec @ 3 ghz
+# Alignment  3 -  8.596 bytes/cycle - 24594.05 MiB/sec @ 3 ghz
+# Alignment  2 -  8.597 bytes/cycle - 24595.64 MiB/sec @ 3 ghz
+# Alignment  1 -  8.600 bytes/cycle - 24604.34 MiB/sec @ 3 ghz
+# Alignment  0 -  8.763 bytes/cycle - 25072.28 MiB/sec @ 3 ghz
+# Average      -  8.617 bytes/cycle - 24654.58 MiB/sec @ 3 ghz
+## KeySpeed tests
+# metrohash64crc_2          0 byte keys       13.000 c/h
+# metrohash64crc_2          1 byte keys       16.450 c/h       16.450 c/b        0.061 b/c
+# metrohash64crc_2          2 byte keys       16.000 c/h        8.000 c/b        0.125 b/c
+# metrohash64crc_2          3 byte keys       24.000 c/h        8.000 c/b        0.125 b/c
+# metrohash64crc_2          4 byte keys       16.232 c/h        4.058 c/b        0.246 b/c
+# metrohash64crc_2          5 byte keys       24.000 c/h        4.800 c/b        0.208 b/c
+# metrohash64crc_2          6 byte keys       24.000 c/h        4.000 c/b        0.250 b/c
+# metrohash64crc_2          7 byte keys       31.411 c/h        4.487 c/b        0.223 b/c
+# metrohash64crc_2          8 byte keys       16.000 c/h        2.000 c/b        0.500 b/c
+# metrohash64crc_2          9 byte keys       24.000 c/h        2.667 c/b        0.375 b/c
+# metrohash64crc_2         10 byte keys       24.224 c/h        2.422 c/b        0.413 b/c
+# metrohash64crc_2         11 byte keys       31.437 c/h        2.858 c/b        0.350 b/c
+# metrohash64crc_2         12 byte keys       24.000 c/h        2.000 c/b        0.500 b/c
+# metrohash64crc_2         13 byte keys       31.513 c/h        2.424 c/b        0.413 b/c
+# metrohash64crc_2         14 byte keys       31.000 c/h        2.214 c/b        0.452 b/c
+# metrohash64crc_2         15 byte keys       39.000 c/h        2.600 c/b        0.385 b/c
+# metrohash64crc_2         16 byte keys       22.000 c/h        1.375 c/b        0.727 b/c
+# metrohash64crc_2         17 byte keys       29.161 c/h        1.715 c/b        0.583 b/c
+# metrohash64crc_2         18 byte keys       29.934 c/h        1.663 c/b        0.601 b/c
+# metrohash64crc_2         19 byte keys       37.000 c/h        1.947 c/b        0.514 b/c
+# metrohash64crc_2         20 byte keys       29.248 c/h        1.462 c/b        0.684 b/c
+# metrohash64crc_2         21 byte keys       37.000 c/h        1.762 c/b        0.568 b/c
+# metrohash64crc_2         22 byte keys       36.929 c/h        1.679 c/b        0.596 b/c
+# metrohash64crc_2         23 byte keys       44.000 c/h        1.913 c/b        0.523 b/c
+# metrohash64crc_2         24 byte keys       27.477 c/h        1.145 c/b        0.873 b/c
+# metrohash64crc_2         25 byte keys       34.000 c/h        1.360 c/b        0.735 b/c
+# metrohash64crc_2         26 byte keys       34.126 c/h        1.313 c/b        0.762 b/c
+# metrohash64crc_2         27 byte keys       42.000 c/h        1.556 c/b        0.643 b/c
+# metrohash64crc_2         28 byte keys       34.592 c/h        1.235 c/b        0.809 b/c
+# metrohash64crc_2         29 byte keys       42.000 c/h        1.448 c/b        0.690 b/c
+# metrohash64crc_2         30 byte keys       41.964 c/h        1.399 c/b        0.715 b/c
+# metrohash64crc_2         31 byte keys       49.272 c/h        1.589 c/b        0.629 b/c
+#                          Average < 32       29.905 c/h        1.929 c/b        0.518 b/c
+# metrohash64crc_2         32 byte keys       40.000 c/h        1.250 c/b        0.800 b/c
+# metrohash64crc_2         36 byte keys       48.546 c/h        1.348 c/b        0.742 b/c
+# metrohash64crc_2         40 byte keys       45.000 c/h        1.125 c/b        0.889 b/c
+# metrohash64crc_2         44 byte keys       52.997 c/h        1.204 c/b        0.830 b/c
+# metrohash64crc_2         48 byte keys       52.000 c/h        1.083 c/b        0.923 b/c
+# metrohash64crc_2         52 byte keys       59.502 c/h        1.144 c/b        0.874 b/c
+# metrohash64crc_2         56 byte keys       56.999 c/h        1.018 c/b        0.982 b/c
+# metrohash64crc_2         60 byte keys       64.371 c/h        1.073 c/b        0.932 b/c
+# metrohash64crc_2         64 byte keys       43.000 c/h        0.672 c/b        1.488 b/c
+# metrohash64crc_2         68 byte keys       51.000 c/h        0.750 c/b        1.333 b/c
+# metrohash64crc_2         72 byte keys       48.722 c/h        0.677 c/b        1.478 b/c
+# metrohash64crc_2         76 byte keys       56.000 c/h        0.737 c/b        1.357 b/c
+# metrohash64crc_2         80 byte keys       55.981 c/h        0.700 c/b        1.429 b/c
+# metrohash64crc_2         84 byte keys       63.000 c/h        0.750 c/b        1.333 b/c
+# metrohash64crc_2         88 byte keys       60.299 c/h        0.685 c/b        1.459 b/c
+# metrohash64crc_2         92 byte keys       68.145 c/h        0.741 c/b        1.350 b/c
+# metrohash64crc_2         96 byte keys       47.000 c/h        0.490 c/b        2.043 b/c
+# metrohash64crc_2        100 byte keys       54.588 c/h        0.546 c/b        1.832 b/c
+# metrohash64crc_2        104 byte keys       52.000 c/h        0.500 c/b        2.000 b/c
+# metrohash64crc_2        108 byte keys       59.000 c/h        0.546 c/b        1.831 b/c
+# metrohash64crc_2        112 byte keys       59.000 c/h        0.527 c/b        1.898 b/c
+# metrohash64crc_2        116 byte keys       67.064 c/h        0.578 c/b        1.730 b/c
+# metrohash64crc_2        120 byte keys       65.193 c/h        0.543 c/b        1.841 b/c
+# metrohash64crc_2        124 byte keys       71.195 c/h        0.574 c/b        1.742 b/c
+#                         Average < 128       41.028 c/h        0.970 c/b        1.031 b/c
+# metrohash64crc_2        128 byte keys       50.000 c/h        0.391 c/b        2.560 b/c
+# metrohash64crc_2        256 byte keys       59.507 c/h        0.232 c/b        4.302 b/c
+# metrohash64crc_2        512 byte keys       82.802 c/h        0.162 c/b        6.183 b/c
+# metrohash64crc_2       1024 byte keys      134.681 c/h        0.132 c/b        7.603 b/c
+# metrohash64crc_2       2048 byte keys      247.216 c/h        0.121 c/b        8.284 b/c
+# metrohash64crc_2       4096 byte keys      484.025 c/h        0.118 c/b        8.462 b/c
+# metrohash64crc_2       8192 byte keys      928.816 c/h        0.113 c/b        8.820 b/c
+# metrohash64crc_2      16384 byte keys     1819.311 c/h        0.111 c/b        9.006 b/c
+# metrohash64crc_2      32768 byte keys     3604.576 c/h        0.110 c/b        9.091 b/c
+# metrohash64crc_2      65536 byte keys     7231.108 c/h        0.110 c/b        9.063 b/c
+#                       Overall Average      256.661 c/h        0.127 c/b        7.870 b/c
+ok 6 - Speed (always passes) # metrohash64crc_2
+### Differential Tests ###
+# Testing 8303632 up-to-5-bit differentials in 64-bit keys -> 64 bit hashes.
+# 1000 reps, 8303632000 total tests, expecting 0.00 random collisions..........
+ok 7 - Differential collisions # metrohash64crc_2
+ok 8 - Nothing skipped during differential collision check # metrohash64crc_2
+# 0 total collisions, of which 0 single collisions were ignored
+ok 9 - ProcessDifferentials
+# Testing 11017632 up-to-4-bit differentials in 128-bit keys -> 64 bit hashes.
+# 1000 reps, 11017632000 total tests, expecting 0.00 random collisions..........
+ok 10 - Differential collisions # metrohash64crc_2
+ok 11 - Nothing skipped during differential collision check # metrohash64crc_2
+# 0 total collisions, of which 0 single collisions were ignored
+ok 12 - ProcessDifferentials
+# Testing 2796416 up-to-3-bit differentials in 256-bit keys -> 64 bit hashes.
+# 1000 reps, 2796416000 total tests, expecting 0.00 random collisions..........
+ok 13 - Differential collisions # metrohash64crc_2
+ok 14 - Nothing skipped during differential collision check # metrohash64crc_2
+# 0 total collisions, of which 0 single collisions were ignored
+ok 15 - ProcessDifferentials
+ok 16 - Differential # metrohash64crc_2
+### Avalanche Tests ### - seed-bits: 64 hash-bits: 64
+# Samples 500000, expected error 0.00051200, confidence level 99.99994267%
+# Testing   0-bit keys.......... not ok! # worst-bit:  98.761% error-ratio: 7.342566e+03
+#              +---------------------------------------------------+
+#              |012345678901234567890123456789012345678901234567890|
+#              +---------------------------------------------------+
+# Scale:       |.1234567890abcdefghijklmnopqrstuvwxyzãäåêëîïðñôõöûü|
+#              |üÿABCDEFGHIJKLMNOPQRSTUVWXYZÂÃÄÅÊËÑÔÕÖÛÜÝø¤*©®¶&%@#|
+#              +---------------------------------------------------+
+#              |pct diff from 50%: abs((0.5-(changed/reps))*2) *100|
+#              +----------------------------------------------------------------+
+#              |0         1         2         3         4         5         6   |
+#              |0123456789012345678901234567890123456789012345678901234567890123|
+#              +----------------------------------------------------------------+
+# seed     0.0 |................................................................| x 3
+# seed     3.0 |.......1........................................................|
+# seed     4.0 |................................................................| x 36
+# seed    40.0 |..........................1.....................................|
+# seed    41.0 |..1..1.........1...........1.......1..1.........................|
+# seed    42.0 |...1........................7.......1...........................|
+# seed    43.0 |11.....11........1..........19...11.....11......................|
+# seed    44.0 |1.2..1..11...................10..1.2..1..11.....................|
+# seed    45.0 |.1.2..1..11...................1i1.1.2..1..11....................|
+# seed    46.0 |1...2..1..11...1...............3i1...2..1..11...................|
+# seed    47.0 |i1.1.2..1..12...................3i1.1.2..1..12..................|
+# seed    48.0 |3h1...2.....12.................1.3h1...2.....12.................|
+# seed    49.0 |.3l1...3.....11....1...1.......11.3l1...3.....11................|
+# seed    50.0 |1.4p1...3.11..11.1.1....1.......11.4p1...3.11..11...............|
+# seed    51.0 |12.8t1.4.4.12..12...2.......2....12.8t1.4.4.12..12..........1.1.|
+# seed    52.0 |145.9u1.517.121.12.1.3....1..2..1145.9u1.517.121.12..........1.1|
+# seed    53.0 |1289.0v..43a2221.11.2.31..11..22.1289.0v..43a2221.11.1...1......|
+# seed    54.0 |..289.0å1.33b2221.11.2.41..12..61..289.0å1.33b2221.11.1...1.1...|
+# seed    55.0 |5.23991jô0.a4d2321.13.2.611.221.b5.23991jô0.a4d2321.13.2...2.1..|
+# seed    56.0 |hb143706möP.o6d232115212.711.231.hb143706möP.o6d2321152.211.112.|
+# seed    57.0 |.gb143896mõS.o6e2221152.2.812.2a..gb143896mõS.o6e2221152.211.2.2|
+# seed    58.0 |3.kc242a08jCZ.o6e2321252.3.712.5a3.kc242a08jCZ.o6e2321252.211.1.|
+# seed    59.0 |c0.pc263b9ixPÑ.o6e264236422.01.19c0.pc263b9ixPÑ.o6e2642364.13..5|
+# seed    60.0 |06ð.pc2n8jaãQÑ¤.o6e9b03e3095.a19406ð.pc2n8jaãQÑ¤.o6e9b03e30.7c3.|
+# seed    61.0 |keêS.pf.r.qvOËø¶.o7m4l3.len91.47mkeêS.pf.r.qvOËø¶.o7m4l3.len.3.8|
+# seed    62.0 |7.ûWÖ.rM.x.îTÔ*¶%.o.ð.aE.d.4A..o.7.ûWÖ.rM.x.îTÔ*¶%.o.ð.aE.d.4.b.|
+# seed    63.0 |oãuOËø4AYbElJÅÝ®%@1üoKiëSeïszQf.üoãuOËø4AYbElJÅÝ®%@1üoKiëSeïsz.8|
+#              +----------------------------------------------------------------+
+#              +---------------------------------------------------+
+#              |012345678901234567890123456789012345678901234567890|
+#              +---------------------------------------------------+
+# Scale:       |.1234567890abcdefghijklmnopqrstuvwxyzãäåêëîïðñôõöûü|
+#              |üÿABCDEFGHIJKLMNOPQRSTUVWXYZÂÃÄÅÊËÑÔÕÖÛÜÝø¤*©®¶&%@#|
+#              +---------------------------------------------------+
+#              |scaled p-value above confidence level (zero is ok) |
+#              +----------------------------------------------------------------+
+#              |0         1         2         3         4         5         6   |
+#              |0123456789012345678901234567890123456789012345678901234567890123|
+#              +----------------------------------------------------------------+
+# seed     0.0 |................................................................| x 41
+# seed    41.0 |...........................@....................................|
+# seed    42.0 |............................#...................................|
+# seed    43.0 |.@.....@.....................#....@.....@.......................|
+# seed    44.0 |..#......#...................##....#......#.....................|
+# seed    45.0 |...#.....@#...................Ö#Ã...#.....@#....................|
+# seed    46.0 |@...#..J...#...................##@...#..J...#...................|
+# seed    47.0 |#....#.....®#...................##....#.....®#..................|
+# seed    48.0 |##....#.....@#.................®.##....#.....@#.................|
+# seed    49.0 |.##V...#.....@#........ä..........##V...#.....@#................|
+# seed    50.0 |#.##@...#..@...#...@............@#.##@...#..@...#...............|
+# seed    51.0 |.#.###.#.#.@#..@#...#.......#.....#.###.#.#.@#..@#..............|
+# seed    52.0 |@##.##..#@#.##&..#...#....@..#..@@##.##..#@#.##&..#..........@.@|
+# seed    53.0 |@###.##..######..Ã#.#.#...##..##.@###.##..######..Ã#.@...#......|
+# seed    54.0 |..###.##V.######@.%#.#.#@..@#..#@..###.##V.######@.%#.#...#.....|
+# seed    55.0 |#.####.###.######@.##.#.#@#.###.##.####.###.######@.##.#...#.@..|
+# seed    56.0 |###########.######@@##.#.#@#.##Ä.###########.######@@##.#...###.|
+# seed    57.0 |.###########.######@###.#.#@#.##..###########.######@###.#...#.#|
+# seed    58.0 |#.###########.######@###.#.###.###.###########.######@###.##@...|
+# seed    59.0 |##.###########.############.#Ê.@###.###########.##########.##..#|
+# seed    60.0 |###.###########.############.#.#####.###########.##########.###.|
+# seed    61.0 |####.##.#.######.######.#####.#######.##.#.######.######.###.#.#|
+# seed    62.0 |#.###.##.#.######.#.#.##.#.##..#.#.###.##.#.######.#.#.##.#.#.#.|
+# seed    63.0 |##################.############.###################.##########.#|
+#              +----------------------------------------------------------------+
+# 673 of 4096 bits failed (16.43%) failed at 99.999943 confidence
+#     g-test: 100.000000%
+#     sum-error-square: 3.75939381
+#     key/seed errors: 18/64
+#     - seed bit 44 gtest probability not random: 100.0000 (15980774/16019226)
+#     - seed bit 45 gtest probability not random: 100.0000 (15954344/16045656)
+#     - with 16 more seed errors not described above.
+#     hash bit-level errors: 59/64
+#     - hash bit 0 gtest-prob not-random: 100.0000 (16201155/15798845)
+#     - hash bit 1 gtest-prob not-random: 100.0000 (16077092/15922908)
+#     - hash bit 2 gtest-prob not-random: 100.0000 (15733732/16266268)
+#     - with 56 more hash bit errors not described above.
+not ok 17 - Strict Avalanche Criteria - 0 bit/0 byte keys # metrohash64crc_2
+# Testing   8-bit keys.......... ok.     # worst-bit:   0.519% error-ratio: 1.023469e+00
+ok 18 - Strict Avalanche Criteria - 8 bit/1 byte keys # metrohash64crc_2
+# Testing  16-bit keys.......... not ok! # worst-bit:   5.828% error-ratio: 4.172554e+00
+#              +---------------------------------------------------+
+#              |012345678901234567890123456789012345678901234567890|
+#              +---------------------------------------------------+
+# Scale:       |.1234567890abcdefghijklmnopqrstuvwxyzãäåêëîïðñôõöûü|
+#              |üÿABCDEFGHIJKLMNOPQRSTUVWXYZÂÃÄÅÊËÑÔÕÖÛÜÝø¤*©®¶&%@#|
+#              +---------------------------------------------------+
+#              |pct diff from 50%: abs((0.5-(changed/reps))*2) *100|
+#              +----------------------------------------------------------------+
+#              |0         1         2         3         4         5         6   |
+#              |0123456789012345678901234567890123456789012345678901234567890123|
+#              +----------------------------------------------------------------+
+# seed     0.0 |................................................................| x 33
+# seed    33.0 |.1..............................................................|
+# seed    34.0 |................................................................| x 16
+# seed    50.0 |.............................................................1..|
+# seed    51.0 |................................................................| x 8
+# seed    59.0 |...1........11......................1.........1.................|
+# seed    60.0 |.2..2......1.61..........1........2..2......1...................|
+# seed    61.0 |..6..12.1....13...........1.....1..6..12.1....1.................|
+# seed    62.0 |..31..11.3..1......................31..11.3..1..................|
+# seed    63.0 |.2142..13.6.11....................2142..13.6.11.................|
+# key      0.0 |................................................................| x 16
+#              +----------------------------------------------------------------+
+#              +---------------------------------------------------+
+#              |012345678901234567890123456789012345678901234567890|
+#              +---------------------------------------------------+
+# Scale:       |.1234567890abcdefghijklmnopqrstuvwxyzãäåêëîïðñôõöûü|
+#              |üÿABCDEFGHIJKLMNOPQRSTUVWXYZÂÃÄÅÊËÑÔÕÖÛÜÝø¤*©®¶&%@#|
+#              +---------------------------------------------------+
+#              |scaled p-value above confidence level (zero is ok) |
+#              +----------------------------------------------------------------+
+#              |0         1         2         3         4         5         6   |
+#              |0123456789012345678901234567890123456789012345678901234567890123|
+#              +----------------------------------------------------------------+
+# seed     0.0 |................................................................| x 59
+# seed    59.0 |............@@..................................................|
+# seed    60.0 |.#..#........#....................#..#..........................|
+# seed    61.0 |..#..##......@#.................@..#..##......@.................|
+# seed    62.0 |..##...@.#..@......................##...@.#..@..................|
+# seed    63.0 |.#@##..¤#.#.Õ&....................#@##..¤#.#.Õ&.................|
+# key      0.0 |................................................................| x 16
+#              +----------------------------------------------------------------+
+# 45 of 5120 bits failed (0.88%) failed at 99.999943 confidence
+#     g-test: 100.000000%
+#     sum-error-square: 0.00213635
+#     key/seed errors: 1/80
+#     - seed bit 61 gtest probability not random: 100.0000 (15964152/16035848)
+#     hash bit-level errors: 2/64
+#     - hash bit 2 gtest-prob not-random: 100.0000 (19970968/20029032)
+#     - hash bit 35 gtest-prob not-random: 100.0000 (19973637/20026363)
+not ok 19 - Strict Avalanche Criteria - 16 bit/2 byte keys # metrohash64crc_2
+# Testing  24-bit keys.......... ok.     # worst-bit:   0.544% error-ratio: 1.039480e+00
+ok 20 - Strict Avalanche Criteria - 24 bit/3 byte keys # metrohash64crc_2
+# Testing  32-bit keys.......... not ok! # worst-bit:   6.787% error-ratio: 3.520513e+00
+#              +---------------------------------------------------+
+#              |012345678901234567890123456789012345678901234567890|
+#              +---------------------------------------------------+
+# Scale:       |.1234567890abcdefghijklmnopqrstuvwxyzãäåêëîïðñôõöûü|
+#              |üÿABCDEFGHIJKLMNOPQRSTUVWXYZÂÃÄÅÊËÑÔÕÖÛÜÝø¤*©®¶&%@#|
+#              +---------------------------------------------------+
+#              |pct diff from 50%: abs((0.5-(changed/reps))*2) *100|
+#              +----------------------------------------------------------------+
+#              |0         1         2         3         4         5         6   |
+#              |0123456789012345678901234567890123456789012345678901234567890123|
+#              +----------------------------------------------------------------+
+# seed     0.0 |................................................................| x 37
+# seed    37.0 |..............1.................................................|
+# seed    38.0 |................................................................| x 11
+# seed    49.0 |....................1...........................................|
+# seed    50.0 |................................................................| x 10
+# seed    60.0 |.13......1.4...........1........1.13......1....1................|
+# seed    61.0 |2.52..1.....3...........1......112.52..1........................|
+# seed    62.0 |...2..15.......................1....2..15.......................|
+# seed    63.0 |121.11.27.1.....................2121.11.27.1.........1..........|
+# key      0.0 |................................................................| x 32
+#              +----------------------------------------------------------------+
+#              +---------------------------------------------------+
+#              |012345678901234567890123456789012345678901234567890|
+#              +---------------------------------------------------+
+# Scale:       |.1234567890abcdefghijklmnopqrstuvwxyzãäåêëîïðñôõöûü|
+#              |üÿABCDEFGHIJKLMNOPQRSTUVWXYZÂÃÄÅÊËÑÔÕÖÛÜÝø¤*©®¶&%@#|
+#              +---------------------------------------------------+
+#              |scaled p-value above confidence level (zero is ok) |
+#              +----------------------------------------------------------------+
+#              |0         1         2         3         4         5         6   |
+#              |0123456789012345678901234567890123456789012345678901234567890123|
+#              +----------------------------------------------------------------+
+# seed     0.0 |................................................................| x 60
+# seed    60.0 |.##........#...........@........@.##............................|
+# seed    61.0 |#.##..@.....#...........@.......@#.##..@........................|
+# seed    62.0 |...#..@#.......................#....#..@#.......................|
+# seed    63.0 |*#@.&®.##.......................#*#@.&®.##......................|
+# key      0.0 |................................................................| x 32
+#              +----------------------------------------------------------------+
+# 40 of 6144 bits failed (0.65%) failed at 99.999943 confidence
+#     g-test: 100.000000%
+#     sum-error-square: 0.00180250
+#     key/seed errors: 3/96
+#     - seed bit 61 gtest probability not random: 100.0000 (16021520/15978480)
+#     - seed bit 62 gtest probability not random: 100.0000 (16033072/15966928)
+#     - with 1 more seed errors not described above.
+#     hash bit-level errors: 5/64
+#     - hash bit 2 gtest-prob not-random: 100.0000 (24021580/23978420)
+#     - hash bit 7 gtest-prob not-random: 100.0000 (24018139/23981861)
+#     - hash bit 8 gtest-prob not-random: 100.0000 (24023608/23976392)
+#     - with 2 more hash bit errors not described above.
+not ok 21 - Strict Avalanche Criteria - 32 bit/4 byte keys # metrohash64crc_2
+# Testing  40-bit keys.......... ok.     # worst-bit:   0.525% error-ratio: 1.001395e+00
+ok 22 - Strict Avalanche Criteria - 40 bit/5 byte keys # metrohash64crc_2
+# Testing  48-bit keys.......... ok.     # worst-bit:   0.534% error-ratio: 9.925143e-01
+ok 23 - Strict Avalanche Criteria - 48 bit/6 byte keys # metrohash64crc_2
+# Testing  56-bit keys.......... ok.     # worst-bit:   0.608% error-ratio: 1.025825e+00
+ok 24 - Strict Avalanche Criteria - 56 bit/7 byte keys # metrohash64crc_2
+# Testing  64-bit keys.......... ok.     # worst-bit:   0.610% error-ratio: 9.954478e-01
+ok 25 - Strict Avalanche Criteria - 64 bit/8 byte keys # metrohash64crc_2
+# Testing  72-bit keys.......... ok.     # worst-bit:   0.576% error-ratio: 1.004208e+00
+ok 26 - Strict Avalanche Criteria - 72 bit/9 byte keys # metrohash64crc_2
+# Testing  80-bit keys.......... ok.     # worst-bit:   0.690% error-ratio: 9.969819e-01
+ok 27 - Strict Avalanche Criteria - 80 bit/10 byte keys # metrohash64crc_2
+# Testing  88-bit keys.......... ok.     # worst-bit:   0.566% error-ratio: 1.001457e+00
+ok 28 - Strict Avalanche Criteria - 88 bit/11 byte keys # metrohash64crc_2
+# Testing  96-bit keys.......... ok.     # worst-bit:   0.550% error-ratio: 9.693432e-01
+ok 29 - Strict Avalanche Criteria - 96 bit/12 byte keys # metrohash64crc_2
+# Testing 104-bit keys.......... ok.     # worst-bit:   0.531% error-ratio: 9.993639e-01
+ok 30 - Strict Avalanche Criteria - 104 bit/13 byte keys # metrohash64crc_2
+# Testing 112-bit keys.......... ok.     # worst-bit:   0.555% error-ratio: 1.002021e+00
+ok 31 - Strict Avalanche Criteria - 112 bit/14 byte keys # metrohash64crc_2
+# Testing 120-bit keys.......... ok.     # worst-bit:   0.540% error-ratio: 9.866028e-01
+ok 32 - Strict Avalanche Criteria - 120 bit/15 byte keys # metrohash64crc_2
+# Testing 128-bit keys.......... ok.     # worst-bit:   0.540% error-ratio: 9.989827e-01
+ok 33 - Strict Avalanche Criteria - 128 bit/16 byte keys # metrohash64crc_2
+# Testing 136-bit keys.......... ok.     # worst-bit:   0.583% error-ratio: 9.990110e-01
+ok 34 - Strict Avalanche Criteria - 136 bit/17 byte keys # metrohash64crc_2
+# Testing 144-bit keys.......... ok.     # worst-bit:   0.595% error-ratio: 1.037636e+00
+ok 35 - Strict Avalanche Criteria - 144 bit/18 byte keys # metrohash64crc_2
+# Testing 152-bit keys.......... ok.     # worst-bit:   0.520% error-ratio: 1.011306e+00
+ok 36 - Strict Avalanche Criteria - 152 bit/19 byte keys # metrohash64crc_2
+# Testing 152-bit keys.......... ok.     # worst-bit:   0.536% error-ratio: 9.844641e-01
+ok 37 - Strict Avalanche Criteria - 152 bit/19 byte keys # metrohash64crc_2
+# Testing 200-bit keys.......... ok.     # worst-bit:   0.624% error-ratio: 1.009048e+00
+ok 38 - Strict Avalanche Criteria - 200 bit/25 byte keys # metrohash64crc_2
+# Testing 256-bit keys.......... ok.     # worst-bit:   0.604% error-ratio: 1.003283e+00
+ok 39 - Strict Avalanche Criteria - 256 bit/32 byte keys # metrohash64crc_2
+# Testing 512-bit keys.......... ok.     # worst-bit:   0.617% error-ratio: 1.006984e+00
+ok 40 - Strict Avalanche Criteria - 512 bit/64 byte keys # metrohash64crc_2
+# Testing 520-bit keys.......... ok.     # worst-bit:   0.590% error-ratio: 9.919887e-01
+ok 41 - Strict Avalanche Criteria - 520 bit/65 byte keys # metrohash64crc_2
+### Keyset 'Cyclic' Tests ###
+# Keyset 'Cyclic' - 8 cycles of 8 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual    11564 - Excessive keys in collision - failed
+not ok 42 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 8 bytes - 10000000 keys
+ok 43 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 8 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 9 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 44 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 9 bytes - 10000000 keys
+ok 45 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 9 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 10 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 46 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 10 bytes - 10000000 keys
+ok 47 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 10 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 11 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 48 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 11 bytes - 10000000 keys
+ok 49 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 11 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 12 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 50 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 12 bytes - 10000000 keys
+ok 51 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 12 bytes - 10000000 keys
+not ok 52 - Keyset 'Cyclic' # metrohash64crc_2
+### Keyset 'TwoBytes' Tests ###
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 53 - Collision Rate for Keyset 'TwoBytes' - up-to-4-byte keys, 652545 total keys
+ok 54 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-4-byte keys, 652545 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 55 - Collision Rate for Keyset 'TwoBytes' - up-to-8-byte keys, 5471025 total keys
+ok 56 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-8-byte keys, 5471025 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 57 - Collision Rate for Keyset 'TwoBytes' - up-to-12-byte keys, 18616785 total keys
+ok 58 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-12-byte keys, 18616785 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 59 - Collision Rate for Keyset 'TwoBytes' - up-to-16-byte keys, 44251425 total keys
+ok 60 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-16-byte keys, 44251425 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 61 - Collision Rate for Keyset 'TwoBytes' - up-to-20-byte keys, 86536545 total keys
+ok 62 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-20-byte keys, 86536545 total keys
+ok 63 - Keyset 'TwoBytes' # metrohash64crc_2
+### Keyset 'Sparse' Tests ###
+# Keyset 'Sparse' - 32-bit keys with up to 6 bits set - 1149017 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 64 - Collision Rate for Keyset 'Sparse' - 32-bit keys with up to 6 bits set
+ok 65 - Distribution Bias Check for Keyset 'Sparse' - 32-bit keys with up to 6 bits set
+# Keyset 'Sparse' - 40-bit keys with up to 6 bits set - 4598479 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 66 - Collision Rate for Keyset 'Sparse' - 40-bit keys with up to 6 bits set
+ok 67 - Distribution Bias Check for Keyset 'Sparse' - 40-bit keys with up to 6 bits set
+# Keyset 'Sparse' - 48-bit keys with up to 5 bits set - 1925357 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 68 - Collision Rate for Keyset 'Sparse' - 48-bit keys with up to 5 bits set
+ok 69 - Distribution Bias Check for Keyset 'Sparse' - 48-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 56-bit keys with up to 5 bits set - 4216423 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 70 - Collision Rate for Keyset 'Sparse' - 56-bit keys with up to 5 bits set
+ok 71 - Distribution Bias Check for Keyset 'Sparse' - 56-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 64-bit keys with up to 5 bits set - 8303633 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 72 - Collision Rate for Keyset 'Sparse' - 64-bit keys with up to 5 bits set
+ok 73 - Distribution Bias Check for Keyset 'Sparse' - 64-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 96-bit keys with up to 4 bits set - 3469497 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 74 - Collision Rate for Keyset 'Sparse' - 96-bit keys with up to 4 bits set
+ok 75 - Distribution Bias Check for Keyset 'Sparse' - 96-bit keys with up to 4 bits set
+# Keyset 'Sparse' - 256-bit keys with up to 3 bits set - 2796417 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 76 - Collision Rate for Keyset 'Sparse' - 256-bit keys with up to 3 bits set
+ok 77 - Distribution Bias Check for Keyset 'Sparse' - 256-bit keys with up to 3 bits set
+# Keyset 'Sparse' - 2048-bit keys with up to 2 bits set - 2098177 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 78 - Collision Rate for Keyset 'Sparse' - 2048-bit keys with up to 2 bits set
+ok 79 - Distribution Bias Check for Keyset 'Sparse' - 2048-bit keys with up to 2 bits set
+ok 80 - Keyset 'Sparse' # metrohash64crc_2
+### Keyset 'Crc-MultiCollision' Tests ###
+# Keyset 'Crc(a)-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 81 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 1 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 82 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 2 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 83 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 3 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 84 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 4 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 85 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 5 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 86 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 6 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 87 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 7 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 88 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 8 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 89 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 9 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual  1048574 - ALL keys were in collision - failed
+not ok 90 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 10 # metrohash64crc_2
+# Keyset 'Crc(b)-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 91 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 1 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 92 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 2 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 93 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 3 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 94 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 4 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 95 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 5 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 96 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 6 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 97 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 7 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 98 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 8 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 99 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 9 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 100 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 10 # metrohash64crc_2
+### Keyset 'Murmur2-MultiCollision' Tests ###
+# Keyset 'Murmur2-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 101 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 1 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 102 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 2 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 103 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 3 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 104 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 4 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 105 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 5 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 106 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 6 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 107 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 7 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 108 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 8 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 109 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 9 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 110 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 10 # metrohash64crc_2
+### Keyset 'Murmur3A-MultiCollision' Tests ###
+# Keyset 'Murmur3A-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 111 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 1 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 112 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 2 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 113 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 3 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 114 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 4 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 115 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 5 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 116 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 6 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 117 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 7 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 118 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 8 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 119 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 9 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 120 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 10 # metrohash64crc_2
+### Keyset 'Murmur3F-MultiCollision' Tests ###
+# Keyset 'Murmur3F-MultiCollision' - 1048575 x 16 block keys - 512-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 121 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 1 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 122 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 2 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 123 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 3 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 124 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 4 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 125 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 5 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 126 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 6 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 127 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 7 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 128 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 8 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 129 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 9 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 130 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 10 # metrohash64crc_2
+### Keyset 'City64-MultiCollision' Tests ###
+# Keyset 'City64-MultiCollision' - 10 x 2 block keys - 16-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 131 - Collision Rate for Keyset 'City64-MultiCollision' - seed 1 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 132 - Collision Rate for Keyset 'City64-MultiCollision' - seed 2 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 133 - Collision Rate for Keyset 'City64-MultiCollision' - seed 3 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 134 - Collision Rate for Keyset 'City64-MultiCollision' - seed 4 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 135 - Collision Rate for Keyset 'City64-MultiCollision' - seed 5 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 136 - Collision Rate for Keyset 'City64-MultiCollision' - seed 6 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 137 - Collision Rate for Keyset 'City64-MultiCollision' - seed 7 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 138 - Collision Rate for Keyset 'City64-MultiCollision' - seed 8 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 139 - Collision Rate for Keyset 'City64-MultiCollision' - seed 9 # metrohash64crc_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 140 - Collision Rate for Keyset 'City64-MultiCollision' - seed 10 # metrohash64crc_2
+### Keyset 'Combination Lowbits' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 141 - Collision Rate for Keyset 'Combination Lowbits'
+ok 142 - Distribution Bias Check for Keyset 'Combination Lowbits'
+ok 143 - Keyset 'Combination Lowbits' # metrohash64crc_2
+### Keyset 'Combination Highbits' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 144 - Collision Rate for Keyset 'Combination Highbits'
+ok 145 - Distribution Bias Check for Keyset 'Combination Highbits'
+ok 146 - Keyset 'Combination Highbits' # metrohash64crc_2
+### Keyset 'Combination Highbits2' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 147 - Collision Rate for Keyset 'Combination Highbits2'
+ok 148 - Distribution Bias Check for Keyset 'Combination Highbits2'
+ok 149 - Keyset 'Combination Highbits2' # metrohash64crc_2
+### Keyset 'Combination HiBit-Null' Tests ###
+# Keyset 'Combination' - up to 20 blocks from a set of 2 - 2097150 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 150 - Collision Rate for Keyset 'Combination HiBit-Null'
+ok 151 - Distribution Bias Check for Keyset 'Combination HiBit-Null'
+ok 152 - Keyset 'Combination HiBit-Null' # metrohash64crc_2
+### Keyset 'Combination LowBit-Null' Tests ###
+# Keyset 'Combination' - up to 20 blocks from a set of 2 - 2097150 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 153 - Collision Rate for Keyset 'Combination LowBit-Null'
+ok 154 - Distribution Bias Check for Keyset 'Combination LowBit-Null'
+ok 155 - Keyset 'Combination LowBit-Null' # metrohash64crc_2
+### Keyset 'Combination Hi-Lo' Tests ###
+# Keyset 'Combination' - up to 6 blocks from a set of 15 - 12204240 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 156 - Collision Rate for Keyset 'Combination Hi-Lo'
+ok 157 - Distribution Bias Check for Keyset 'Combination Hi-Lo'
+ok 158 - Keyset 'Combination Hi-Lo' # metrohash64crc_2
+### Keyset 'Text' Tests ###
+# Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 159 - Collision Rate for Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+ok 160 - Distribution Bias Check for Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+# Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 161 - Collision Rate for Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+ok 162 - Distribution Bias Check for Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+# Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 163 - Collision Rate for Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+ok 164 - Distribution Bias Check for Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+ok 165 - Keyset 'Text' # metrohash64crc_2
+### Keyset 'Zeroes' Tests ###
+# Keyset 'Zeroes' - 262144 keys, zero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 166 - Collision Rate for Keyset 'Zeroes' - 262144 keys, zero seed
+ok 167 - Distribution Bias Check for Keyset 'Zeroes' - 262144 keys, zero seed
+# Keyset 'Zeroes' - 262144 keys, nonzero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 168 - Collision Rate for Keyset 'Zeroes' - 262144 keys, nonzero seed
+ok 169 - Distribution Bias Check for Keyset 'Zeroes' - 262144 keys, nonzero seed
+ok 170 - Keyset 'Zeroes' # metrohash64crc_2
+### Keyset 'Seed' Tests ###
+# Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 171 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+ok 172 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+# Keyset 'Seed' - 2000000 seeds, Key ""
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 173 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key ""
+ok 174 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key ""
+# Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 175 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+ok 176 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+# Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 177 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+ok 178 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+ok 179 - Keyset 'Seed' # metrohash64crc_2
+### Keyset 'Effs' Tests ###
+# Keyset 'Effs' - 262144 keys, zero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 180 - Collision Rate for Keyset 'Effs' - 262144 keys, zero seed
+ok 181 - Distribution Bias Check for Keyset 'Effs' - 262144 keys, zero seed
+# Keyset 'Effs' - 262144 keys, nonzero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 182 - Collision Rate for Keyset 'Effs' - 262144 keys, nonzero seed
+ok 183 - Distribution Bias Check for Keyset 'Effs' - 262144 keys, nonzero seed
+ok 184 - Keyset 'Effs' # metrohash64crc_2
+### Keyset 'Words' Tests ###
+# Hashed 99171 keys from 297513 words from file '/usr/share/dict/words'
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 185 - Collision Rate for Keyset 'Words'
+ok 186 - Distribution Bias Check for Keyset 'Words'
+not ok 187 - all tests passed # metrohash64crc_2
+1..187
+# Tests Failed. metrohash64crc_2 failed 16 of 187 tests.
+# Testing took 1794.540200 seconds
+# This is SMHasher version v1.3-demerphq-7-geee7fbf - built on Dec 15 2017.

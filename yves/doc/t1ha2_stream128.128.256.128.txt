@@ -1,0 +1,486 @@
+ok 1 - Found Hash # t1ha2_stream128
+###################################################################
+### Testing t1ha2_stream128 - no seed_state
+### - Fast Positive Hash - portable, 128-bit, little-endian -
+### seedbits: 128 statebits: 256 hashbits: 128
+###################################################################
+ok 2 - Verification code # t1ha2_stream128
+# t1ha2_stream128      - Verification value 0x3E022C62 : Passed.
+### Sanity Tests ###
+# Sanity check simple key bit flips and consistency - hashbytes=16..........
+ok 3 - SanityTest # t1ha2_stream128
+# Sanity check null suffixes change the hash (simple)..........
+ok 4 - Appended Zeroes Test # t1ha2_stream128
+ok 5 - Sanity Test # t1ha2_stream128
+### Speed Tests ###
+## Bulk speed test - 262144-byte keys
+# Alignment  7 -  1.888 bytes/cycle - 5400.58 MiB/sec @ 3 ghz
+# Alignment  6 -  1.863 bytes/cycle - 5329.90 MiB/sec @ 3 ghz
+# Alignment  5 -  1.898 bytes/cycle - 5431.59 MiB/sec @ 3 ghz
+# Alignment  4 -  1.856 bytes/cycle - 5309.80 MiB/sec @ 3 ghz
+# Alignment  3 -  1.848 bytes/cycle - 5286.44 MiB/sec @ 3 ghz
+# Alignment  2 -  1.872 bytes/cycle - 5355.04 MiB/sec @ 3 ghz
+# Alignment  1 -  1.810 bytes/cycle - 5178.65 MiB/sec @ 3 ghz
+# Alignment  0 -  1.839 bytes/cycle - 5262.59 MiB/sec @ 3 ghz
+# Average      -  1.859 bytes/cycle - 5319.32 MiB/sec @ 3 ghz
+## KeySpeed tests
+# t1ha2_stream128           0 byte keys       51.372 c/h
+# t1ha2_stream128           1 byte keys       90.358 c/h       90.358 c/b        0.011 b/c
+# t1ha2_stream128           2 byte keys       91.675 c/h       45.837 c/b        0.022 b/c
+# t1ha2_stream128           3 byte keys       90.631 c/h       30.210 c/b        0.033 b/c
+# t1ha2_stream128           4 byte keys       86.757 c/h       21.689 c/b        0.046 b/c
+# t1ha2_stream128           5 byte keys       88.723 c/h       17.745 c/b        0.056 b/c
+# t1ha2_stream128           6 byte keys       86.740 c/h       14.457 c/b        0.069 b/c
+# t1ha2_stream128           7 byte keys       90.459 c/h       12.923 c/b        0.077 b/c
+# t1ha2_stream128           8 byte keys       57.992 c/h        7.249 c/b        0.138 b/c
+# t1ha2_stream128           9 byte keys       89.480 c/h        9.942 c/b        0.101 b/c
+# t1ha2_stream128          10 byte keys       96.303 c/h        9.630 c/b        0.104 b/c
+# t1ha2_stream128          11 byte keys       86.000 c/h        7.818 c/b        0.128 b/c
+# t1ha2_stream128          12 byte keys       88.796 c/h        7.400 c/b        0.135 b/c
+# t1ha2_stream128          13 byte keys       86.000 c/h        6.615 c/b        0.151 b/c
+# t1ha2_stream128          14 byte keys       89.389 c/h        6.385 c/b        0.157 b/c
+# t1ha2_stream128          15 byte keys       87.809 c/h        5.854 c/b        0.171 b/c
+# t1ha2_stream128          16 byte keys       65.989 c/h        4.124 c/b        0.242 b/c
+# t1ha2_stream128          17 byte keys       87.167 c/h        5.127 c/b        0.195 b/c
+# t1ha2_stream128          18 byte keys       87.000 c/h        4.833 c/b        0.207 b/c
+# t1ha2_stream128          19 byte keys       87.569 c/h        4.609 c/b        0.217 b/c
+# t1ha2_stream128          20 byte keys       87.000 c/h        4.350 c/b        0.230 b/c
+# t1ha2_stream128          21 byte keys       87.000 c/h        4.143 c/b        0.241 b/c
+# t1ha2_stream128          22 byte keys       87.137 c/h        3.961 c/b        0.252 b/c
+# t1ha2_stream128          23 byte keys       87.196 c/h        3.791 c/b        0.264 b/c
+# t1ha2_stream128          24 byte keys       70.000 c/h        2.917 c/b        0.343 b/c
+# t1ha2_stream128          25 byte keys      114.954 c/h        4.598 c/b        0.217 b/c
+# t1ha2_stream128          26 byte keys      115.986 c/h        4.461 c/b        0.224 b/c
+# t1ha2_stream128          27 byte keys      115.989 c/h        4.296 c/b        0.233 b/c
+# t1ha2_stream128          28 byte keys      115.201 c/h        4.114 c/b        0.243 b/c
+# t1ha2_stream128          29 byte keys      115.000 c/h        3.966 c/b        0.252 b/c
+# t1ha2_stream128          30 byte keys      115.000 c/h        3.833 c/b        0.261 b/c
+# t1ha2_stream128          31 byte keys      114.932 c/h        3.707 c/b        0.270 b/c
+#                          Average < 32       90.988 c/h        5.870 c/b        0.170 b/c
+# t1ha2_stream128          32 byte keys       75.981 c/h        2.374 c/b        0.421 b/c
+# t1ha2_stream128          36 byte keys      114.623 c/h        3.184 c/b        0.314 b/c
+# t1ha2_stream128          40 byte keys       83.871 c/h        2.097 c/b        0.477 b/c
+# t1ha2_stream128          44 byte keys      114.997 c/h        2.614 c/b        0.383 b/c
+# t1ha2_stream128          48 byte keys       90.986 c/h        1.896 c/b        0.528 b/c
+# t1ha2_stream128          52 byte keys      116.000 c/h        2.231 c/b        0.448 b/c
+# t1ha2_stream128          56 byte keys       93.510 c/h        1.670 c/b        0.599 b/c
+# t1ha2_stream128          60 byte keys      144.276 c/h        2.405 c/b        0.416 b/c
+# t1ha2_stream128          64 byte keys       93.000 c/h        1.453 c/b        0.688 b/c
+# t1ha2_stream128          68 byte keys      145.571 c/h        2.141 c/b        0.467 b/c
+# t1ha2_stream128          72 byte keys      102.000 c/h        1.417 c/b        0.706 b/c
+# t1ha2_stream128          76 byte keys      132.236 c/h        1.740 c/b        0.575 b/c
+# t1ha2_stream128          80 byte keys      109.995 c/h        1.375 c/b        0.727 b/c
+# t1ha2_stream128          84 byte keys      133.646 c/h        1.591 c/b        0.629 b/c
+# t1ha2_stream128          88 byte keys      109.996 c/h        1.250 c/b        0.800 b/c
+# t1ha2_stream128          92 byte keys      160.764 c/h        1.747 c/b        0.572 b/c
+# t1ha2_stream128          96 byte keys      111.211 c/h        1.158 c/b        0.863 b/c
+# t1ha2_stream128         100 byte keys      150.919 c/h        1.509 c/b        0.663 b/c
+# t1ha2_stream128         104 byte keys      150.079 c/h        1.443 c/b        0.693 b/c
+# t1ha2_stream128         108 byte keys      152.523 c/h        1.412 c/b        0.708 b/c
+# t1ha2_stream128         112 byte keys      137.009 c/h        1.223 c/b        0.817 b/c
+# t1ha2_stream128         116 byte keys      151.259 c/h        1.304 c/b        0.767 b/c
+# t1ha2_stream128         120 byte keys      127.414 c/h        1.062 c/b        0.942 b/c
+# t1ha2_stream128         124 byte keys      177.687 c/h        1.433 c/b        0.698 b/c
+#                         Average < 128      105.199 c/h        2.488 c/b        0.402 b/c
+# t1ha2_stream128         128 byte keys      127.911 c/h        0.999 c/b        1.001 b/c
+# t1ha2_stream128         256 byte keys      202.622 c/h        0.791 c/b        1.263 b/c
+# t1ha2_stream128         512 byte keys      334.010 c/h        0.652 c/b        1.533 b/c
+# t1ha2_stream128        1024 byte keys      598.140 c/h        0.584 c/b        1.712 b/c
+# t1ha2_stream128        2048 byte keys     1112.073 c/h        0.543 c/b        1.842 b/c
+# t1ha2_stream128        4096 byte keys     2331.774 c/h        0.569 c/b        1.757 b/c
+# t1ha2_stream128        8192 byte keys     4457.955 c/h        0.544 c/b        1.838 b/c
+# t1ha2_stream128       16384 byte keys     8723.894 c/h        0.532 c/b        1.878 b/c
+# t1ha2_stream128       32768 byte keys    17237.893 c/h        0.526 c/b        1.901 b/c
+# t1ha2_stream128       65536 byte keys    34291.399 c/h        0.523 c/b        1.911 b/c
+#                       Overall Average     1141.043 c/h        0.565 c/b        1.770 b/c
+ok 6 - Speed (always passes) # t1ha2_stream128
+### Differential Tests ###
+# Testing 8303632 up-to-5-bit differentials in 64-bit keys -> 128 bit hashes.
+# 1000 reps, 8303632000 total tests, expecting 0.00 random collisions..........
+ok 7 - Differential collisions # t1ha2_stream128
+ok 8 - Nothing skipped during differential collision check # t1ha2_stream128
+# 0 total collisions, of which 0 single collisions were ignored
+ok 9 - ProcessDifferentials
+# Testing 11017632 up-to-4-bit differentials in 128-bit keys -> 128 bit hashes.
+# 1000 reps, 11017632000 total tests, expecting 0.00 random collisions..........
+ok 10 - Differential collisions # t1ha2_stream128
+ok 11 - Nothing skipped during differential collision check # t1ha2_stream128
+# 0 total collisions, of which 0 single collisions were ignored
+ok 12 - ProcessDifferentials
+# Testing 2796416 up-to-3-bit differentials in 256-bit keys -> 128 bit hashes.
+# 1000 reps, 2796416000 total tests, expecting 0.00 random collisions..........
+ok 13 - Differential collisions # t1ha2_stream128
+ok 14 - Nothing skipped during differential collision check # t1ha2_stream128
+# 0 total collisions, of which 0 single collisions were ignored
+ok 15 - ProcessDifferentials
+ok 16 - Differential # t1ha2_stream128
+### Avalanche Tests ### - seed-bits: 128 hash-bits: 128
+# Samples 400000, expected error 0.00064000, confidence level 99.99994267%
+# Testing   0-bit keys.......... ok.     # worst-bit:   0.721% error-ratio: 9.898702e-01
+ok 17 - Strict Avalanche Criteria - 0 bit/0 byte keys # t1ha2_stream128
+# Testing   8-bit keys.......... ok.     # worst-bit:   0.754% error-ratio: 9.994304e-01
+ok 18 - Strict Avalanche Criteria - 8 bit/1 byte keys # t1ha2_stream128
+# Testing  16-bit keys.......... ok.     # worst-bit:   0.710% error-ratio: 9.885198e-01
+ok 19 - Strict Avalanche Criteria - 16 bit/2 byte keys # t1ha2_stream128
+# Testing  24-bit keys.......... ok.     # worst-bit:   0.637% error-ratio: 9.972252e-01
+ok 20 - Strict Avalanche Criteria - 24 bit/3 byte keys # t1ha2_stream128
+# Testing  32-bit keys.......... ok.     # worst-bit:   0.639% error-ratio: 1.016810e+00
+ok 21 - Strict Avalanche Criteria - 32 bit/4 byte keys # t1ha2_stream128
+# Testing  40-bit keys.......... ok.     # worst-bit:   0.675% error-ratio: 1.003201e+00
+ok 22 - Strict Avalanche Criteria - 40 bit/5 byte keys # t1ha2_stream128
+# Testing  48-bit keys.......... ok.     # worst-bit:   0.674% error-ratio: 1.004110e+00
+ok 23 - Strict Avalanche Criteria - 48 bit/6 byte keys # t1ha2_stream128
+# Testing  56-bit keys.......... ok.     # worst-bit:   0.659% error-ratio: 9.969740e-01
+ok 24 - Strict Avalanche Criteria - 56 bit/7 byte keys # t1ha2_stream128
+# Testing  64-bit keys.......... ok.     # worst-bit:   0.698% error-ratio: 9.980319e-01
+ok 25 - Strict Avalanche Criteria - 64 bit/8 byte keys # t1ha2_stream128
+# Testing  72-bit keys.......... ok.     # worst-bit:   0.731% error-ratio: 9.945000e-01
+ok 26 - Strict Avalanche Criteria - 72 bit/9 byte keys # t1ha2_stream128
+# Testing  80-bit keys.......... ok.     # worst-bit:   0.659% error-ratio: 1.006965e+00
+ok 27 - Strict Avalanche Criteria - 80 bit/10 byte keys # t1ha2_stream128
+# Testing  88-bit keys.......... ok.     # worst-bit:   0.670% error-ratio: 9.954314e-01
+ok 28 - Strict Avalanche Criteria - 88 bit/11 byte keys # t1ha2_stream128
+# Testing  96-bit keys.......... ok.     # worst-bit:   0.721% error-ratio: 1.012317e+00
+ok 29 - Strict Avalanche Criteria - 96 bit/12 byte keys # t1ha2_stream128
+# Testing 104-bit keys.......... ok.     # worst-bit:   0.779% error-ratio: 9.840543e-01
+ok 30 - Strict Avalanche Criteria - 104 bit/13 byte keys # t1ha2_stream128
+# Testing 112-bit keys.......... ok.     # worst-bit:   0.663% error-ratio: 1.012043e+00
+ok 31 - Strict Avalanche Criteria - 112 bit/14 byte keys # t1ha2_stream128
+# Testing 120-bit keys.......... ok.     # worst-bit:   0.657% error-ratio: 9.986690e-01
+ok 32 - Strict Avalanche Criteria - 120 bit/15 byte keys # t1ha2_stream128
+# Testing 128-bit keys.......... ok.     # worst-bit:   0.667% error-ratio: 1.003746e+00
+ok 33 - Strict Avalanche Criteria - 128 bit/16 byte keys # t1ha2_stream128
+# Testing 136-bit keys.......... ok.     # worst-bit:   0.635% error-ratio: 9.981297e-01
+ok 34 - Strict Avalanche Criteria - 136 bit/17 byte keys # t1ha2_stream128
+# Testing 144-bit keys.......... ok.     # worst-bit:   0.654% error-ratio: 9.870489e-01
+ok 35 - Strict Avalanche Criteria - 144 bit/18 byte keys # t1ha2_stream128
+# Testing 152-bit keys.......... ok.     # worst-bit:   0.653% error-ratio: 1.011717e+00
+ok 36 - Strict Avalanche Criteria - 152 bit/19 byte keys # t1ha2_stream128
+# Testing 152-bit keys.......... ok.     # worst-bit:   0.621% error-ratio: 9.956177e-01
+ok 37 - Strict Avalanche Criteria - 152 bit/19 byte keys # t1ha2_stream128
+# Testing 200-bit keys.......... ok.     # worst-bit:   0.633% error-ratio: 1.006500e+00
+ok 38 - Strict Avalanche Criteria - 200 bit/25 byte keys # t1ha2_stream128
+# Testing 256-bit keys.......... ok.     # worst-bit:   0.690% error-ratio: 9.978936e-01
+ok 39 - Strict Avalanche Criteria - 256 bit/32 byte keys # t1ha2_stream128
+# Testing 520-bit keys.......... ok.     # worst-bit:   0.685% error-ratio: 1.000633e+00
+ok 40 - Strict Avalanche Criteria - 520 bit/65 byte keys # t1ha2_stream128
+# Testing 512-bit keys.......... ok.     # worst-bit:   0.830% error-ratio: 9.979246e-01
+ok 41 - Strict Avalanche Criteria - 512 bit/64 byte keys # t1ha2_stream128
+# Testing 1024-bit keys.......... ok.     # worst-bit:   0.656% error-ratio: 9.973260e-01
+ok 42 - Strict Avalanche Criteria - 1024 bit/128 byte keys # t1ha2_stream128
+# Testing 2048-bit keys.......... ok.     # worst-bit:   0.716% error-ratio: 9.970948e-01
+ok 43 - Strict Avalanche Criteria - 2048 bit/256 byte keys # t1ha2_stream128
+### Keyset 'Cyclic' Tests ###
+# Keyset 'Cyclic' - 8 cycles of 16 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 44 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 16 bytes - 10000000 keys
+ok 45 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 16 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 17 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 46 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 17 bytes - 10000000 keys
+ok 47 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 17 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 18 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 48 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 18 bytes - 10000000 keys
+ok 49 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 18 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 19 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 50 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 19 bytes - 10000000 keys
+ok 51 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 19 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 20 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 52 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 20 bytes - 10000000 keys
+ok 53 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 20 bytes - 10000000 keys
+ok 54 - Keyset 'Cyclic' # t1ha2_stream128
+### Keyset 'TwoBytes' Tests ###
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 55 - Collision Rate for Keyset 'TwoBytes' - up-to-4-byte keys, 652545 total keys
+ok 56 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-4-byte keys, 652545 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 57 - Collision Rate for Keyset 'TwoBytes' - up-to-8-byte keys, 5471025 total keys
+ok 58 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-8-byte keys, 5471025 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 59 - Collision Rate for Keyset 'TwoBytes' - up-to-12-byte keys, 18616785 total keys
+ok 60 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-12-byte keys, 18616785 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 61 - Collision Rate for Keyset 'TwoBytes' - up-to-16-byte keys, 44251425 total keys
+ok 62 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-16-byte keys, 44251425 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 63 - Collision Rate for Keyset 'TwoBytes' - up-to-20-byte keys, 86536545 total keys
+ok 64 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-20-byte keys, 86536545 total keys
+ok 65 - Keyset 'TwoBytes' # t1ha2_stream128
+### Keyset 'Sparse' Tests ###
+# Keyset 'Sparse' - 4096-bit keys with up to 2 bits set - 8390657 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 66 - Collision Rate for Keyset 'Sparse' - 4096-bit keys with up to 2 bits set
+ok 67 - Distribution Bias Check for Keyset 'Sparse' - 4096-bit keys with up to 2 bits set
+# Keyset 'Sparse' - 2048-bit keys with up to 2 bits set - 2098177 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 68 - Collision Rate for Keyset 'Sparse' - 2048-bit keys with up to 2 bits set
+ok 69 - Distribution Bias Check for Keyset 'Sparse' - 2048-bit keys with up to 2 bits set
+# Keyset 'Sparse' - 1024-bit keys with up to 2 bits set - 524801 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 70 - Collision Rate for Keyset 'Sparse' - 1024-bit keys with up to 2 bits set
+ok 71 - Distribution Bias Check for Keyset 'Sparse' - 1024-bit keys with up to 2 bits set
+# Keyset 'Sparse' - 512-bit keys with up to 2 bits set - 131329 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 72 - Collision Rate for Keyset 'Sparse' - 512-bit keys with up to 2 bits set
+ok 73 - Distribution Bias Check for Keyset 'Sparse' - 512-bit keys with up to 2 bits set
+# Keyset 'Sparse' - 256-bit keys with up to 3 bits set - 2796417 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 74 - Collision Rate for Keyset 'Sparse' - 256-bit keys with up to 3 bits set
+ok 75 - Distribution Bias Check for Keyset 'Sparse' - 256-bit keys with up to 3 bits set
+# Keyset 'Sparse' - 32-bit keys with up to 6 bits set - 1149017 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 76 - Collision Rate for Keyset 'Sparse' - 32-bit keys with up to 6 bits set
+ok 77 - Distribution Bias Check for Keyset 'Sparse' - 32-bit keys with up to 6 bits set
+# Keyset 'Sparse' - 40-bit keys with up to 6 bits set - 4598479 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 78 - Collision Rate for Keyset 'Sparse' - 40-bit keys with up to 6 bits set
+ok 79 - Distribution Bias Check for Keyset 'Sparse' - 40-bit keys with up to 6 bits set
+# Keyset 'Sparse' - 48-bit keys with up to 5 bits set - 1925357 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 80 - Collision Rate for Keyset 'Sparse' - 48-bit keys with up to 5 bits set
+ok 81 - Distribution Bias Check for Keyset 'Sparse' - 48-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 56-bit keys with up to 5 bits set - 4216423 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 82 - Collision Rate for Keyset 'Sparse' - 56-bit keys with up to 5 bits set
+ok 83 - Distribution Bias Check for Keyset 'Sparse' - 56-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 64-bit keys with up to 5 bits set - 8303633 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 84 - Collision Rate for Keyset 'Sparse' - 64-bit keys with up to 5 bits set
+ok 85 - Distribution Bias Check for Keyset 'Sparse' - 64-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 96-bit keys with up to 4 bits set - 3469497 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 86 - Collision Rate for Keyset 'Sparse' - 96-bit keys with up to 4 bits set
+ok 87 - Distribution Bias Check for Keyset 'Sparse' - 96-bit keys with up to 4 bits set
+ok 88 - Keyset 'Sparse' # t1ha2_stream128
+### Keyset 'Crc-MultiCollision' Tests ###
+# Keyset 'Crc(a)-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 89 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 1 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 90 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 2 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 91 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 3 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 92 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 4 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 93 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 5 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 94 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 6 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 95 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 7 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 96 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 8 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 97 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 9 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 98 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 10 # t1ha2_stream128
+# Keyset 'Crc(b)-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 99 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 1 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 100 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 2 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 101 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 3 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 102 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 4 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 103 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 5 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 104 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 6 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 105 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 7 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 106 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 8 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 107 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 9 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 108 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 10 # t1ha2_stream128
+### Keyset 'Murmur2-MultiCollision' Tests ###
+# Keyset 'Murmur2-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 109 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 1 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 110 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 2 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 111 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 3 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 112 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 4 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 113 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 5 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 114 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 6 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 115 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 7 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 116 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 8 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 117 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 9 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 118 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 10 # t1ha2_stream128
+### Keyset 'Murmur3A-MultiCollision' Tests ###
+# Keyset 'Murmur3A-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 119 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 1 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 120 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 2 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 121 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 3 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 122 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 4 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 123 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 5 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 124 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 6 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 125 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 7 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 126 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 8 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 127 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 9 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 128 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 10 # t1ha2_stream128
+### Keyset 'Murmur3F-MultiCollision' Tests ###
+# Keyset 'Murmur3F-MultiCollision' - 1048575 x 16 block keys - 512-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 129 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 1 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 130 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 2 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 131 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 3 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 132 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 4 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 133 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 5 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 134 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 6 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 135 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 7 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 136 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 8 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 137 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 9 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 138 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 10 # t1ha2_stream128
+### Keyset 'City64-MultiCollision' Tests ###
+# Keyset 'City64-MultiCollision' - 10 x 2 block keys - 16-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 139 - Collision Rate for Keyset 'City64-MultiCollision' - seed 1 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 140 - Collision Rate for Keyset 'City64-MultiCollision' - seed 2 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 141 - Collision Rate for Keyset 'City64-MultiCollision' - seed 3 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 142 - Collision Rate for Keyset 'City64-MultiCollision' - seed 4 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 143 - Collision Rate for Keyset 'City64-MultiCollision' - seed 5 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 144 - Collision Rate for Keyset 'City64-MultiCollision' - seed 6 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 145 - Collision Rate for Keyset 'City64-MultiCollision' - seed 7 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 146 - Collision Rate for Keyset 'City64-MultiCollision' - seed 8 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 147 - Collision Rate for Keyset 'City64-MultiCollision' - seed 9 # t1ha2_stream128
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 148 - Collision Rate for Keyset 'City64-MultiCollision' - seed 10 # t1ha2_stream128
+### Keyset 'Combination Lowbits' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 149 - Collision Rate for Keyset 'Combination Lowbits'
+ok 150 - Distribution Bias Check for Keyset 'Combination Lowbits'
+ok 151 - Keyset 'Combination Lowbits' # t1ha2_stream128
+### Keyset 'Combination Highbits' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 152 - Collision Rate for Keyset 'Combination Highbits'
+ok 153 - Distribution Bias Check for Keyset 'Combination Highbits'
+ok 154 - Keyset 'Combination Highbits' # t1ha2_stream128
+### Keyset 'Combination Highbits2' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 155 - Collision Rate for Keyset 'Combination Highbits2'
+ok 156 - Distribution Bias Check for Keyset 'Combination Highbits2'
+ok 157 - Keyset 'Combination Highbits2' # t1ha2_stream128
+### Keyset 'Combination HiBit-Null' Tests ###
+# Keyset 'Combination' - up to 20 blocks from a set of 2 - 2097150 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 158 - Collision Rate for Keyset 'Combination HiBit-Null'
+ok 159 - Distribution Bias Check for Keyset 'Combination HiBit-Null'
+ok 160 - Keyset 'Combination HiBit-Null' # t1ha2_stream128
+### Keyset 'Combination LowBit-Null' Tests ###
+# Keyset 'Combination' - up to 20 blocks from a set of 2 - 2097150 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 161 - Collision Rate for Keyset 'Combination LowBit-Null'
+ok 162 - Distribution Bias Check for Keyset 'Combination LowBit-Null'
+ok 163 - Keyset 'Combination LowBit-Null' # t1ha2_stream128
+### Keyset 'Combination Hi-Lo' Tests ###
+# Keyset 'Combination' - up to 6 blocks from a set of 15 - 12204240 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 164 - Collision Rate for Keyset 'Combination Hi-Lo'
+ok 165 - Distribution Bias Check for Keyset 'Combination Hi-Lo'
+ok 166 - Keyset 'Combination Hi-Lo' # t1ha2_stream128
+### Keyset 'Text' Tests ###
+# Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 167 - Collision Rate for Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+ok 168 - Distribution Bias Check for Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+# Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 169 - Collision Rate for Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+ok 170 - Distribution Bias Check for Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+# Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 171 - Collision Rate for Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+ok 172 - Distribution Bias Check for Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+ok 173 - Keyset 'Text' # t1ha2_stream128
+### Keyset 'Zeroes' Tests ###
+# Keyset 'Zeroes' - 262144 keys, zero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 174 - Collision Rate for Keyset 'Zeroes' - 262144 keys, zero seed
+ok 175 - Distribution Bias Check for Keyset 'Zeroes' - 262144 keys, zero seed
+# Keyset 'Zeroes' - 262144 keys, nonzero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 176 - Collision Rate for Keyset 'Zeroes' - 262144 keys, nonzero seed
+ok 177 - Distribution Bias Check for Keyset 'Zeroes' - 262144 keys, nonzero seed
+ok 178 - Keyset 'Zeroes' # t1ha2_stream128
+### Keyset 'Seed' Tests ###
+# Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 179 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+ok 180 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+# Keyset 'Seed' - 2000000 seeds, Key ""
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 181 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key ""
+ok 182 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key ""
+# Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 183 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+ok 184 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+# Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 185 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+ok 186 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+ok 187 - Keyset 'Seed' # t1ha2_stream128
+### Keyset 'Effs' Tests ###
+# Keyset 'Effs' - 262144 keys, zero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 188 - Collision Rate for Keyset 'Effs' - 262144 keys, zero seed
+ok 189 - Distribution Bias Check for Keyset 'Effs' - 262144 keys, zero seed
+# Keyset 'Effs' - 262144 keys, nonzero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 190 - Collision Rate for Keyset 'Effs' - 262144 keys, nonzero seed
+ok 191 - Distribution Bias Check for Keyset 'Effs' - 262144 keys, nonzero seed
+ok 192 - Keyset 'Effs' # t1ha2_stream128
+### Keyset 'Words' Tests ###
+# Hashed 99171 keys from 297513 words from file '/usr/share/dict/words'
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 193 - Collision Rate for Keyset 'Words'
+ok 194 - Distribution Bias Check for Keyset 'Words'
+ok 195 - all tests passed # t1ha2_stream128
+1..195
+# All Tests Passed. t1ha2_stream128 passed all 195 tests run.
+# Testing took 4767.552595 seconds
+# This is SMHasher version v1.3-demerphq-33-g88c4f88 - built on Mar 12 2018.

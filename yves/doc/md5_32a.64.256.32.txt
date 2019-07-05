@@ -1,0 +1,486 @@
+ok 1 - Found Hash # md5_32a
+###################################################################
+### Testing md5_32a - no seed_state
+### - MD5, first 32 bits, seeding of md5 start state -
+### seedbits: 64 statebits: 256 hashbits: 32
+###################################################################
+ok 2 - Verification code # md5_32a
+# md5_32a              - Verification value 0xF695A0BB : Passed.
+### Sanity Tests ###
+# Sanity check simple key bit flips and consistency - hashbytes=4..........
+ok 3 - SanityTest # md5_32a
+# Sanity check null suffixes change the hash (simple)..........
+ok 4 - Appended Zeroes Test # md5_32a
+ok 5 - Sanity Test # md5_32a
+### Speed Tests ###
+## Bulk speed test - 262144-byte keys
+# Alignment  7 -  0.160 bytes/cycle -  456.37 MiB/sec @ 3 ghz
+# Alignment  6 -  0.159 bytes/cycle -  456.27 MiB/sec @ 3 ghz
+# Alignment  5 -  0.160 bytes/cycle -  456.36 MiB/sec @ 3 ghz
+# Alignment  4 -  0.160 bytes/cycle -  456.65 MiB/sec @ 3 ghz
+# Alignment  3 -  0.160 bytes/cycle -  456.46 MiB/sec @ 3 ghz
+# Alignment  2 -  0.160 bytes/cycle -  456.71 MiB/sec @ 3 ghz
+# Alignment  1 -  0.160 bytes/cycle -  456.74 MiB/sec @ 3 ghz
+# Alignment  0 -  0.160 bytes/cycle -  456.53 MiB/sec @ 3 ghz
+# Average      -  0.160 bytes/cycle -  456.51 MiB/sec @ 3 ghz
+## KeySpeed tests
+# md5_32a                   0 byte keys      453.409 c/h
+# md5_32a                   1 byte keys      456.601 c/h      456.601 c/b        0.002 b/c
+# md5_32a                   2 byte keys      456.758 c/h      228.379 c/b        0.004 b/c
+# md5_32a                   3 byte keys      456.743 c/h      152.248 c/b        0.007 b/c
+# md5_32a                   4 byte keys      456.605 c/h      114.151 c/b        0.009 b/c
+# md5_32a                   5 byte keys      456.607 c/h       91.321 c/b        0.011 b/c
+# md5_32a                   6 byte keys      456.609 c/h       76.102 c/b        0.013 b/c
+# md5_32a                   7 byte keys      456.615 c/h       65.231 c/b        0.015 b/c
+# md5_32a                   8 byte keys      456.934 c/h       57.117 c/b        0.018 b/c
+# md5_32a                   9 byte keys      456.906 c/h       50.767 c/b        0.020 b/c
+# md5_32a                  10 byte keys      456.917 c/h       45.692 c/b        0.022 b/c
+# md5_32a                  11 byte keys      456.917 c/h       41.538 c/b        0.024 b/c
+# md5_32a                  12 byte keys      456.947 c/h       38.079 c/b        0.026 b/c
+# md5_32a                  13 byte keys      456.944 c/h       35.150 c/b        0.028 b/c
+# md5_32a                  14 byte keys      456.955 c/h       32.640 c/b        0.031 b/c
+# md5_32a                  15 byte keys      456.948 c/h       30.463 c/b        0.033 b/c
+# md5_32a                  16 byte keys      456.717 c/h       28.545 c/b        0.035 b/c
+# md5_32a                  17 byte keys      456.697 c/h       26.865 c/b        0.037 b/c
+# md5_32a                  18 byte keys      456.709 c/h       25.373 c/b        0.039 b/c
+# md5_32a                  19 byte keys      456.702 c/h       24.037 c/b        0.042 b/c
+# md5_32a                  20 byte keys      456.726 c/h       22.836 c/b        0.044 b/c
+# md5_32a                  21 byte keys      456.720 c/h       21.749 c/b        0.046 b/c
+# md5_32a                  22 byte keys      456.725 c/h       20.760 c/b        0.048 b/c
+# md5_32a                  23 byte keys      456.716 c/h       19.857 c/b        0.050 b/c
+# md5_32a                  24 byte keys      456.757 c/h       19.032 c/b        0.053 b/c
+# md5_32a                  25 byte keys      456.825 c/h       18.273 c/b        0.055 b/c
+# md5_32a                  26 byte keys      456.830 c/h       17.570 c/b        0.057 b/c
+# md5_32a                  27 byte keys      456.827 c/h       16.920 c/b        0.059 b/c
+# md5_32a                  28 byte keys      456.833 c/h       16.315 c/b        0.061 b/c
+# md5_32a                  29 byte keys      456.825 c/h       15.753 c/b        0.063 b/c
+# md5_32a                  30 byte keys      456.836 c/h       15.228 c/b        0.066 b/c
+# md5_32a                  31 byte keys      456.828 c/h       14.736 c/b        0.068 b/c
+#                          Average < 32      456.678 c/h       29.463 c/b        0.034 b/c
+# md5_32a                  32 byte keys      458.000 c/h       14.312 c/b        0.070 b/c
+# md5_32a                  36 byte keys      458.000 c/h       12.722 c/b        0.079 b/c
+# md5_32a                  40 byte keys      458.000 c/h       11.450 c/b        0.087 b/c
+# md5_32a                  44 byte keys      458.426 c/h       10.419 c/b        0.096 b/c
+# md5_32a                  48 byte keys      458.440 c/h        9.551 c/b        0.105 b/c
+# md5_32a                  52 byte keys      458.492 c/h        8.817 c/b        0.113 b/c
+# md5_32a                  56 byte keys      859.096 c/h       15.341 c/b        0.065 b/c
+# md5_32a                  60 byte keys      860.186 c/h       14.336 c/b        0.070 b/c
+# md5_32a                  64 byte keys      854.885 c/h       13.358 c/b        0.075 b/c
+# md5_32a                  68 byte keys      860.888 c/h       12.660 c/b        0.079 b/c
+# md5_32a                  72 byte keys      859.998 c/h       11.944 c/b        0.084 b/c
+# md5_32a                  76 byte keys      859.999 c/h       11.316 c/b        0.088 b/c
+# md5_32a                  80 byte keys      861.767 c/h       10.772 c/b        0.093 b/c
+# md5_32a                  84 byte keys      861.763 c/h       10.259 c/b        0.097 b/c
+# md5_32a                  88 byte keys      861.820 c/h        9.793 c/b        0.102 b/c
+# md5_32a                  92 byte keys      861.977 c/h        9.369 c/b        0.107 b/c
+# md5_32a                  96 byte keys      862.746 c/h        8.987 c/b        0.111 b/c
+# md5_32a                 100 byte keys      862.800 c/h        8.628 c/b        0.116 b/c
+# md5_32a                 104 byte keys      862.846 c/h        8.297 c/b        0.121 b/c
+# md5_32a                 108 byte keys      862.468 c/h        7.986 c/b        0.125 b/c
+# md5_32a                 112 byte keys      862.503 c/h        7.701 c/b        0.130 b/c
+# md5_32a                 116 byte keys      862.604 c/h        7.436 c/b        0.134 b/c
+# md5_32a                 120 byte keys     1265.612 c/h       10.547 c/b        0.095 b/c
+# md5_32a                 124 byte keys     1265.984 c/h       10.210 c/b        0.098 b/c
+#                         Average < 128      601.303 c/h       14.220 c/b        0.070 b/c
+# md5_32a                 128 byte keys     1256.116 c/h        9.813 c/b        0.102 b/c
+# md5_32a                 256 byte keys     2064.471 c/h        8.064 c/b        0.124 b/c
+# md5_32a                 512 byte keys     3820.594 c/h        7.462 c/b        0.134 b/c
+# md5_32a                1024 byte keys     7025.789 c/h        6.861 c/b        0.146 b/c
+# md5_32a                2048 byte keys    13449.809 c/h        6.567 c/b        0.152 b/c
+# md5_32a                4096 byte keys    26271.894 c/h        6.414 c/b        0.156 b/c
+# md5_32a                8192 byte keys    51933.147 c/h        6.339 c/b        0.158 b/c
+# md5_32a               16384 byte keys   103239.140 c/h        6.301 c/b        0.159 b/c
+# md5_32a               32768 byte keys   205851.385 c/h        6.282 c/b        0.159 b/c
+# md5_32a               65536 byte keys   411021.283 c/h        6.272 c/b        0.159 b/c
+#                       Overall Average    13024.343 c/h        6.448 c/b        0.155 b/c
+ok 6 - Speed (always passes) # md5_32a
+### Differential Tests ###
+# Testing 8303632 up-to-5-bit differentials in 64-bit keys -> 32 bit hashes.
+# 1000 reps, 8303632000 total tests, expecting 1.93 random collisions..........
+ok 7 - Differential collisions # md5_32a
+ok 8 - Nothing skipped during differential collision check # md5_32a
+# 1 total collisions, of which 1 single collisions were ignored
+ok 9 - ProcessDifferentials
+# Testing 11017632 up-to-4-bit differentials in 128-bit keys -> 32 bit hashes.
+# 1000 reps, 11017632000 total tests, expecting 2.57 random collisions..........
+ok 10 - Differential collisions # md5_32a
+ok 11 - Nothing skipped during differential collision check # md5_32a
+# 1 total collisions, of which 1 single collisions were ignored
+ok 12 - ProcessDifferentials
+# Testing 2796416 up-to-3-bit differentials in 256-bit keys -> 32 bit hashes.
+# 1000 reps, 2796416000 total tests, expecting 0.65 random collisions..........
+ok 13 - Differential collisions # md5_32a
+ok 14 - Nothing skipped during differential collision check # md5_32a
+# 0 total collisions, of which 0 single collisions were ignored
+ok 15 - ProcessDifferentials
+ok 16 - Differential # md5_32a
+### Avalanche Tests ### - seed-bits: 64 hash-bits: 32
+# Samples 400000, expected error 0.00064000, confidence level 99.99994267%
+# Testing   0-bit keys.......... ok.     # worst-bit:   0.676% error-ratio: 9.697960e-01
+ok 17 - Strict Avalanche Criteria - 0 bit/0 byte keys # md5_32a
+# Testing   8-bit keys.......... ok.     # worst-bit:   0.563% error-ratio: 1.001868e+00
+ok 18 - Strict Avalanche Criteria - 8 bit/1 byte keys # md5_32a
+# Testing  16-bit keys.......... ok.     # worst-bit:   0.650% error-ratio: 9.792177e-01
+ok 19 - Strict Avalanche Criteria - 16 bit/2 byte keys # md5_32a
+# Testing  24-bit keys.......... ok.     # worst-bit:   0.734% error-ratio: 9.994708e-01
+ok 20 - Strict Avalanche Criteria - 24 bit/3 byte keys # md5_32a
+# Testing  32-bit keys.......... ok.     # worst-bit:   0.599% error-ratio: 1.005243e+00
+ok 21 - Strict Avalanche Criteria - 32 bit/4 byte keys # md5_32a
+# Testing  40-bit keys.......... ok.     # worst-bit:   0.555% error-ratio: 1.028803e+00
+ok 22 - Strict Avalanche Criteria - 40 bit/5 byte keys # md5_32a
+# Testing  48-bit keys.......... ok.     # worst-bit:   0.560% error-ratio: 9.774319e-01
+ok 23 - Strict Avalanche Criteria - 48 bit/6 byte keys # md5_32a
+# Testing  56-bit keys.......... ok.     # worst-bit:   0.650% error-ratio: 1.029200e+00
+ok 24 - Strict Avalanche Criteria - 56 bit/7 byte keys # md5_32a
+# Testing  64-bit keys.......... ok.     # worst-bit:   0.576% error-ratio: 9.312405e-01
+ok 25 - Strict Avalanche Criteria - 64 bit/8 byte keys # md5_32a
+# Testing  72-bit keys.......... ok.     # worst-bit:   0.602% error-ratio: 1.009787e+00
+ok 26 - Strict Avalanche Criteria - 72 bit/9 byte keys # md5_32a
+# Testing  80-bit keys.......... ok.     # worst-bit:   0.537% error-ratio: 9.727257e-01
+ok 27 - Strict Avalanche Criteria - 80 bit/10 byte keys # md5_32a
+# Testing  88-bit keys.......... ok.     # worst-bit:   0.734% error-ratio: 9.767474e-01
+ok 28 - Strict Avalanche Criteria - 88 bit/11 byte keys # md5_32a
+# Testing  96-bit keys.......... ok.     # worst-bit:   0.732% error-ratio: 9.995836e-01
+ok 29 - Strict Avalanche Criteria - 96 bit/12 byte keys # md5_32a
+# Testing 104-bit keys.......... ok.     # worst-bit:   0.588% error-ratio: 1.027393e+00
+ok 30 - Strict Avalanche Criteria - 104 bit/13 byte keys # md5_32a
+# Testing 112-bit keys.......... ok.     # worst-bit:   0.564% error-ratio: 9.913943e-01
+ok 31 - Strict Avalanche Criteria - 112 bit/14 byte keys # md5_32a
+# Testing 120-bit keys.......... ok.     # worst-bit:   0.611% error-ratio: 9.906802e-01
+ok 32 - Strict Avalanche Criteria - 120 bit/15 byte keys # md5_32a
+# Testing 128-bit keys.......... ok.     # worst-bit:   0.606% error-ratio: 9.947241e-01
+ok 33 - Strict Avalanche Criteria - 128 bit/16 byte keys # md5_32a
+# Testing 136-bit keys.......... ok.     # worst-bit:   0.633% error-ratio: 1.001914e+00
+ok 34 - Strict Avalanche Criteria - 136 bit/17 byte keys # md5_32a
+# Testing 144-bit keys.......... ok.     # worst-bit:   0.578% error-ratio: 1.003780e+00
+ok 35 - Strict Avalanche Criteria - 144 bit/18 byte keys # md5_32a
+# Testing 152-bit keys.......... ok.     # worst-bit:   0.635% error-ratio: 1.021626e+00
+ok 36 - Strict Avalanche Criteria - 152 bit/19 byte keys # md5_32a
+# Testing 152-bit keys.......... ok.     # worst-bit:   0.647% error-ratio: 9.709206e-01
+ok 37 - Strict Avalanche Criteria - 152 bit/19 byte keys # md5_32a
+# Testing 200-bit keys.......... ok.     # worst-bit:   0.619% error-ratio: 1.023301e+00
+ok 38 - Strict Avalanche Criteria - 200 bit/25 byte keys # md5_32a
+# Testing 256-bit keys.......... ok.     # worst-bit:   0.631% error-ratio: 9.893655e-01
+ok 39 - Strict Avalanche Criteria - 256 bit/32 byte keys # md5_32a
+# Testing 520-bit keys.......... ok.     # worst-bit:   0.710% error-ratio: 9.989968e-01
+ok 40 - Strict Avalanche Criteria - 520 bit/65 byte keys # md5_32a
+# Testing 512-bit keys.......... ok.     # worst-bit:   0.694% error-ratio: 1.013575e+00
+ok 41 - Strict Avalanche Criteria - 512 bit/64 byte keys # md5_32a
+# Testing 1024-bit keys.......... ok.     # worst-bit:   0.657% error-ratio: 1.006352e+00
+ok 42 - Strict Avalanche Criteria - 1024 bit/128 byte keys # md5_32a
+# Testing 2048-bit keys.......... ok.     # worst-bit:   0.728% error-ratio: 1.001712e+00
+ok 43 - Strict Avalanche Criteria - 2048 bit/256 byte keys # md5_32a
+### Keyset 'Cyclic' Tests ###
+# Keyset 'Cyclic' - 8 cycles of 4 bytes - 10000000 keys
+# Testing collisions   - Expected 11641.53, actual    11469 ( 0.99x) - passed
+ok 44 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 4 bytes - 10000000 keys
+ok 45 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 4 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 5 bytes - 10000000 keys
+# Testing collisions   - Expected 11641.53, actual    11538 ( 0.99x) - passed
+ok 46 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 5 bytes - 10000000 keys
+ok 47 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 5 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 6 bytes - 10000000 keys
+# Testing collisions   - Expected 11641.53, actual    11642 ( 1.00x) - passed
+ok 48 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 6 bytes - 10000000 keys
+ok 49 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 6 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 7 bytes - 10000000 keys
+# Testing collisions   - Expected 11641.53, actual    11544 ( 0.99x) - passed
+ok 50 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 7 bytes - 10000000 keys
+ok 51 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 7 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 8 bytes - 10000000 keys
+# Testing collisions   - Expected 11641.53, actual    11707 ( 1.01x) - passed
+ok 52 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 8 bytes - 10000000 keys
+ok 53 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 8 bytes - 10000000 keys
+ok 54 - Keyset 'Cyclic' # md5_32a
+### Keyset 'TwoBytes' Tests ###
+# Testing collisions   - Expected    49.57, actual       58 ( 1.17x) - passed
+ok 55 - Collision Rate for Keyset 'TwoBytes' - up-to-4-byte keys, 652545 total keys
+ok 56 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-4-byte keys, 652545 total keys
+# Testing collisions   - Expected  3484.56, actual     3436 ( 0.99x) - passed
+ok 57 - Collision Rate for Keyset 'TwoBytes' - up-to-8-byte keys, 5471025 total keys
+ok 58 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-8-byte keys, 5471025 total keys
+# Testing collisions   - Expected 40347.77, actual    40583 ( 1.01x) - passed
+ok 59 - Collision Rate for Keyset 'TwoBytes' - up-to-12-byte keys, 18616785 total keys
+ok 60 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-12-byte keys, 18616785 total keys
+# Testing collisions   - Expected 227963.15, actual   227012 ( 1.00x) - passed
+ok 61 - Collision Rate for Keyset 'TwoBytes' - up-to-16-byte keys, 44251425 total keys
+ok 62 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-16-byte keys, 44251425 total keys
+# Testing collisions   - Expected 871784.70, actual   867342 ( 0.99x) - passed
+ok 63 - Collision Rate for Keyset 'TwoBytes' - up-to-20-byte keys, 86536545 total keys
+ok 64 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-20-byte keys, 86536545 total keys
+ok 65 - Keyset 'TwoBytes' # md5_32a
+### Keyset 'Sparse' Tests ###
+# Keyset 'Sparse' - 4096-bit keys with up to 2 bits set - 8390657 keys
+# Testing collisions   - Expected  8196.00, actual     8157 ( 1.00x) - passed
+ok 66 - Collision Rate for Keyset 'Sparse' - 4096-bit keys with up to 2 bits set
+ok 67 - Distribution Bias Check for Keyset 'Sparse' - 4096-bit keys with up to 2 bits set
+# Keyset 'Sparse' - 2048-bit keys with up to 2 bits set - 2098177 keys
+# Testing collisions   - Expected   512.50, actual      532 ( 1.04x) - passed
+ok 68 - Collision Rate for Keyset 'Sparse' - 2048-bit keys with up to 2 bits set
+ok 69 - Distribution Bias Check for Keyset 'Sparse' - 2048-bit keys with up to 2 bits set
+# Keyset 'Sparse' - 1024-bit keys with up to 2 bits set - 524801 keys
+# Testing collisions   - Expected    32.06, actual       35 ( 1.09x) - passed
+ok 70 - Collision Rate for Keyset 'Sparse' - 1024-bit keys with up to 2 bits set
+ok 71 - Distribution Bias Check for Keyset 'Sparse' - 1024-bit keys with up to 2 bits set
+# Keyset 'Sparse' - 512-bit keys with up to 2 bits set - 131329 keys
+# Testing collisions   - Expected     2.01, actual        1 ( 0.50x) - passed
+ok 72 - Collision Rate for Keyset 'Sparse' - 512-bit keys with up to 2 bits set
+ok 73 - Distribution Bias Check for Keyset 'Sparse' - 512-bit keys with up to 2 bits set
+# Keyset 'Sparse' - 256-bit keys with up to 3 bits set - 2796417 keys
+# Testing collisions   - Expected   910.36, actual      875 ( 0.96x) - passed
+ok 74 - Collision Rate for Keyset 'Sparse' - 256-bit keys with up to 3 bits set
+ok 75 - Distribution Bias Check for Keyset 'Sparse' - 256-bit keys with up to 3 bits set
+# Keyset 'Sparse' - 32-bit keys with up to 6 bits set - 1149017 keys
+# Testing collisions   - Expected   153.70, actual      148 ( 0.96x) - passed
+ok 76 - Collision Rate for Keyset 'Sparse' - 32-bit keys with up to 6 bits set
+ok 77 - Distribution Bias Check for Keyset 'Sparse' - 32-bit keys with up to 6 bits set
+# Keyset 'Sparse' - 40-bit keys with up to 6 bits set - 4598479 keys
+# Testing collisions   - Expected  2461.72, actual     2519 ( 1.02x) - passed
+ok 78 - Collision Rate for Keyset 'Sparse' - 40-bit keys with up to 6 bits set
+ok 79 - Distribution Bias Check for Keyset 'Sparse' - 40-bit keys with up to 6 bits set
+# Keyset 'Sparse' - 48-bit keys with up to 5 bits set - 1925357 keys
+# Testing collisions   - Expected   431.55, actual      432 ( 1.00x) - passed
+ok 80 - Collision Rate for Keyset 'Sparse' - 48-bit keys with up to 5 bits set
+ok 81 - Distribution Bias Check for Keyset 'Sparse' - 48-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 56-bit keys with up to 5 bits set - 4216423 keys
+# Testing collisions   - Expected  2069.66, actual     2063 ( 1.00x) - passed
+ok 82 - Collision Rate for Keyset 'Sparse' - 56-bit keys with up to 5 bits set
+ok 83 - Distribution Bias Check for Keyset 'Sparse' - 56-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 64-bit keys with up to 5 bits set - 8303633 keys
+# Testing collisions   - Expected  8026.87, actual     8017 ( 1.00x) - passed
+ok 84 - Collision Rate for Keyset 'Sparse' - 64-bit keys with up to 5 bits set
+ok 85 - Distribution Bias Check for Keyset 'Sparse' - 64-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 96-bit keys with up to 4 bits set - 3469497 keys
+# Testing collisions   - Expected  1401.34, actual     1343 ( 0.96x) - passed
+ok 86 - Collision Rate for Keyset 'Sparse' - 96-bit keys with up to 4 bits set
+ok 87 - Distribution Bias Check for Keyset 'Sparse' - 96-bit keys with up to 4 bits set
+ok 88 - Keyset 'Sparse' # md5_32a
+### Keyset 'Crc-MultiCollision' Tests ###
+# Keyset 'Crc(a)-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected   128.00, actual      124 ( 0.97x) - passed
+ok 89 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 1 # md5_32a
+# Testing collisions   - Expected   128.00, actual      138 ( 1.08x) - passed
+ok 90 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 2 # md5_32a
+# Testing collisions   - Expected   128.00, actual      129 ( 1.01x) - passed
+ok 91 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 3 # md5_32a
+# Testing collisions   - Expected   128.00, actual      133 ( 1.04x) - passed
+ok 92 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 4 # md5_32a
+# Testing collisions   - Expected   128.00, actual      121 ( 0.95x) - passed
+ok 93 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 5 # md5_32a
+# Testing collisions   - Expected   128.00, actual      144 ( 1.13x) - passed
+ok 94 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 6 # md5_32a
+# Testing collisions   - Expected   128.00, actual      136 ( 1.06x) - passed
+ok 95 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 7 # md5_32a
+# Testing collisions   - Expected   128.00, actual      140 ( 1.09x) - passed
+ok 96 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 8 # md5_32a
+# Testing collisions   - Expected   128.00, actual      135 ( 1.05x) - passed
+ok 97 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 9 # md5_32a
+# Testing collisions   - Expected   128.00, actual      138 ( 1.08x) - passed
+ok 98 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 10 # md5_32a
+# Keyset 'Crc(b)-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected   128.00, actual      104 ( 0.81x) - passed
+ok 99 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 1 # md5_32a
+# Testing collisions   - Expected   128.00, actual      104 ( 0.81x) - passed
+ok 100 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 2 # md5_32a
+# Testing collisions   - Expected   128.00, actual       99 ( 0.77x) - passed
+ok 101 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 3 # md5_32a
+# Testing collisions   - Expected   128.00, actual      132 ( 1.03x) - passed
+ok 102 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 4 # md5_32a
+# Testing collisions   - Expected   128.00, actual      107 ( 0.84x) - passed
+ok 103 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 5 # md5_32a
+# Testing collisions   - Expected   128.00, actual      146 ( 1.14x) - passed
+ok 104 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 6 # md5_32a
+# Testing collisions   - Expected   128.00, actual      131 ( 1.02x) - passed
+ok 105 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 7 # md5_32a
+# Testing collisions   - Expected   128.00, actual      114 ( 0.89x) - passed
+ok 106 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 8 # md5_32a
+# Testing collisions   - Expected   128.00, actual      133 ( 1.04x) - passed
+ok 107 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 9 # md5_32a
+# Testing collisions   - Expected   128.00, actual      133 ( 1.04x) - passed
+ok 108 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 10 # md5_32a
+### Keyset 'Murmur2-MultiCollision' Tests ###
+# Keyset 'Murmur2-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected   128.00, actual      133 ( 1.04x) - passed
+ok 109 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 1 # md5_32a
+# Testing collisions   - Expected   128.00, actual      125 ( 0.98x) - passed
+ok 110 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 2 # md5_32a
+# Testing collisions   - Expected   128.00, actual      123 ( 0.96x) - passed
+ok 111 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 3 # md5_32a
+# Testing collisions   - Expected   128.00, actual      131 ( 1.02x) - passed
+ok 112 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 4 # md5_32a
+# Testing collisions   - Expected   128.00, actual      130 ( 1.02x) - passed
+ok 113 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 5 # md5_32a
+# Testing collisions   - Expected   128.00, actual      131 ( 1.02x) - passed
+ok 114 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 6 # md5_32a
+# Testing collisions   - Expected   128.00, actual      140 ( 1.09x) - passed
+ok 115 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 7 # md5_32a
+# Testing collisions   - Expected   128.00, actual      129 ( 1.01x) - passed
+ok 116 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 8 # md5_32a
+# Testing collisions   - Expected   128.00, actual      110 ( 0.86x) - passed
+ok 117 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 9 # md5_32a
+# Testing collisions   - Expected   128.00, actual      112 ( 0.88x) - passed
+ok 118 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 10 # md5_32a
+### Keyset 'Murmur3A-MultiCollision' Tests ###
+# Keyset 'Murmur3A-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected   128.00, actual      147 ( 1.15x) - passed
+ok 119 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 1 # md5_32a
+# Testing collisions   - Expected   128.00, actual      119 ( 0.93x) - passed
+ok 120 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 2 # md5_32a
+# Testing collisions   - Expected   128.00, actual      160 ( 1.25x) - passed
+ok 121 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 3 # md5_32a
+# Testing collisions   - Expected   128.00, actual      117 ( 0.91x) - passed
+ok 122 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 4 # md5_32a
+# Testing collisions   - Expected   128.00, actual      107 ( 0.84x) - passed
+ok 123 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 5 # md5_32a
+# Testing collisions   - Expected   128.00, actual      121 ( 0.95x) - passed
+ok 124 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 6 # md5_32a
+# Testing collisions   - Expected   128.00, actual      135 ( 1.05x) - passed
+ok 125 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 7 # md5_32a
+# Testing collisions   - Expected   128.00, actual      121 ( 0.95x) - passed
+ok 126 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 8 # md5_32a
+# Testing collisions   - Expected   128.00, actual      118 ( 0.92x) - passed
+ok 127 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 9 # md5_32a
+# Testing collisions   - Expected   128.00, actual      136 ( 1.06x) - passed
+ok 128 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 10 # md5_32a
+### Keyset 'Murmur3F-MultiCollision' Tests ###
+# Keyset 'Murmur3F-MultiCollision' - 1048575 x 16 block keys - 512-bytes long - 10 seeds
+# Testing collisions   - Expected   128.00, actual      118 ( 0.92x) - passed
+ok 129 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 1 # md5_32a
+# Testing collisions   - Expected   128.00, actual      139 ( 1.09x) - passed
+ok 130 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 2 # md5_32a
+# Testing collisions   - Expected   128.00, actual      126 ( 0.98x) - passed
+ok 131 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 3 # md5_32a
+# Testing collisions   - Expected   128.00, actual      126 ( 0.98x) - passed
+ok 132 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 4 # md5_32a
+# Testing collisions   - Expected   128.00, actual      141 ( 1.10x) - passed
+ok 133 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 5 # md5_32a
+# Testing collisions   - Expected   128.00, actual      135 ( 1.05x) - passed
+ok 134 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 6 # md5_32a
+# Testing collisions   - Expected   128.00, actual      131 ( 1.02x) - passed
+ok 135 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 7 # md5_32a
+# Testing collisions   - Expected   128.00, actual      115 ( 0.90x) - passed
+ok 136 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 8 # md5_32a
+# Testing collisions   - Expected   128.00, actual      124 ( 0.97x) - passed
+ok 137 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 9 # md5_32a
+# Testing collisions   - Expected   128.00, actual      110 ( 0.86x) - passed
+ok 138 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 10 # md5_32a
+### Keyset 'City64-MultiCollision' Tests ###
+# Keyset 'City64-MultiCollision' - 10 x 2 block keys - 16-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 139 - Collision Rate for Keyset 'City64-MultiCollision' - seed 1 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 140 - Collision Rate for Keyset 'City64-MultiCollision' - seed 2 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 141 - Collision Rate for Keyset 'City64-MultiCollision' - seed 3 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 142 - Collision Rate for Keyset 'City64-MultiCollision' - seed 4 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 143 - Collision Rate for Keyset 'City64-MultiCollision' - seed 5 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 144 - Collision Rate for Keyset 'City64-MultiCollision' - seed 6 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 145 - Collision Rate for Keyset 'City64-MultiCollision' - seed 7 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 146 - Collision Rate for Keyset 'City64-MultiCollision' - seed 8 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 147 - Collision Rate for Keyset 'City64-MultiCollision' - seed 9 # md5_32a
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 148 - Collision Rate for Keyset 'City64-MultiCollision' - seed 10 # md5_32a
+### Keyset 'Combination Lowbits' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected 42799.01, actual    42370 ( 0.99x) - passed
+ok 149 - Collision Rate for Keyset 'Combination Lowbits'
+ok 150 - Distribution Bias Check for Keyset 'Combination Lowbits'
+ok 151 - Keyset 'Combination Lowbits' # md5_32a
+### Keyset 'Combination Highbits' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected 42799.01, actual    42630 ( 1.00x) - passed
+ok 152 - Collision Rate for Keyset 'Combination Highbits'
+ok 153 - Distribution Bias Check for Keyset 'Combination Highbits'
+ok 154 - Keyset 'Combination Highbits' # md5_32a
+### Keyset 'Combination Highbits2' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected 42799.01, actual    42406 ( 0.99x) - passed
+ok 155 - Collision Rate for Keyset 'Combination Highbits2'
+ok 156 - Distribution Bias Check for Keyset 'Combination Highbits2'
+ok 157 - Keyset 'Combination Highbits2' # md5_32a
+### Keyset 'Combination HiBit-Null' Tests ###
+# Keyset 'Combination' - up to 20 blocks from a set of 2 - 2097150 keys
+# Testing collisions   - Expected   512.00, actual      566 ( 1.11x) - passed
+ok 158 - Collision Rate for Keyset 'Combination HiBit-Null'
+ok 159 - Distribution Bias Check for Keyset 'Combination HiBit-Null'
+ok 160 - Keyset 'Combination HiBit-Null' # md5_32a
+### Keyset 'Combination LowBit-Null' Tests ###
+# Keyset 'Combination' - up to 20 blocks from a set of 2 - 2097150 keys
+# Testing collisions   - Expected   512.00, actual      525 ( 1.03x) - passed
+ok 161 - Collision Rate for Keyset 'Combination LowBit-Null'
+ok 162 - Distribution Bias Check for Keyset 'Combination LowBit-Null'
+ok 163 - Keyset 'Combination LowBit-Null' # md5_32a
+### Keyset 'Combination Hi-Lo' Tests ###
+# Keyset 'Combination' - up to 6 blocks from a set of 15 - 12204240 keys
+# Testing collisions   - Expected 17339.30, actual    17288 ( 1.00x) - passed
+ok 164 - Collision Rate for Keyset 'Combination Hi-Lo'
+ok 165 - Distribution Bias Check for Keyset 'Combination Hi-Lo'
+ok 166 - Keyset 'Combination Hi-Lo' # md5_32a
+### Keyset 'Text' Tests ###
+# Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+# Testing collisions   - Expected 25418.13, actual    25363 ( 1.00x) - passed
+ok 167 - Collision Rate for Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+ok 168 - Distribution Bias Check for Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+# Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+# Testing collisions   - Expected 25418.13, actual    25387 ( 1.00x) - passed
+ok 169 - Collision Rate for Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+ok 170 - Distribution Bias Check for Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+# Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+# Testing collisions   - Expected 25418.13, actual    25484 ( 1.00x) - passed
+ok 171 - Collision Rate for Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+ok 172 - Distribution Bias Check for Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+ok 173 - Keyset 'Text' # md5_32a
+### Keyset 'Zeroes' Tests ###
+# Keyset 'Zeroes' - 262144 keys, zero seed
+# Testing collisions   - Expected     8.00, actual        0 ( 0.00x) - passed
+ok 174 - Collision Rate for Keyset 'Zeroes' - 262144 keys, zero seed
+ok 175 - Distribution Bias Check for Keyset 'Zeroes' - 262144 keys, zero seed
+# Keyset 'Zeroes' - 262144 keys, nonzero seed
+# Testing collisions   - Expected     8.00, actual        7 ( 0.88x) - passed
+ok 176 - Collision Rate for Keyset 'Zeroes' - 262144 keys, nonzero seed
+ok 177 - Distribution Bias Check for Keyset 'Zeroes' - 262144 keys, nonzero seed
+ok 178 - Keyset 'Zeroes' # md5_32a
+### Keyset 'Seed' Tests ###
+# Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+# Testing collisions   - Expected   465.66, actual      471 ( 1.01x) - passed
+ok 179 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+ok 180 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+# Keyset 'Seed' - 2000000 seeds, Key ""
+# Testing collisions   - Expected   465.66, actual      489 ( 1.05x) - passed
+ok 181 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key ""
+ok 182 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key ""
+# Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+# Testing collisions   - Expected   465.66, actual      450 ( 0.97x) - passed
+ok 183 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+ok 184 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+# Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+# Testing collisions   - Expected   465.66, actual      476 ( 1.02x) - passed
+ok 185 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+ok 186 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+ok 187 - Keyset 'Seed' # md5_32a
+### Keyset 'Effs' Tests ###
+# Keyset 'Effs' - 262144 keys, zero seed
+# Testing collisions   - Expected     8.00, actual        6 ( 0.75x) - passed
+ok 188 - Collision Rate for Keyset 'Effs' - 262144 keys, zero seed
+ok 189 - Distribution Bias Check for Keyset 'Effs' - 262144 keys, zero seed
+# Keyset 'Effs' - 262144 keys, nonzero seed
+# Testing collisions   - Expected     8.00, actual        4 ( 0.50x) - passed
+ok 190 - Collision Rate for Keyset 'Effs' - 262144 keys, nonzero seed
+ok 191 - Distribution Bias Check for Keyset 'Effs' - 262144 keys, nonzero seed
+ok 192 - Keyset 'Effs' # md5_32a
+### Keyset 'Words' Tests ###
+# Hashed 99171 keys from 297513 words from file '/usr/share/dict/words'
+# Testing collisions   - Expected    10.30, actual        9 ( 0.87x) - passed
+ok 193 - Collision Rate for Keyset 'Words'
+ok 194 - Distribution Bias Check for Keyset 'Words'
+ok 195 - all tests passed # md5_32a
+1..195
+# All Tests Passed. md5_32a passed all 195 tests run.
+# Testing took 7448.397137 seconds
+# This is SMHasher version v1.3-demerphq-33-g88c4f88 - built on Mar 12 2018.

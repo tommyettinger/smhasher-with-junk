@@ -1,0 +1,760 @@
+ok 1 - Found Hash # metrohash128_2
+###################################################################
+### Testing metrohash128_2 - no seed_state
+### - MetroHash128_2 for 64-bit -
+### seedbits: 64 statebits: 64 hashbits: 128
+###################################################################
+ok 2 - Verification code # metrohash128_2
+# metrohash128_2       - Verification value 0x2EFAD245 : Passed.
+### Sanity Tests ###
+# Sanity check simple key bit flips and consistency - hashbytes=16..........
+ok 3 - SanityTest # metrohash128_2
+# Sanity check null suffixes change the hash (simple)..........
+ok 4 - Appended Zeroes Test # metrohash128_2
+ok 5 - Sanity Test # metrohash128_2
+### Speed Tests ###
+## Bulk speed test - 262144-byte keys
+# Alignment  7 -  5.306 bytes/cycle - 15181.59 MiB/sec @ 3 ghz
+# Alignment  6 -  5.306 bytes/cycle - 15181.76 MiB/sec @ 3 ghz
+# Alignment  5 -  5.307 bytes/cycle - 15182.82 MiB/sec @ 3 ghz
+# Alignment  4 -  5.307 bytes/cycle - 15182.48 MiB/sec @ 3 ghz
+# Alignment  3 -  5.306 bytes/cycle - 15180.39 MiB/sec @ 3 ghz
+# Alignment  2 -  5.306 bytes/cycle - 15181.58 MiB/sec @ 3 ghz
+# Alignment  1 -  5.306 bytes/cycle - 15181.09 MiB/sec @ 3 ghz
+# Alignment  0 -  5.574 bytes/cycle - 15947.22 MiB/sec @ 3 ghz
+# Average      -  5.340 bytes/cycle - 15277.37 MiB/sec @ 3 ghz
+## KeySpeed tests
+# metrohash128_2            0 byte keys       15.520 c/h
+# metrohash128_2            1 byte keys       22.944 c/h       22.944 c/b        0.044 b/c
+# metrohash128_2            2 byte keys       25.000 c/h       12.500 c/b        0.080 b/c
+# metrohash128_2            3 byte keys       27.000 c/h        9.000 c/b        0.111 b/c
+# metrohash128_2            4 byte keys       22.892 c/h        5.723 c/b        0.175 b/c
+# metrohash128_2            5 byte keys       32.000 c/h        6.400 c/b        0.156 b/c
+# metrohash128_2            6 byte keys       29.999 c/h        5.000 c/b        0.200 b/c
+# metrohash128_2            7 byte keys       33.000 c/h        4.714 c/b        0.212 b/c
+# metrohash128_2            8 byte keys       25.000 c/h        3.125 c/b        0.320 b/c
+# metrohash128_2            9 byte keys       27.000 c/h        3.000 c/b        0.333 b/c
+# metrohash128_2           10 byte keys       34.235 c/h        3.423 c/b        0.292 b/c
+# metrohash128_2           11 byte keys       36.886 c/h        3.353 c/b        0.298 b/c
+# metrohash128_2           12 byte keys       27.000 c/h        2.250 c/b        0.444 b/c
+# metrohash128_2           13 byte keys       37.000 c/h        2.846 c/b        0.351 b/c
+# metrohash128_2           14 byte keys       35.000 c/h        2.500 c/b        0.400 b/c
+# metrohash128_2           15 byte keys       38.000 c/h        2.533 c/b        0.395 b/c
+# metrohash128_2           16 byte keys       29.126 c/h        1.820 c/b        0.549 b/c
+# metrohash128_2           17 byte keys       39.000 c/h        2.294 c/b        0.436 b/c
+# metrohash128_2           18 byte keys       37.000 c/h        2.056 c/b        0.486 b/c
+# metrohash128_2           19 byte keys       40.000 c/h        2.105 c/b        0.475 b/c
+# metrohash128_2           20 byte keys       38.860 c/h        1.943 c/b        0.515 b/c
+# metrohash128_2           21 byte keys       48.859 c/h        2.327 c/b        0.430 b/c
+# metrohash128_2           22 byte keys       46.000 c/h        2.091 c/b        0.478 b/c
+# metrohash128_2           23 byte keys       49.743 c/h        2.163 c/b        0.462 b/c
+# metrohash128_2           24 byte keys       37.000 c/h        1.542 c/b        0.649 b/c
+# metrohash128_2           25 byte keys       40.000 c/h        1.600 c/b        0.625 b/c
+# metrohash128_2           26 byte keys       47.000 c/h        1.808 c/b        0.553 b/c
+# metrohash128_2           27 byte keys       49.000 c/h        1.815 c/b        0.551 b/c
+# metrohash128_2           28 byte keys       40.000 c/h        1.429 c/b        0.700 b/c
+# metrohash128_2           29 byte keys       50.000 c/h        1.724 c/b        0.580 b/c
+# metrohash128_2           30 byte keys       48.000 c/h        1.600 c/b        0.625 b/c
+# metrohash128_2           31 byte keys       50.996 c/h        1.645 c/b        0.608 b/c
+#                          Average < 32       36.221 c/h        2.337 c/b        0.428 b/c
+# metrohash128_2           32 byte keys       44.000 c/h        1.375 c/b        0.727 b/c
+# metrohash128_2           36 byte keys       54.000 c/h        1.500 c/b        0.667 b/c
+# metrohash128_2           40 byte keys       53.000 c/h        1.325 c/b        0.755 b/c
+# metrohash128_2           44 byte keys       55.754 c/h        1.267 c/b        0.789 b/c
+# metrohash128_2           48 byte keys       58.132 c/h        1.211 c/b        0.826 b/c
+# metrohash128_2           52 byte keys       68.135 c/h        1.310 c/b        0.763 b/c
+# metrohash128_2           56 byte keys       66.727 c/h        1.192 c/b        0.839 b/c
+# metrohash128_2           60 byte keys       69.168 c/h        1.153 c/b        0.867 b/c
+# metrohash128_2           64 byte keys       49.932 c/h        0.780 c/b        1.282 b/c
+# metrohash128_2           68 byte keys       59.868 c/h        0.880 c/b        1.136 b/c
+# metrohash128_2           72 byte keys       59.978 c/h        0.833 c/b        1.200 b/c
+# metrohash128_2           76 byte keys       61.203 c/h        0.805 c/b        1.242 b/c
+# metrohash128_2           80 byte keys       62.998 c/h        0.787 c/b        1.270 b/c
+# metrohash128_2           84 byte keys       72.791 c/h        0.867 c/b        1.154 b/c
+# metrohash128_2           88 byte keys       71.000 c/h        0.807 c/b        1.239 b/c
+# metrohash128_2           92 byte keys       73.954 c/h        0.804 c/b        1.244 b/c
+# metrohash128_2           96 byte keys       55.804 c/h        0.581 c/b        1.720 b/c
+# metrohash128_2          100 byte keys       63.768 c/h        0.638 c/b        1.568 b/c
+# metrohash128_2          104 byte keys       63.430 c/h        0.610 c/b        1.640 b/c
+# metrohash128_2          108 byte keys       64.983 c/h        0.602 c/b        1.662 b/c
+# metrohash128_2          112 byte keys       67.732 c/h        0.605 c/b        1.654 b/c
+# metrohash128_2          116 byte keys       77.137 c/h        0.665 c/b        1.504 b/c
+# metrohash128_2          120 byte keys       75.736 c/h        0.631 c/b        1.584 b/c
+# metrohash128_2          124 byte keys       78.663 c/h        0.634 c/b        1.576 b/c
+#                         Average < 128       47.981 c/h        1.135 c/b        0.881 b/c
+# metrohash128_2          128 byte keys       58.892 c/h        0.460 c/b        2.173 b/c
+# metrohash128_2          256 byte keys       80.451 c/h        0.314 c/b        3.182 b/c
+# metrohash128_2          512 byte keys      121.313 c/h        0.237 c/b        4.221 b/c
+# metrohash128_2         1024 byte keys      208.458 c/h        0.204 c/b        4.912 b/c
+# metrohash128_2         2048 byte keys      377.558 c/h        0.184 c/b        5.424 b/c
+# metrohash128_2         4096 byte keys      752.264 c/h        0.184 c/b        5.445 b/c
+# metrohash128_2         8192 byte keys     1459.879 c/h        0.178 c/b        5.611 b/c
+# metrohash128_2        16384 byte keys     2874.918 c/h        0.175 c/b        5.699 b/c
+# metrohash128_2        32768 byte keys     5774.262 c/h        0.176 c/b        5.675 b/c
+# metrohash128_2        65536 byte keys    11636.864 c/h        0.178 c/b        5.632 b/c
+#                       Overall Average      394.421 c/h        0.195 c/b        5.121 b/c
+ok 6 - Speed (always passes) # metrohash128_2
+### Differential Tests ###
+# Testing 8303632 up-to-5-bit differentials in 64-bit keys -> 128 bit hashes.
+# 1000 reps, 8303632000 total tests, expecting 0.00 random collisions..........
+ok 7 - Differential collisions # metrohash128_2
+ok 8 - Nothing skipped during differential collision check # metrohash128_2
+# 0 total collisions, of which 0 single collisions were ignored
+ok 9 - ProcessDifferentials
+# Testing 11017632 up-to-4-bit differentials in 128-bit keys -> 128 bit hashes.
+# 1000 reps, 11017632000 total tests, expecting 0.00 random collisions..........
+ok 10 - Differential collisions # metrohash128_2
+ok 11 - Nothing skipped during differential collision check # metrohash128_2
+# 0 total collisions, of which 0 single collisions were ignored
+ok 12 - ProcessDifferentials
+# Testing 2796416 up-to-3-bit differentials in 256-bit keys -> 128 bit hashes.
+# 1000 reps, 2796416000 total tests, expecting 0.00 random collisions..........
+ok 13 - Differential collisions # metrohash128_2
+ok 14 - Nothing skipped during differential collision check # metrohash128_2
+# 0 total collisions, of which 0 single collisions were ignored
+ok 15 - ProcessDifferentials
+ok 16 - Differential # metrohash128_2
+### Avalanche Tests ### - seed-bits: 64 hash-bits: 128
+# Samples 250000, expected error 0.00102400, confidence level 99.99994267%
+# Testing   0-bit keys.......... not ok! # worst-bit: 100.000% error-ratio: 6.199799e+04
+#              +---------------------------------------------------+
+#              |012345678901234567890123456789012345678901234567890|
+#              +---------------------------------------------------+
+# Scale:       |.1234567890abcdefghijklmnopqrstuvwxyzãäåêëîïðñôõöûü|
+#              |üÿABCDEFGHIJKLMNOPQRSTUVWXYZÂÃÄÅÊËÑÔÕÖÛÜÝø¤*©®¶&%@#|
+#              +---------------------------------------------------+
+#              |pct diff from 50%: abs((0.5-(changed/reps))*2) *100|
+#              +----------------------------------------------------------------+
+#              |0         1         2         3         4         5         6   |
+#              |0123456789012345678901234567890123456789012345678901234567890123|
+#              +----------------------------------------------------------------+
+# seed     0.0 |êrM3xwtNgëûoãfüoLAY3ÿnð3jêSBmKû.uMÊø®3öWcïU29qpgtNcïjI5ësy5ö0ya0|
+# seed     0.1 |e70oäR4ôoãufî5mgj5rx4whngH0cmG41.rw2ãBYHgtå9syÿeuhnKBühuM.êïcw1.|
+# seed     1.0 |xOËø.jêtNhfåaElpãbAôj5bîsjêhBmb8nGÃÜ®¤3öWcðQË5õqãtLeäRÊ9üWÖ5ðr.4|
+# seed     1.1 |u2vp8ôgyivKbåoäu9B9ñ8ðeïrM2ïmå43e87mfdFmJ37ê62eÿ03fãcfk7CZ97ô4.9|
+# seed     2.0 |rzQÑnIjêtN6lcwzõpn55BnäujIji6BgaptNËøÔ*4öWcåPÄ3êjêtNhãNÃ3AYÛ6î7ê|
+# seed     2.1 |nû6öV7ynsppJjäluoKY3zhGczvB9êSjeoJabuJfëts0êCzÿk3îõgqmlkIÄqHki4d|
+# seed     3.0 |ãdïUåkJjêttD0x.5õmKijïBGJjIeG6wcisxPÑUÕ*4öW0wKÅ9ñkpãûoãGWcFÂRegx|
+# seed     3.1 |rkC9CZaêlsyoE7ôpuxCVbïqMfwgGcïk34öåghzQ.z6iåtl9ðq3fGk0wtNËñkî258|
+# seed     4.0 |gêañ7õkIjê29iwdï6jIjIg4njIieGÃ05euvxPõTÔ*4öðrzQAcEli9û2fBGkJëR14|
+# seed     4.1 |29êñpLs1d73vcz9i41aCêg7õxwnzû111ek.d0jzmqa3ãefa6nebvndh8CZ91fddb|
+# seed     5.0 |ämK0zfHkIjtNhxiHÄ0DIjåSeïjIbðUO3toãvx9îTÕ*49wiI4öh5An1qzvfGk2äqh|
+# seed     5.1 |ê9lcoä1õ0lxañ9öjiswx2ni18w6hmG51egwovvriêowrûgwPbîeãhjAEWÖZ4Aj61|
+# seed     6.0 |7iGÃ5öfGkJbðãuvxPðrkI2ûô9Dkå3Ax9aôqzvngîTÔ*3z8üJjIjoCZaxKQfGin.2|
+# seed     6.1 |z1eftlaÿbqE6ådïñ6ôET5vkI0x3inä54aã1f4añn8a4klk0DëcupvdpkûWEïqc.6|
+# seed     7.0 |ûpfG0xPfGk5oiãe0D6ðhjpã7êhH0D261h5õqã0ñgîTÔvry.xïr0ñqMwmäzQfdï2i|
+# seed     7.1 |fiyvaE1üvjêR1o71ûofüõiêSywtywO2.47712ñaiI5ct762ë734ôd0ga2ûh3q744|
+# seed     8.0 |ByQfôqxPgGgëtqlJ0ûbqK8tKiHhüXÖ77tN7ôq9vOgëTpãuOgdïl.wPwrzsyQb6ër|
+# seed     8.1 |bqãðTb7CynäQË8Cmäiûp6hêStyrtxuji3î6ägëSdEð4wBHN.ôdB5uðJKÄ3xlylq5|
+# seed     9.0 |îszQ8ãuxPfv.bðrzQfGkmûpãðrMfGÃB4gEÂ7õazvOgîtcåSðNduNgHwhëëtyzQ4g|
+# seed     9.1 |t7d4ûXaðseîRÑîTELIjcümzQåuuåty510ëzhgbEvx1êhlqãRbozQdiuuOË90b182|
+# seed    10.0 |uusybpãvxP1üo8aeG2ÿ8Cmimbðr2ûX6.6ãQÑ74tywOg7õqLcyPfGcEsyvhës3Aa9|
+# seed    10.1 |52äq9CgñxsxKÄbðbqmnãs1zPläliyp.22ä441ðeavbji42dFe4rM6d11ûWb0ñ.f1|
+# seed    11.0 |iiësnäpãvxñUQÑ4öeõ5õ8öJ2ûbðnjIJ4tcïTÔ5ësyvOdõOËX8ðJÄXbx0COgîiBðb|
+# seed    11.1 |IbåñT6y5f8CQÅO7ñotywðN9ADmwEkåd44ñIdrwPdzcqëixCYOamJMav9üXN6ñî45|
+# seed    12.0 |äufîb4öpãvaEzQõpLhHjIjlöpLb9ôjv8oHeîTôgësyvw7îTüRbxPüX8ôquOgq5cq|
+# seed    12.1 |ñle.ûW3ökwpõOãRc08143ëïcgC4kã352jgñfmeîñoa10t3pLvñokãs4kbEãî27b0|
+# seed    13.0 |emJfbE4öpã7Brz1kêvOãRëEl2ÿY4iI51fyQdï4Agësy.üoL1îTdF.ülåfwuN7C15|
+# seed    13.1 |v7heoL9ôjz8wñ1ûfdtywbkbEf88h0ñ1.1hppcðfcö8uq81rIvd0C0a9qGa5iG69.|
+# seed    14.0 |ÿmzQ9DZ3öpfGðruxk7ôoäga3ÿ2ÿsJji1ofîTeåuNgëswOÃÜø5ASÔÜ.ðlIjäuIÃa7|
+# seed    14.1 |farh.üwMãAXb0cäL4öVÑnt4öRÑ3haðd21u9h9tNf32mrck9ñs4wed4gdëTc3ö..3|
+# seed    15.0 |cñrz6BYÛ4ö.üaðjgHcdoolåuyQ2alJbdlGgîTczvOgîpãFÃÊÛ6îSÃÜ5õpCmäoH2î|
+# seed    15.1 |ë8n2õ17åj0CnJgksmûUÄîqx1åQuG9ñ21bri3ylãDZ41sj8oflnpLhsfi9CexO1.2|
+# seed    16.0 |F1ðruyPË¤3ëSZbïNgõU7õqEXÊø®.ülDdivOgîÿozvOgteiFOYÛ3åJÄU8s9Cmvg5ä|
+# seed    16.1 |90tkãRa3kvjhä3ûo04üI4qnK8z0jgëgc2qssuôpwOBP2zpwLaudêMûQMÄ0ñgGû.c|
+# seed    17.0 |yBaðkmåRÔ¤3öBZ1tN6ñK.qaCMÊøVbEk1cuwOghïrzvO9ôqeëÿYAkyPðNhë8C4ö9f|
+# seed    17.1 |tdcsHÄyN0xvklvfa3îojïpvOëroykêd.fm56a6õ8CgêL07bqD2ãkãeïwHÄ2bð051|
+# seed    18.0 |nnKahëlåRÔån7BûptëaãQfîsqMÊôVae1dsxwO.cðrzv8ävOg3ÿ8CmKbzgåR83vfb|
+# seed    18.1 |y0kküX0ïinqrz2ïnko1ãg3qMbðcnu336.7bj4ÿ6cû04ðsn8ïqogF426dhHïex6d1|
+# seed    19.0 |åfEÂ.bElåSbðr6bjêaDlJbõxïqL2ûXc42yvwwBWcðrzpnlåÿX3õeCZX4öpLÅ9z1f|
+# seed    19.1 |z84gãRcv0mo9choHgûTc1îkJP01lgë330ôc47îTe3elu18a7o7we98d1ðh36ra26|
+# seed    20.0 |fëbEGYbElåÿ3üXbðkmFQÑY9v0ñqÿ6BK4srzvxiõWcïrmäuidFÂaDlJÿTdrzQöpka|
+# seed    20.1 |õuFgyPôqwtuaE0êst7AE4môVGÃ6å5Bw1hrHM1ûWÄÝ1ïEW5ðUdüoLhzoümJhtwp40|
+# seed    21.0 |ñjIbqBZbElhHkJäeGkdñUAQfî9ôjI6ybiãsyv04öWcð61aDmåRjê2ÿ2üäorz0õ7c|
+# seed    21.1 |t7th0ñcrca5äte19cywdnafGhGmbðn78bbãëI1üMÊüdcüüdEyliêm2a5ñqnpnge5|
+# seed    22.0 |49AY26BYbE2û5BiëidFkJ4êpyQ98CZa6ldïrzgH5öWckIjnñEÂDiz5ëtn8ïrn7.b|
+# seed    22.1 |633lz46w0häf0cDh1ãôH58gAöe3rph.57ë5azP3ëS7ãu0cnwfsohgugj5õ0cã5.5|
+# seed    23.0 |ðr5AYÛ6BYbEZÜ5AnKiêSÔ¤4öpLÅ9CZÛ.wPdïs1ÿX5öW1û4AibEdFkJj2tycð8C5a|
+# seed    23.1 |ïgupFÃ74lisDV7A1vu8vnwqkeGg3öN639vEdëSÔ8CK3ÿPfëkêrpLiõVYÛ6õJ4uw.|
+# seed    24.0 |IÄÝ4AYÛ6BYbDÂÜ6BnJjêSÔ¤4öpLÅ9CZdeîTdïrMÊø5õVÖ*4ÿYbElJÄÝ®3ÿXbðUBm|
+# seed    24.1 |vwAMRÔPË8ôdñIPÑø4AY8o9cCmäôVduH2moõL4öWGkpL1ëF3ÿkjêpL8CAYÛ6vOg7v|
+# seed    25.0 |mJÅÝ4AYÛ6BXaDÂÛ5AmJhëRÔ¤3öpKÅ9CaîdïTdîsNÊø4õWÕ*3ÿYbElJÃÜ©2ÿXbðhö|
+# seed    25.1 |247ååSzPêsMhjëTÔsxPË7ôp0BmdFsqz13êhoïsMgGdïTcdîdFd2ûplä5BYÖ2ÿi3a|
+# seed    26.0 |ÿnKÅÛ3AYÛ6ÿYbEXÖ5AlJhåRËø2ûoLÅ9.rMdïTcîsNÊø4öUÕø4AVcCmHÃÛ*1ÿWak2|
+# seed    26.1 |åaûhkåjäi0ïôIbEYåtyNðMHÃ8BdFîfê7w2uôa9Cõf0BYñNfGevN2õ69ñ6BWyND.e|
+# seed    27.0 |6öqLZÛ3AYÛ6BUdÿYÛ6BmKiêOÊø3ñqMY19ðUdïPgëtNÊÔ1ïUËÝ5öV0CiIYÖ*2ûW.ô|
+# seed    27.1 |zaî7ãkfikäbdjowJ0ãpu3tmIZ65ÿdãq.hEb5jê99CkzO8yfîO5ÿY4.õlJ7ûbuf14|
+# seed    28.0 |Ô.öpEÂÜ3AYÂaðU8CZÃaðrAbvOË¤4ïsCûQ9ôVdãNgîsMUÕ7ïPÃÝ1ôR7AnAXÖ©3ALT|
+# seed    28.1 |hsKVdFkDdCSbEkuoGkåuwxwqHÄ9ñQ9ïsÿVRX9ñVdwDOÄW9ëcxöSÔÑ1ñCXÖ3zvuqå|
+# seed    29.0 |RY4öjIÄÝ3AGY2ðLiIGÃ1ïcFlåSÔSeïgkñT9ñVauNgësöWUdëHÄW7ðUdë9DZÜUdåö|
+# seed    29.1 |åawûRewdñhêNgwxwrð7mbdaðqMF8ðU04jEðDCeGvxqyLüFbEhdñUPûjcûXT1l573|
+# seed    30.0 |åEÂ5mäRÔ¤3rAGbzöplGEdãvr7BZëSeu1bÿY9ñyvuNgëdFñV7hHÿXcEzdïsMÊñU5l|
+# seed    30.1 |6b89åR2ðgt0ãH3o285õptvs8aðlC.üc17ã6sfåpev4eå9njås.dFxap01ûô9ïef6|
+# seed    31.0 |irMÊ21ÿXÛ©23qLh5õddmKi5rzcE6êSa.ilJÄ91låuNg1û0ñiëheFeîjêt9DZ8ð12|
+# seed    31.1 |zarhbã5u9jq2g4êmlnx7iqtNg4bpôk.64pöaw4öjx3crð6n3hiotetfjH1bê939.|
+# seed    32.0 |AmKÅÕ*1üXÛÜ©.üSÔ5ðTañQÑ8ôVcCiêNN2üoKÅ0DmåuNgHÃ0ñqLhëSdïrMÊ9CZa5ô|
+# seed    32.1 |w5õoîpjcpãdkêt3ÿ1ðUÕ52kJÄÝ53suo9obïQÊø4õpyOcDXÔ¤1ûkåtxMÄÝ®2üWa4ï|
+# seed    33.0 |6BnKVÕ*1üXÃÜÝ3îTÕ7îQ9ãQÂ3ûWcEjxãN.üoKÅ9DlåuNgGÃañrMhëTeïsMÊ9DZ8ê|
+# seed    33.1 |utxü6õpLhôV5vLÅ3ðcïUNË9êSÔWÖ6äa.oKaäOÊø4õnvNcAUÔÖ.ûjwptKÄÝÕ5ÿP5v|
+# seed    34.0 |Ê6BmûXÖ©1üIZÄÝ5õWRfëTeïFX.üElJj4ôU.üoKÅ0DlåuNgHÃ0ñrMhëSeîsMÊ9Cyf|
+# seed    34.1 |x9c6B3gîu7ôAnäRÔ8CdïãRJjêSAYMfw53õPdxNÊÑ4ãoãIaôSWÅ0DlxpsMÊUÊ5ê70|
+# seed    35.0 |RÑ6BeFÃÜ®1tCKÅLfGåS5Bê9dFÂ1nCmr4îTÔ.üoKÅ0DlåuNgGÃ0ñrMhëSeîsMÊ95ä|
+# seed    35.1 |odêszQf6dï8ktmKÅ8ôVd.ükJjêdFrôfbx6ðîivOTÔ5q3zã1ïCOKin5e0îTñNÃ23o|
+# seed    36.0 |õWÖ67õVÖ*&29xPoüm4åvq9ôqãRÑ88C7esMÊø.üoLÅ0DmåuNgHÃ0ñrMhëSeîsNÊ10|
+# seed    36.1 |wkõOVÕXÖ6õWcê7ÿXP8ôV7CFkJiqãð236wN51rrxÿXesy32u8pñmKcufk4ö2zKlh7|
+# seed    37.0 |1ûXÖ5uOËø¶PË8Cû5AnleîszðQÑ¤RÑ8toBYÛ©&.üoLÅ9DmäuNgHÃ0ñrMhëSeïsMoC|
+# seed    37.1 |j63ñõWÿYDlJqhë2ÿêS8ôãveGlJcb.üg8hGSauuwsLF2öL6xPgöBnwIMSË4äcêñ.g|
+# seed    38.0 |W1üXtyuNËøzOAm6B67õq7.57õVÖãRÑ7bvOË¤¶%.üoKÅ9DlåuNgHÃ0ñrMhëTeïs3i|
+# seed    38.1 |õ7ïq5ö7C0vwmåuN23AY8.gueGkbElå4.4ñGsmrypuqûpïpbBhs7B6zuôRÔ8ê0c.4|
+# seed    39.0 |ZÜ1ümmåuNËnv5BnäReayQfîszQÑpãQc8åRÔ¤¶%@.üoLÅ9CmåtNgGÃ0ñrMhëSeï6u|
+# seed    39.1 |gvNRÃ5ïeBnwilGÃÝ6ãRÑ4AnKeFdïAWkrA1äoexuqt6ucôxinxaz61äubBYkûR.78|
+# seed    40.0 |TÔ*1kênäuOäuy6äûWüXbEtJDLÅøöpãêcvOËø¶%@@.üoLÅ9DläuNgHÃ0ñqMhëTd0n|
+# seed    40.1 |D.öïLÊ9CmxwszvOËûpãQûpiëTex20Dm1xO1fqläovayB6e1ï4ãvOfuv4zQñbÿsdo|
+# seed    41.0 |QÑ¤¶27Bmäu6qtNg3û6B0ñrz9rMÊ4öp7eêRÔ¤¶%@@#.üoKÅ0DlåtNgHÃ0ñrMhëS.t|
+# seed    41.1 |jcå0äReïgwwcdpLÊ2ûoã0ãohëS5Bnä.1sMMb6õmss.inï7m6cmuOmãtiiå2yfb.6|
+# seed    42.0 |QÑ¤¶WÖ6BmänäuOMÃ3ïdA0peElwOP4öehAYÛ©&%@###.üoKÅ0DlåtNgHÃ0ñrMhëõh|
+# seed    42.1 |ñhuMhHReîswqLhäRZ2ûovpqLiêLÊÑÝQôPËÑWÅ5AlãlA5õJUÑ4êbðü6rhDlxjEd9v|
+# seed    43.0 |ðUÕ*ûWÖ6Bni76õrLÅ9DlJiêtxwwêS4wcwOË¤¶%@@###.üoLÅ9DlåtNgHÃ0ñqMhfô|
+# seed    43.1 |1zrzCmëR3uxuxüoãFÂ2ûlåtoLhwPQÄîfñTVûNÄ7ðmm0û3võSFaë6bõcrdE4ãgx6g|
+# seed    44.0 |bðUÕ1öWÖ7B2ûp2gîT9ôiHfäqwww9DZaiåRÑ¤¶%@@####.üoLÅ9DmäuNgHÃ0ñrM.6|
+# seed    44.1 |J7p19D1åBnu804üoqMÊ2m38ôpL7õzM23hFJ2zMÊ5ö4xvï51ðiðrMgs1mGcbjB334|
+# seed    45.0 |YbðUÄ4öWÖ7üVÑ¤4öWÅ9ñnIjêtwxvOËÕÅÛ©&%@########.üoKÅ9DmåtNhHÃ0ñr6ü|
+# seed    45.1 |U8åty9jmnnähës1ü7CZÛ6öp3öp0qhëk22ïRÄ5õVÑ7ûUÑÝø*.ñpFÃÕÝ¤2õVaîqI6s|
+# seed    46.0 |AYbðLÅ3öWÖ6ôSÔË3ÿLÅ3ûpDavxwqãQTNÂÜ©&@@########.üoKÅ9DmåuNgHÃ0ñiw|
+# seed    46.1 |ËX7ôLÊ2ûoAnzHWÖ.äOËøÄÜÔ*4öiêtyô5wbëLÂ4öRÔ5ôSÅÊÖ¤4ïhFUÅÑÖ4õO9ðnãp|
+# seed    47.0 |3ÿYbwOË3öWL7ôVOÄ5uLR4s0CmvxrjêôäJÄÝ®&@@########.üoLÅ9DmåtNgHÃakf|
+# seed    47.1 |TCUapLJ9k3A6iDZÜ6uOËJZTÕ*4w7d871iHazHÃ3ïTM2öMNXÕX7ñdüKSWÔ6åK8v7h|
+# seed    48.0 |Z3AY4öWÖ4öwOgHvLÅ9oñVdïrrzv9ñj92äRÑ¤¶%@@########.üoKÅ9CläuNgHÃ1u|
+# seed    48.1 |FküëqptNhë4qãvOËnäuNoCïUÕ*4Anäd63ñH4xOË4ðyDlïwBWÿMgHjsôüTÔ6êP62f|
+# seed    49.0 |XÖ3ÿ6ïTÕ*46õ5õoäR1üiH1ñtërz5kI9grMÊø®%@@#########.üoKÅ9CmåuNgH4c|
+# seed    49.1 |Evda3ö1ûuLÅ9mBYÛAnäus77ôVÖðUJQ64x3å3wKÅU4.v5ãjnI1ãdîmve6õW.äLfb5|
+# seed    50.0 |SÔ*3ïeïTÕ*4ïP5vgGR1wNWcêcïrqHkñëNÊø¶%@@###########.üoKÅ9DlåuNg1ö|
+# seed    50.1 |õ0ïrz4fmjêS9îsNÊ4Anä5öp4öW3ðoãp9tN3ðgêSÃÜ2îP7yiFS4üeslpFaDO5ñG.w|
+# seed    51.0 |ûXÛ©3AeîTÕFeîTdïgñVduBM7õaðlgH66ïTÔ*¶%@############.üoLÅ9CmåuN0ð|
+# seed    51.1 |2ïnIÄÝ5BnäRË7BZÛ¤4AnãQËø4öUbîql8åRW9ëeîIÄG8ñI6wgöLiHjvloK0ëJ3r0x|
+# seed    52.0 |2ûXÖlåReïTjIjIerMhHmåprðrMa3ögoesNÊø¶%@@############.üoLÅ9Dmåteh|
+# seed    52.1 |K3õlJÅÖ7ûkêNË9CZÑ¤4AnäOËø4ôVcï72qKMkqIewNlöpîfgDlðmä1d50üXbëO37.|
+# seed    53.0 |Ä1üXñhëSeïãuiICmwðUCmxñ9aEÂ1uN.pÿXÛ©&%@##############.üoKÅ9Dmådî|
+# seed    53.1 |LO.üoLVÖ3AkwPÂaDRÔ¤4ôivOËø3ûP9ip3õJôaãRbêxkjAûcuõICmvonlhHõKZAI.|
+# seed    54.0 |VÕ2û1üiêSe1kojhtyeF8CjatyaD8åtaauOËø¶%@@##############.üoKÅ9Dm.l|
+# seed    54.1 |BAW9ësöVÂaElåEÂaïRÑ¤2ÿnuOËY4yP.cî1ã4ãfëBd5fsealuië8Cg9kkDi0åN5uh|
+# seed    55.0 |Ö©&2ûoLiëTeFkJjêtxPË8CZaEÂaDlåtaDÂÜ©&@@################.üoLÅ9Ddï|
+# seed    55.1 |êãRO0ë0õIRfr3dFÂ2äRÑKioävOEÂaðûyGÂ2ûoKiëSeFlIiêtyPË8CYbðrMhëSÔ2å|
+# seed    56.0 |XÖ©&2ûoKiëReElHiêtxPË8BYbEÂaDlä9CZÜ©&@@#################.ûoLÅ0ed|
+# seed    56.1 |i.üuAip6wãR0ñqcEtoäRsEhoäumJãp22zPË1ûoKiêReEkIiêtyPÑ8BYaðrKiêR8u|
+# seed    57.0 |üXÛ©©.üoKiåQdEjIiäuyPÅ7BXbEXbElcDZÜ©&@@##################.üoLÅ4õ|
+# seed    57.1 |J2ûãeGkJjoãhHüXchîoäoc3üoã0ñoeëcoKÄÛ1ûoKhåRcEkHhåtyQÅ7BXbðpKhê0q|
+# seed    58.0 |.üXÖÛ©.üoLhãQcDlJiãqãKÅ9üXbAXcA4üXÛ©&%@###################.üoL0ð|
+# seed    58.1 |n4öouomKoõojê.üX0.üoañr.üo.ouxu2lHZÑø1ünKhäQcCjIjãqãLÄ8üWbîpKg2q|
+# seed    59.0 |Ü.üXZÛ©.üoDmåSeüoÿoäorMX3üX9üX8kEÂÜ©&@@####################.üoëa|
+# seed    59.1 |õmäü3übðü1üoüR.üIÄ.üküQÑ.üfü8oBG5ôRYÔ¤.õoCiëNbümÿkêosJW5ûX8înD62|
+# seed    60.0 |Åø.üFÂÜ®.üiü8ôü1übü0ñrzüU.üI.üJ7êSÔ¤¶%@@####################.ü0ö|
+# seed    60.1 |1e.4A.ã.9D.c.ôV.vOË.k.ñVÕ.r.ïspuü.ñGUÔ¤.ögû6äÿ6ûaö7ôpuüP2üJ4ñj6x|
+# seed    61.0 |UÕ*.pLÊø®.n.ð.bE.z.ë.a.3AY.uO.xäCYÛ©&%@######################.1v|
+# seed    61.1 |J0îrzQfGkêSeïsMÊ9CZÜ6öpLÊø5An.f7vN.uÿWÖÄ.r5ö4gñ2ê4ñ.c59îR.wC2l.l|
+# seed    62.0 |XÖ©&2ÿYÛ©&2ûpLhëSeFkJjêtyQÑ8CZaiåRÑ¤¶%@@######################..|
+# seed    62.1 |NSÔ¤¶%@#######################.dõVQbwOËVÕ4xvï5mJiëtNgsgjHÃaåN3c.|
+# seed    63.0 |################################################################|
+# seed    63.1 |################################################################|
+#              +-------------------------------------------------------------------+
+#              +---------------------------------------------------+
+#              |012345678901234567890123456789012345678901234567890|
+#              +---------------------------------------------------+
+# Scale:       |.1234567890abcdefghijklmnopqrstuvwxyzãäåêëîïðñôõöûü|
+#              |üÿABCDEFGHIJKLMNOPQRSTUVWXYZÂÃÄÅÊËÑÔÕÖÛÜÝø¤*©®¶&%@#|
+#              +---------------------------------------------------+
+#              |scaled p-value above confidence level (zero is ok) |
+#              +----------------------------------------------------------------+
+#              |0         1         2         3         4         5         6   |
+#              |0123456789012345678901234567890123456789012345678901234567890123|
+#              +----------------------------------------------------------------+
+# seed     0.0 |###############################.###########@####################|
+# seed     0.1 |###############################..########################.####@.|
+# seed     1.0 |####.#########################################################.#|
+# seed     1.1 |##############################################################.#|
+# seed     2.0 |################################################################|
+# seed     2.1 |################################################################|
+# seed     3.0 |##############.#################################################|
+# seed     3.1 |#######################################.########################|
+# seed     4.0 |######################################################@#######@#|
+# seed     4.1 |@######.#########K###########Ü¶.##.########################.####|
+# seed     5.0 |#####################################################@##########|
+# seed     5.1 |######@################.#######@###############################@|
+# seed     6.0 |##############################################################.#|
+# seed     6.1 |#@################################.###########################.#|
+# seed     7.0 |###############################.##############.#################|
+# seed     7.1 |######.#####.##.###############.###@@###########################|
+# seed     8.0 |###################################################.############|
+# seed     8.1 |###############################################.################|
+# seed     9.0 |###########.####################################################|
+# seed     9.1 |###############################.#########.###################.##|
+# seed    10.0 |##########.####################.################################|
+# seed    10.1 |#####################@########.#####.#################.@#####.#.|
+# seed    11.0 |################################################################| x 2
+# seed    11.1 |################################################################|
+# seed    12.1 |###.##############@#######################Ü#####################|
+# seed    13.0 |##############.################V###########.###.####.#########.#|
+# seed    13.1 |#############@################..@############.#################.|
+# seed    14.0 |###############################U#####################.##########|
+# seed    14.1 |####.##########################@.############################..#|
+# seed    15.0 |##########.#####################################################|
+# seed    15.1 |#####ø#################@#######.##########@##################..#|
+# seed    16.0 |#@#########################.####################################|
+# seed    16.1 |##############################################################.#|
+# seed    17.0 |##############.#####.##########@################################|
+# seed    17.1 |###############################.###############################©|
+# seed    18.0 |###############################.#####.##########################|
+# seed    18.1 |##################@#############.##############################®|
+# seed    19.0 |####.#########################################################.#|
+# seed    19.1 |####################.#####@#################.##########.########|
+# seed    20.0 |################################################################|
+# seed    20.1 |###############################@####Ý####.######################|
+# seed    21.0 |############################################@#########@#########|
+# seed    21.1 |##############.######################@###############@##########|
+# seed    22.0 |##########@###################################################.#|
+# seed    22.1 |################.#############.###############################.#|
+# seed    23.0 |###############################.#####@#####%####################|
+# seed    23.1 |###############@###############################################.|
+# seed    24.0 |################################################################| x 2
+# seed    24.1 |###########################################.####################|
+# seed    25.1 |###############################ê################################|
+# seed    26.0 |###############################.##########################@####@|
+# seed    26.1 |##############################################################.#|
+# seed    27.0 |###############################.############@##############@##.#|
+# seed    27.1 |###############################.#####################.########.#|
+# seed    28.0 |#.################################################¶#############|
+# seed    28.1 |#####################################################.##########|
+# seed    29.0 |############@######.############################################|
+# seed    29.1 |###########################################################@####|
+# seed    30.0 |###############################@################################|
+# seed    30.1 |############################.##@#################.######@#######|
+# seed    31.0 |#####®#########################.#####@#####@##################@#|
+# seed    31.1 |###########@##################.##########################@#####.|
+# seed    32.0 |######.#####.###################################################|
+# seed    32.1 |################.###############################@###############|
+# seed    33.0 |#######6#########################.##############################|
+# seed    33.1 |###############################.#################.##############|
+# seed    34.0 |########.################.########.#############################|
+# seed    34.1 |################################################################|
+# seed    35.0 |#########.################.########.############################|
+# seed    35.1 |####################.#########################2#################|
+# seed    36.0 |####################################.#########################.#|
+# seed    36.1 |#############################@#####@############################|
+# seed    37.0 |Â####################################.##########################|
+# seed    37.1 |############################.#################################.#|
+# seed    38.0 |#.###################.################.#########################|
+# seed    38.1 |####################.##########.##############################.#|
+# seed    39.0 |##.####################################.########################|
+# seed    39.1 |#################################.##################.########.##|
+# seed    40.0 |###.####################################.#######################|
+# seed    40.1 |#.#############################X##@###########.#################|
+# seed    41.0 |####@####################################.####################.#|
+# seed    41.1 |##############################.@#########.####################.#|
+# seed    42.0 |##########################################.#####################|
+# seed    42.1 |################################################################|
+# seed    43.0 |###########################################.####################|
+# seed    43.1 |K###############################################################|
+# seed    44.0 |####@########@##############################.#################.#|
+# seed    44.1 |###.##%############################@##########@#######&#########|
+# seed    45.0 |#############################################.##################|
+# seed    45.1 |##############.################################.################|
+# seed    46.0 |##############################################.#################|
+# seed    46.1 |###############.################################################|
+# seed    47.0 |###############################################.################|
+# seed    47.1 |###############################.################################|
+# seed    48.0 |################################################.#############.#|
+# seed    48.1 |################################################################|
+# seed    49.0 |#################.###.###########################.##############|
+# seed    49.1 |######@##################################.######®#########.#####|
+# seed    50.0 |##################&###############################.###########.#|
+# seed    50.1 |##############################################################.#|
+# seed    51.0 |###################################################.############|
+# seed    51.1 |@###############################################################|
+# seed    52.0 |@###################################################.###########|
+# seed    52.1 |####################################################@##########.|
+# seed    53.0 |#ø#########################.##.######################.##########|
+# seed    53.1 |##.############################################################.|
+# seed    54.0 |####%#####@###########################################.#######.#|
+# seed    54.1 |##############################.##@##############################|
+# seed    55.0 |#######################################################.########|
+# seed    55.1 |##################################@#############################|
+# seed    56.0 |####@###################################################.#######|
+# seed    56.1 |#.############################@@###®############################|
+# seed    57.0 |#####.###################################################.######|
+# seed    57.1 |####################################.###########################|
+# seed    58.0 |.#####.###################################################.#####|
+# seed    58.1 |#############.###.#####.##.##########.########################@#|
+# seed    59.0 |#.#####.###################################################.####|
+# seed    59.1 |#########@####.###.#####.#############.#########################|
+# seed    60.0 |##.#####.######Ý#########.##.###############################.###|
+# seed    60.1 |@#.##.#.##.#.##.###.#.###.#.#####.#####.################@#######|
+# seed    61.0 |###.#####.#.#.##.#.#.#.###.##.###############################..#|
+# seed    61.1 |#############################.####.#####.##########.#####.####.#|
+# seed    62.0 |##############################################################..|
+# seed    62.1 |##############################.################################.|
+# seed    63.0 |################################################################|
+# seed    63.1 |################################################################|
+#              +-------------------------------------------------------------------+
+# 7968 of 8192 bits failed (97.27%) failed at 99.999943 confidence
+#     g-test: 100.000000%
+#     sum-error-square: 63.48594666
+#     key/seed errors: 64/64
+#     - seed bit 0 gtest probability not random: 100.0000 (15580832/16419168)
+#     - seed bit 1 gtest probability not random: 100.0000 (15961207/16038793)
+#     - with 62 more seed errors not described above.
+#     hash bit-level errors: 126/128
+#     - hash bit 0 gtest-prob not-random: 100.0000 (7394249/8605751)
+#     - hash bit 1 gtest-prob not-random: 100.0000 (6963521/9036479)
+#     - hash bit 2 gtest-prob not-random: 100.0000 (7142365/8857635)
+#     - with 123 more hash bit errors not described above.
+not ok 17 - Strict Avalanche Criteria - 0 bit/0 byte keys # metrohash128_2
+# Testing   8-bit keys.......... ok.     # worst-bit:   0.806% error-ratio: 9.803375e-01
+ok 18 - Strict Avalanche Criteria - 8 bit/1 byte keys # metrohash128_2
+# Testing  16-bit keys.......... ok.     # worst-bit:   0.777% error-ratio: 1.001819e+00
+ok 19 - Strict Avalanche Criteria - 16 bit/2 byte keys # metrohash128_2
+# Testing  24-bit keys.......... ok.     # worst-bit:   0.790% error-ratio: 1.024742e+00
+ok 20 - Strict Avalanche Criteria - 24 bit/3 byte keys # metrohash128_2
+# Testing  32-bit keys.......... ok.     # worst-bit:   0.767% error-ratio: 9.899847e-01
+ok 21 - Strict Avalanche Criteria - 32 bit/4 byte keys # metrohash128_2
+# Testing  40-bit keys.......... ok.     # worst-bit:   0.803% error-ratio: 9.918155e-01
+ok 22 - Strict Avalanche Criteria - 40 bit/5 byte keys # metrohash128_2
+# Testing  48-bit keys.......... ok.     # worst-bit:   0.762% error-ratio: 1.001949e+00
+ok 23 - Strict Avalanche Criteria - 48 bit/6 byte keys # metrohash128_2
+# Testing  56-bit keys.......... ok.     # worst-bit:   0.927% error-ratio: 1.005522e+00
+ok 24 - Strict Avalanche Criteria - 56 bit/7 byte keys # metrohash128_2
+# Testing  64-bit keys.......... ok.     # worst-bit:   0.858% error-ratio: 9.997256e-01
+ok 25 - Strict Avalanche Criteria - 64 bit/8 byte keys # metrohash128_2
+# Testing  72-bit keys.......... ok.     # worst-bit:   0.904% error-ratio: 1.001634e+00
+ok 26 - Strict Avalanche Criteria - 72 bit/9 byte keys # metrohash128_2
+# Testing  80-bit keys.......... ok.     # worst-bit:   0.929% error-ratio: 1.006635e+00
+ok 27 - Strict Avalanche Criteria - 80 bit/10 byte keys # metrohash128_2
+# Testing  88-bit keys.......... ok.     # worst-bit:   0.811% error-ratio: 1.012537e+00
+ok 28 - Strict Avalanche Criteria - 88 bit/11 byte keys # metrohash128_2
+# Testing  96-bit keys.......... ok.     # worst-bit:   0.834% error-ratio: 9.839580e-01
+ok 29 - Strict Avalanche Criteria - 96 bit/12 byte keys # metrohash128_2
+# Testing 104-bit keys.......... ok.     # worst-bit:   0.834% error-ratio: 9.979626e-01
+ok 30 - Strict Avalanche Criteria - 104 bit/13 byte keys # metrohash128_2
+# Testing 112-bit keys.......... ok.     # worst-bit:   0.897% error-ratio: 9.982071e-01
+ok 31 - Strict Avalanche Criteria - 112 bit/14 byte keys # metrohash128_2
+# Testing 120-bit keys.......... ok.     # worst-bit:   0.818% error-ratio: 9.942264e-01
+ok 32 - Strict Avalanche Criteria - 120 bit/15 byte keys # metrohash128_2
+# Testing 128-bit keys.......... ok.     # worst-bit:   0.798% error-ratio: 9.828632e-01
+ok 33 - Strict Avalanche Criteria - 128 bit/16 byte keys # metrohash128_2
+# Testing 136-bit keys.......... ok.     # worst-bit:   0.927% error-ratio: 9.928235e-01
+ok 34 - Strict Avalanche Criteria - 136 bit/17 byte keys # metrohash128_2
+# Testing 144-bit keys.......... ok.     # worst-bit:   0.835% error-ratio: 9.973604e-01
+ok 35 - Strict Avalanche Criteria - 144 bit/18 byte keys # metrohash128_2
+# Testing 152-bit keys.......... ok.     # worst-bit:   0.818% error-ratio: 1.005588e+00
+ok 36 - Strict Avalanche Criteria - 152 bit/19 byte keys # metrohash128_2
+# Testing 152-bit keys.......... ok.     # worst-bit:   0.831% error-ratio: 1.000260e+00
+ok 37 - Strict Avalanche Criteria - 152 bit/19 byte keys # metrohash128_2
+# Testing 200-bit keys.......... ok.     # worst-bit:   0.955% error-ratio: 9.942661e-01
+ok 38 - Strict Avalanche Criteria - 200 bit/25 byte keys # metrohash128_2
+# Testing 256-bit keys.......... ok.     # worst-bit:   0.794% error-ratio: 1.014106e+00
+ok 39 - Strict Avalanche Criteria - 256 bit/32 byte keys # metrohash128_2
+# Testing 512-bit keys.......... ok.     # worst-bit:   0.982% error-ratio: 9.943363e-01
+ok 40 - Strict Avalanche Criteria - 512 bit/64 byte keys # metrohash128_2
+# Testing 520-bit keys.......... ok.     # worst-bit:   0.838% error-ratio: 9.949911e-01
+ok 41 - Strict Avalanche Criteria - 520 bit/65 byte keys # metrohash128_2
+### Keyset 'Cyclic' Tests ###
+# Keyset 'Cyclic' - 8 cycles of 16 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 42 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 16 bytes - 10000000 keys
+ok 43 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 16 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 17 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 44 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 17 bytes - 10000000 keys
+ok 45 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 17 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 18 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 46 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 18 bytes - 10000000 keys
+ok 47 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 18 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 19 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 48 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 19 bytes - 10000000 keys
+ok 49 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 19 bytes - 10000000 keys
+# Keyset 'Cyclic' - 8 cycles of 20 bytes - 10000000 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 50 - Collision Rate for Keyset 'Cyclic' - 8 cycles of 20 bytes - 10000000 keys
+ok 51 - Distribution Bias Check for Keyset 'Cyclic' - 8 cycles of 20 bytes - 10000000 keys
+ok 52 - Keyset 'Cyclic' # metrohash128_2
+### Keyset 'TwoBytes' Tests ###
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 53 - Collision Rate for Keyset 'TwoBytes' - up-to-4-byte keys, 652545 total keys
+ok 54 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-4-byte keys, 652545 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 55 - Collision Rate for Keyset 'TwoBytes' - up-to-8-byte keys, 5471025 total keys
+ok 56 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-8-byte keys, 5471025 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 57 - Collision Rate for Keyset 'TwoBytes' - up-to-12-byte keys, 18616785 total keys
+ok 58 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-12-byte keys, 18616785 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 59 - Collision Rate for Keyset 'TwoBytes' - up-to-16-byte keys, 44251425 total keys
+ok 60 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-16-byte keys, 44251425 total keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 61 - Collision Rate for Keyset 'TwoBytes' - up-to-20-byte keys, 86536545 total keys
+ok 62 - Distribution Bias Check for Keyset 'TwoBytes' - up-to-20-byte keys, 86536545 total keys
+ok 63 - Keyset 'TwoBytes' # metrohash128_2
+### Keyset 'Sparse' Tests ###
+# Keyset 'Sparse' - 32-bit keys with up to 6 bits set - 1149017 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 64 - Collision Rate for Keyset 'Sparse' - 32-bit keys with up to 6 bits set
+ok 65 - Distribution Bias Check for Keyset 'Sparse' - 32-bit keys with up to 6 bits set
+# Keyset 'Sparse' - 40-bit keys with up to 6 bits set - 4598479 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 66 - Collision Rate for Keyset 'Sparse' - 40-bit keys with up to 6 bits set
+ok 67 - Distribution Bias Check for Keyset 'Sparse' - 40-bit keys with up to 6 bits set
+# Keyset 'Sparse' - 48-bit keys with up to 5 bits set - 1925357 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 68 - Collision Rate for Keyset 'Sparse' - 48-bit keys with up to 5 bits set
+ok 69 - Distribution Bias Check for Keyset 'Sparse' - 48-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 56-bit keys with up to 5 bits set - 4216423 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 70 - Collision Rate for Keyset 'Sparse' - 56-bit keys with up to 5 bits set
+ok 71 - Distribution Bias Check for Keyset 'Sparse' - 56-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 64-bit keys with up to 5 bits set - 8303633 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 72 - Collision Rate for Keyset 'Sparse' - 64-bit keys with up to 5 bits set
+ok 73 - Distribution Bias Check for Keyset 'Sparse' - 64-bit keys with up to 5 bits set
+# Keyset 'Sparse' - 96-bit keys with up to 4 bits set - 3469497 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 74 - Collision Rate for Keyset 'Sparse' - 96-bit keys with up to 4 bits set
+ok 75 - Distribution Bias Check for Keyset 'Sparse' - 96-bit keys with up to 4 bits set
+# Keyset 'Sparse' - 256-bit keys with up to 3 bits set - 2796417 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 76 - Collision Rate for Keyset 'Sparse' - 256-bit keys with up to 3 bits set
+ok 77 - Distribution Bias Check for Keyset 'Sparse' - 256-bit keys with up to 3 bits set
+# Keyset 'Sparse' - 2048-bit keys with up to 2 bits set - 2098177 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 78 - Collision Rate for Keyset 'Sparse' - 2048-bit keys with up to 2 bits set
+ok 79 - Distribution Bias Check for Keyset 'Sparse' - 2048-bit keys with up to 2 bits set
+ok 80 - Keyset 'Sparse' # metrohash128_2
+### Keyset 'Crc-MultiCollision' Tests ###
+# Keyset 'Crc(a)-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 81 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 1 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 82 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 2 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 83 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 3 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 84 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 4 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 85 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 5 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 86 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 6 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 87 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 7 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 88 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 8 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 89 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 9 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 90 - Collision Rate for Keyset 'Crc(a)-MultiCollision' - seed 10 # metrohash128_2
+# Keyset 'Crc(b)-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 91 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 1 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 92 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 2 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 93 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 3 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 94 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 4 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 95 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 5 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 96 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 6 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 97 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 7 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 98 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 8 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 99 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 9 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 100 - Collision Rate for Keyset 'Crc(b)-MultiCollision' - seed 10 # metrohash128_2
+### Keyset 'Murmur2-MultiCollision' Tests ###
+# Keyset 'Murmur2-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 101 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 1 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 102 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 2 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 103 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 3 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 104 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 4 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 105 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 5 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 106 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 6 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 107 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 7 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 108 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 8 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 109 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 9 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 110 - Collision Rate for Keyset 'Murmur2-MultiCollision' - seed 10 # metrohash128_2
+### Keyset 'Murmur3A-MultiCollision' Tests ###
+# Keyset 'Murmur3A-MultiCollision' - 1048575 x 16 block keys - 128-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 111 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 1 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 112 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 2 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 113 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 3 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 114 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 4 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 115 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 5 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 116 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 6 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 117 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 7 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 118 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 8 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 119 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 9 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 120 - Collision Rate for Keyset 'Murmur3A-MultiCollision' - seed 10 # metrohash128_2
+### Keyset 'Murmur3F-MultiCollision' Tests ###
+# Keyset 'Murmur3F-MultiCollision' - 1048575 x 16 block keys - 512-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 121 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 1 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 122 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 2 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 123 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 3 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 124 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 4 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 125 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 5 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 126 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 6 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 127 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 7 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 128 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 8 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 129 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 9 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 130 - Collision Rate for Keyset 'Murmur3F-MultiCollision' - seed 10 # metrohash128_2
+### Keyset 'City64-MultiCollision' Tests ###
+# Keyset 'City64-MultiCollision' - 10 x 2 block keys - 16-bytes long - 10 seeds
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 131 - Collision Rate for Keyset 'City64-MultiCollision' - seed 1 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 132 - Collision Rate for Keyset 'City64-MultiCollision' - seed 2 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 133 - Collision Rate for Keyset 'City64-MultiCollision' - seed 3 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 134 - Collision Rate for Keyset 'City64-MultiCollision' - seed 4 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 135 - Collision Rate for Keyset 'City64-MultiCollision' - seed 5 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 136 - Collision Rate for Keyset 'City64-MultiCollision' - seed 6 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 137 - Collision Rate for Keyset 'City64-MultiCollision' - seed 7 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 138 - Collision Rate for Keyset 'City64-MultiCollision' - seed 8 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 139 - Collision Rate for Keyset 'City64-MultiCollision' - seed 9 # metrohash128_2
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 140 - Collision Rate for Keyset 'City64-MultiCollision' - seed 10 # metrohash128_2
+### Keyset 'Combination Lowbits' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 141 - Collision Rate for Keyset 'Combination Lowbits'
+ok 142 - Distribution Bias Check for Keyset 'Combination Lowbits'
+ok 143 - Keyset 'Combination Lowbits' # metrohash128_2
+### Keyset 'Combination Highbits' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 144 - Collision Rate for Keyset 'Combination Highbits'
+ok 145 - Distribution Bias Check for Keyset 'Combination Highbits'
+ok 146 - Keyset 'Combination Highbits' # metrohash128_2
+### Keyset 'Combination Highbits2' Tests ###
+# Keyset 'Combination' - up to 8 blocks from a set of 8 - 19173960 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 147 - Collision Rate for Keyset 'Combination Highbits2'
+ok 148 - Distribution Bias Check for Keyset 'Combination Highbits2'
+ok 149 - Keyset 'Combination Highbits2' # metrohash128_2
+### Keyset 'Combination HiBit-Null' Tests ###
+# Keyset 'Combination' - up to 20 blocks from a set of 2 - 2097150 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 150 - Collision Rate for Keyset 'Combination HiBit-Null'
+ok 151 - Distribution Bias Check for Keyset 'Combination HiBit-Null'
+ok 152 - Keyset 'Combination HiBit-Null' # metrohash128_2
+### Keyset 'Combination LowBit-Null' Tests ###
+# Keyset 'Combination' - up to 20 blocks from a set of 2 - 2097150 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 153 - Collision Rate for Keyset 'Combination LowBit-Null'
+ok 154 - Distribution Bias Check for Keyset 'Combination LowBit-Null'
+ok 155 - Keyset 'Combination LowBit-Null' # metrohash128_2
+### Keyset 'Combination Hi-Lo' Tests ###
+# Keyset 'Combination' - up to 6 blocks from a set of 15 - 12204240 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 156 - Collision Rate for Keyset 'Combination Hi-Lo'
+ok 157 - Distribution Bias Check for Keyset 'Combination Hi-Lo'
+ok 158 - Keyset 'Combination Hi-Lo' # metrohash128_2
+### Keyset 'Text' Tests ###
+# Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 159 - Collision Rate for Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+ok 160 - Distribution Bias Check for Keyset 'Text' - keys of form "Foo[XXXX]Bar" - 14776336 keys
+# Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 161 - Collision Rate for Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+ok 162 - Distribution Bias Check for Keyset 'Text' - keys of form "FooBar[XXXX]" - 14776336 keys
+# Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 163 - Collision Rate for Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+ok 164 - Distribution Bias Check for Keyset 'Text' - keys of form "[XXXX]FooBar" - 14776336 keys
+ok 165 - Keyset 'Text' # metrohash128_2
+### Keyset 'Zeroes' Tests ###
+# Keyset 'Zeroes' - 262144 keys, zero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 166 - Collision Rate for Keyset 'Zeroes' - 262144 keys, zero seed
+ok 167 - Distribution Bias Check for Keyset 'Zeroes' - 262144 keys, zero seed
+# Keyset 'Zeroes' - 262144 keys, nonzero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 168 - Collision Rate for Keyset 'Zeroes' - 262144 keys, nonzero seed
+ok 169 - Distribution Bias Check for Keyset 'Zeroes' - 262144 keys, nonzero seed
+ok 170 - Keyset 'Zeroes' # metrohash128_2
+### Keyset 'Seed' Tests ###
+# Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 171 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+ok 172 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "The quick brown fox "...
+# Keyset 'Seed' - 2000000 seeds, Key ""
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 173 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key ""
+ok 174 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key ""
+# Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 175 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+ok 176 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "00101100110101101"
+# Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 177 - Collision Rate for Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+ok 178 - Distribution Bias Check for Keyset 'Seed' - 2000000 seeds, Key "abcbcddbdebdcaaabaaa"...
+ok 179 - Keyset 'Seed' # metrohash128_2
+### Keyset 'Effs' Tests ###
+# Keyset 'Effs' - 262144 keys, zero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 180 - Collision Rate for Keyset 'Effs' - 262144 keys, zero seed
+ok 181 - Distribution Bias Check for Keyset 'Effs' - 262144 keys, zero seed
+# Keyset 'Effs' - 262144 keys, nonzero seed
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 182 - Collision Rate for Keyset 'Effs' - 262144 keys, nonzero seed
+ok 183 - Distribution Bias Check for Keyset 'Effs' - 262144 keys, nonzero seed
+ok 184 - Keyset 'Effs' # metrohash128_2
+### Keyset 'Words' Tests ###
+# Hashed 99171 keys from 297513 words from file '/usr/share/dict/words'
+# Testing collisions   - Expected     0.00, actual        0 ( 0.00x) - passed
+ok 185 - Collision Rate for Keyset 'Words'
+ok 186 - Distribution Bias Check for Keyset 'Words'
+ok 187 - all tests passed # metrohash128_2
+1..187
+# Tests Failed. metrohash128_2 failed 1 of 187 tests.
+# Testing took 2613.495202 seconds
+# This is SMHasher version v1.3-demerphq-7-geee7fbf - built on Dec 15 2017.

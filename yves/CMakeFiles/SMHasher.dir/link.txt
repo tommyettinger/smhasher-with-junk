@@ -1,0 +1,1 @@
+/usr/bin/c++   -msse2 -msse4 -maes -march=native -O3   CMakeFiles/SMHasher.dir/main.cpp.o  -o SMHasher libSMHasherSupport.a -lpthread -lgsl -lgslcblas 
