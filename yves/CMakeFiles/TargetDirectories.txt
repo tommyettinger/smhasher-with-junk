@@ -1,4 +1,0 @@
-/run/media/tommy/Data/Git/smhasher-yves/smhasher/CMakeFiles/rebuild_cache.dir
-/run/media/tommy/Data/Git/smhasher-yves/smhasher/CMakeFiles/SMHasherSupport.dir
-/run/media/tommy/Data/Git/smhasher-yves/smhasher/CMakeFiles/edit_cache.dir
-/run/media/tommy/Data/Git/smhasher-yves/smhasher/CMakeFiles/SMHasher.dir
