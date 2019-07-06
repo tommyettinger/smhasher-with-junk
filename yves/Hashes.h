@@ -56,6 +56,7 @@ void falkhash_with_state_test_cxx(const void *key, int len, const void *seed, vo
 #endif
 void FNV32a_with_state_test( const void * key, int len, const void *state, void * out );
 void FNV32a_YoshimitsuTRIAD_with_state_test( const void * key, int len, const void *state, void * out );
+void FNV32a_NH_with_state_test( const void * key, int len, const void *state, void * out );
 void FNV64a_with_state_test( const void * key, int len, const void *state, void * out );
 void Bernstein_with_state  ( const void * key, int len, const void *state, void * out );
 void sdbm                  ( const void * key, int len, const void *state, void * out );
@@ -313,3 +314,6 @@ void waterhash_test( const void * key, int len, const void * seed, void * out );
 
 #include "wheathash.h"
 void wheathash_test( const void * key, int len, const void * seed, void * out );
+
+#include "woothash.h"
+void woothash_test( const void * key, int len, const void * seed, void * out );

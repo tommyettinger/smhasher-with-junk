@@ -8,6 +8,8 @@
 #define waterhash_version_3
 #include <stdint.h>
 #include <math.h>
+//const uint64_t _waterp0 = 0xa0761d65ull, _waterp1 = 0xe7037ed1ull, _waterp2 = 0x8ebc6af1ull;
+//const uint64_t _waterp3 = 0x589965cdull, _waterp4 = 0x1d8e4e27ull, _waterp5 = 0xeb44accbull;
 const uint64_t _waterp0 = 0xa0761d6478bd642full, _waterp1 = 0xe7037ed1a0b428dbull, _waterp2 = 0x8ebc6af09c88c6e3ull;
 const uint64_t _waterp3 = 0x589965cc75374cc3ull, _waterp4 = 0x1d8e4e27c47d124full, _waterp5 = 0xeb44accab455d165ull;
 
@@ -23,8 +25,8 @@ static inline uint32_t waterhash(const void* key, size_t len, uint64_t seed){
     const uint8_t *p = (const uint8_t*)key;
     uint32_t i;
 	seed += _waterp1;
-	//seed ^= seed >> 41 ^ seed << 53;
-	seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
+	seed ^= seed >> 41 ^ seed << 53;
+	//seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
     for (i = 0; i + 16 <= len; i += 16, p += 16)
     {
         seed = _watermum(

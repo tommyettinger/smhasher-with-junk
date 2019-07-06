@@ -157,6 +157,11 @@ HashInfo g_hashes[] =
   { "FNV64", "Fowler-Noll-Vo hash, 64-bit",
     64, 64, 64, 0x28C0C9FE,
     NULL, FNV64a_with_state_test },
+
+  { "FNV32_NH", "FNV32-NH 32-bit Ettinger",
+    32, 32, 32, 0xE58FFBC5,
+    NULL, FNV32a_NH_with_state_test },
+    
   { "bernstein", "Bernstein, 32-bit",
     32, 32, 32, 0xE956A8EA,
     NULL, Bernstein_with_state },
@@ -335,6 +340,8 @@ HashInfo g_hashes[] =
   64, 64, 32, 0xC97DE72F, NULL, waterhash_test},
   { "wheathash", "wheathash 64bit result",
   64, 64, 64, 0x5EB8ACE1, NULL, wheathash_test},
+  { "woothash", "woothash 64bit result",
+  64, 64, 64, 0x83E6248D, NULL, woothash_test},
 #endif
 
   // CityHash

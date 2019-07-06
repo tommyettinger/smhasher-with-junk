@@ -166,6 +166,118 @@ FNV64a_with_state_test(const void *key, int len, const void *state, void *out)
   *(uint64_t *) out = h;
 }
 
+void
+FNV32a_NH_with_state_test(const void *key, int len, const void *state, void *out)
+{
+//  const uint8_t  *p = (const uint8_t *)key;
+//  //const uint32_t  PRIME = 0xfb0a14adUL;
+//
+//  const uint32_t  c0 = 0xecac1273UL, c1 = 0x80d953bdUL, c2 = 0xac7d0731UL,
+//                  c3 = 0xc546137bUL, c4 = 0x947076b5UL, c5 = 0xf403781fUL;
+//
+//  //const uint64_t c0 = 0xa0761d6478bd642full, c1 = 0xe7037ed1a0b428dbull, c2 = 0x8ebc6af09c88c6e3ull;
+//  //const uint64_t c3 = 0x589965cc75374cc3ull, c4 = 0x1d8e4e27c47d124full, c5 = 0xeb44accab455d165ull;
+//
+//  uint32_t    seed = *((uint32_t*)state);
+//  seed ^= ROTL32(seed, 11) ^  ROTL32(seed, 21);
+//  uint32_t	  hash32A = seed * ((uint32_t)len - c3);
+//  seed ^= ROTL32(seed, 12) ^  ROTL32(seed, 20);
+//  uint32_t	  hash32B = (c5 + (uint32_t)len) * seed;
+//  seed ^= ROTL32(seed, 13) ^  ROTL32(seed, 19);
+//  uint32_t	  hash32C = (c1 - (uint32_t)len) * seed;
+//
+//  for (; len >= 3 * 2 * sizeof(uint32_t); len -= 3 * 2 * sizeof(uint32_t), p += 3 * 2 * sizeof(uint32_t)) {
+//    hash32A += (hash32A ^ c0 ^ *(uint32_t *) (p + 0 )) * (hash32A ^ c1 ^ *(uint32_t *) (p + 4 ));
+//    hash32B += (hash32B ^ c2 ^ *(uint32_t *) (p + 8 )) * (hash32B ^ c3 ^ *(uint32_t *) (p + 12));
+//    hash32C += (hash32C ^ c4 ^ *(uint32_t *) (p + 16)) * (hash32C ^ c5 ^ *(uint32_t *) (p + 20));
+//  }
+//  if (p != key) {
+//    //hash32B ^= c4 * (hash32A += hash32C ^ ROTL64(hash32C, 47) ^ ROTL64(hash32C, 19));
+//    hash32A += hash32C;
+//  }
+//  //Cases 0. .31
+//  if (len & 4 * sizeof(uint32_t)) {
+//    hash32A += ((c2 ^ *(uint32_t *) (p + 0 )) * (c3 ^ *(uint32_t *) (p + 4 )));
+//    hash32B += ((c0 ^ *(uint32_t *) (p + 8 )) * (c1 ^ *(uint32_t *) (p + 12)));
+//    p += 8 * sizeof(uint16_t);
+//  }
+//  //Cases 0. .15
+//  if (len & 2 * sizeof(uint32_t)) {
+//    hash32A += (c5 ^ *(uint32_t *) (p + 0)) * (c4 ^ *(uint32_t *) (p + 4));
+//    //hash32A += (c2 ^ *(uint32_t *) (p + 0)) * (hash32A ^ c3);
+//    //hash32A = ROTL32(hash32A, 11);
+//    //hash32B += (c4 ^ *(uint32_t *) (p + 4)) * (hash32B ^ c5);
+//    //hash32B = ROTL32(hash32B, 11);
+//    p += 4 * sizeof(uint16_t);
+//  }
+//  //Cases:0. .7
+//  if (len & sizeof(uint32_t)) {
+//    hash32A += (c3 ^ *(uint16_t *) (p + 0)) * (c1 ^ *(uint16_t *) (p + 2));
+//    //hash32A = ROTL32(hash32A, 11);
+//    //hash32B += (c1 ^ *(uint16_t *) (p + 2)) * (hash32B ^ c0);
+//    //hash32B = ROTL32(hash32B, 11);
+//    p += 2 * sizeof(uint16_t);
+//  }
+//  //Cases:0. .3
+//  if (len & sizeof(uint16_t)) {
+//    hash32A += (c4 ^ *(uint16_t *) (p + 0)) * (c5);
+//    //hash32A = ROTL32(hash32A, 11);
+//    p += sizeof(uint16_t);
+//  }
+//  if (len & 1) {
+//    hash32A += (c1 ^ *(p + 0)) * (c0);
+//    //hash32A = ROTL32(hash32A, 11);
+//  }
+//  hash32A += hash32B;//c5 * (hash32B ^ ROTL64(hash32B, 41) ^ ROTL64(hash32B, 23));
+//  hash32A = (hash32A ^ ROTL32(hash32A, 13) ^ ROTL32(hash32A, 37)) * c5;
+//  *(uint32_t *) out = (hash32A ^ (hash32A >> 21) ^ (hash32A >> 13) ^ (hash32A >> 17));
+  const uint8_t  *p = (const uint8_t *)key;
+  const uint32_t  PRIME = 0x947076b5UL;//709607;
+  uint32_t    seed    = *((uint32_t*)state);
+  uint32_t	  hash32A = seed ^ 0xecac1273UL;
+  uint32_t	  hash32B = 0x80d953bdUL * len + seed;
+  uint32_t	  hash32C = 0xac7d0731UL * seed + len;
+
+  for (; len >= 3 * 2 * sizeof(uint32_t); len -= 3 * 2 * sizeof(uint32_t), p += 3 * 2 * sizeof(uint32_t)) {
+    hash32A = (hash32A ^ (ROTL32(*(uint32_t *) (p + 0), 5)  ^ *(uint32_t *) (p + 4)))  * PRIME;
+    hash32B = (hash32B ^ (ROTL32(*(uint32_t *) (p + 8), 5)  ^ *(uint32_t *) (p + 12))) * PRIME;
+    hash32C = (hash32C ^ (ROTL32(*(uint32_t *) (p + 16), 5) ^ *(uint32_t *) (p + 20))) * PRIME;
+  }
+  if (p != key) {
+    hash32A = (hash32A ^ ROTL32(hash32C, 5)) * PRIME;
+  }
+  //Cases 0. .31
+  if (len & 4 * sizeof(uint32_t)) {
+    hash32A = (hash32A ^ (ROTL32(*(uint32_t *) (p + 0), 5) ^ *(uint32_t *) (p + 4))) * PRIME;
+    hash32B = (hash32B ^ (ROTL32(*(uint32_t *) (p + 8), 5) ^ *(uint32_t *) (p + 12))) * PRIME;
+    p += 8 * sizeof(uint16_t);
+  }
+  //Cases 0. .15
+  if (len & 2 * sizeof(uint32_t)) {
+    hash32A = (hash32A ^ *(uint32_t *) (p + 0)) * PRIME;
+    hash32B = (hash32B ^ *(uint32_t *) (p + 4)) * PRIME;
+    p += 4 * sizeof(uint16_t);
+  }
+  //Cases:0. .7
+  if (len & sizeof(uint32_t)) {
+    hash32A = (hash32A ^ *(uint16_t *) (p + 0)) * PRIME;
+    hash32B = (hash32B ^ *(uint16_t *) (p + 2)) * PRIME;
+    p += 2 * sizeof(uint16_t);
+  }
+  //Cases:0. .3
+  if (len & sizeof(uint16_t)) {
+    hash32A = (hash32A ^ *(uint16_t *) p) * PRIME;
+    p += sizeof(uint16_t);
+  }
+  if (len & 1)
+    hash32A = (hash32A ^ *p) * PRIME;
+
+  hash32A = (hash32A ^ ROTL32(hash32B, 5)) * PRIME;
+  *(uint32_t *) out = hash32A ^ (hash32A >> 16);
+
+}
+
+
 //-----------------------------------------------------------------------------
 
 uint32_t x17(const void *key, int len, uint32_t h)
@@ -529,11 +641,17 @@ wyhash_test(const void *input, int len, const void *seed, void *out)
 void
 waterhash_test(const void *input, int len, const void *seed, void *out)
 {
-  *(uint32_t *) out = waterhash((const unsigned char *)input, (size_t) len, *((const uint64_t *)seed));
+  *(uint32_t *) out = waterhash((const unsigned char *)input, (uint32_t) len, *((const uint64_t *)seed));
 }
 
 void
 wheathash_test(const void *input, int len, const void *seed, void *out)
 {
-  *(uint64_t *) out = wheathash((const unsigned char *)input, (size_t) len, *((const uint64_t *)seed));
+  *(uint64_t *) out = wheathash((const unsigned char *)input, (uint64_t) len, *((const uint64_t *)seed));
+}
+
+void
+woothash_test(const void *input, int len, const void *seed, void *out)
+{
+  *(uint64_t *) out = woothash((const unsigned char *)input, (uint64_t) len, *((const uint64_t *)seed));
 }
