@@ -335,13 +335,16 @@ HashInfo g_hashes[] =
     64, 64, 64, 0xACB02426,
     NULL, fasthash64_test },
   { "wyhash", "wyhash 64bit",
-  64, 64, 64, 0x3653DA37, NULL, wyhash_test},
+  64, 64, 64, 0x472AACAA, NULL, wyhash_test}, //0x3653DA37
   { "waterhash", "waterhash 32bit result",
-  64, 64, 32, 0xC97DE72F, NULL, waterhash_test},
+  64, 64, 32, 0x06377306, NULL, waterhash_test}, //0xC97DE72F
   { "wheathash", "wheathash 64bit result",
   64, 64, 64, 0x5EB8ACE1, NULL, wheathash_test},
   { "woothash", "woothash 64bit result",
-  64, 64, 64, 0x83E6248D, NULL, woothash_test},
+  64, 64, 64, 0x24B78E70, NULL, woothash_test}, //0x83E6248D
+  { "puller", "puller 64bit result",
+  64, 64, 64, 0xAFC475FA, NULL, puller_test},
+
 #endif
 
   // CityHash
@@ -481,6 +484,14 @@ HashInfo g_hashes[] =
   { "MUM", "github.com/vnmakarov/mum-hash",
     64, 64, 64, 0x73F6BFD7,
     NULL, mum_hash_with_state_test },
+
+  { "gwoemul", "Gwoemul, 32-bit",
+    32, 32, 32, 0x45072060,
+    NULL, Gwoemul_with_state },
+  { "xxh3", "XXH3, 64-bit output",
+    64, 64, 64, 0xDD0D4F96,
+    NULL, xxh3_with_state_test}
+
 };
 int g_hashes_sizeof= sizeof(g_hashes);
 

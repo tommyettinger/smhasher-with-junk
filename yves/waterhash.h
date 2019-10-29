@@ -12,8 +12,6 @@
 //const uint64_t _waterp3 = 0x589965cdull, _waterp4 = 0x1d8e4e27ull, _waterp5 = 0xeb44accbull;
 const uint64_t _waterp0 = 0xa0761d6478bd642full, _waterp1 = 0xe7037ed1a0b428dbull, _waterp2 = 0x8ebc6af09c88c6e3ull;
 const uint64_t _waterp3 = 0x589965cc75374cc3ull, _waterp4 = 0x1d8e4e27c47d124full, _waterp5 = 0xeb44accab455d165ull;
-//const uint64_t _wyp0=0xa0761d6478bd642full, _wyp1=0xe7037ed1a0b428dbull, _wyp2=0x8ebc6af09c88c6e3ull;
-//const uint64_t _wyp3=0x589965cc75374cc3ull, _wyp4=0x1d8e4e27c47d124full, _wyp5=0xeb44accab455d165ull;
 
 static inline uint64_t _watermum(const uint64_t A, const uint64_t B) {
     uint64_t r = A * B;
@@ -27,15 +25,14 @@ static inline uint32_t waterhash(const void* key, size_t len, uint64_t seed){
     const uint8_t *p = (const uint8_t*)key;
     uint32_t i;
 	seed += _waterp1;
-	seed ^= seed >> 41 ^ seed << 53;
-	//seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
-    for (i = 0; i + 16 <= len; i += 16, p += 16)
+	//seed ^= seed >> 41 ^ seed << 53;
+	seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
+	for (i = 0; i + 16 <= len; i += 16, p += 16)
     {
         seed = _watermum(
 			_watermum(_waterr32(p) ^ _waterp1, _waterr32(p + 4) ^ _waterp2) + seed,
 			_watermum(_waterr32(p + 8) ^ _waterp3, _waterr32(p + 12) ^ _waterp4));
     }
-	//seed += _waterp5;
 	switch (len & 15) {
 	case 0:  seed = _watermum(_waterp1 ^ seed, _waterp4 + seed); break;
 	case 1:  seed = _watermum(_waterp2 ^ seed, _waterr08(p) ^ _waterp1); break;

@@ -10,6 +10,7 @@
 #include "MurmurHash3.h"
 
 #if defined(__x86_64__)
+#define XXH_INLINE_ALL
 #include "xxhash.h"
 #include "metrohash.h"
 #include "cmetrohash.h"
@@ -167,6 +168,10 @@ inline void xxHash64_with_state_test( const void * key, int len, const void *sta
   *(uint64_t*)out = (uint64_t) XXH64(key, (size_t) len, *((unsigned long long *)state));
 }
 
+inline void xxh3_with_state_test( const void * key, int len, const void *state, void * out ) {
+  *(uint64_t*)out = (uint64_t) XXH3_64bits_withSeed(key, (size_t) len, *((uint64_t*)state));
+}
+
 inline void metrohash64_1_with_state_test ( const void * key, int len, const void *state, void * out ) {
   metrohash64_1((const uint8_t *)key,(uint64_t)len,*((uint64_t*)state),(uint8_t *)out);
 }
@@ -317,3 +322,6 @@ void wheathash_test( const void * key, int len, const void * seed, void * out );
 
 #include "woothash.h"
 void woothash_test( const void * key, int len, const void * seed, void * out );
+void puller_test( const void * key, int len, const void * seed, void * out );
+
+void Gwoemul_with_state  ( const void * key, int len, const void *state, void * out );

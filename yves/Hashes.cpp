@@ -5,7 +5,7 @@
 //#include <stdint.h>
 #include <assert.h>
 //#include <emmintrin.h>
-//#include <xmmintrin.h>
+#include <x86intrin.h>
 
 // ----------------------------------------------------------------------------
 //fake / bad hashes
@@ -654,4 +654,100 @@ void
 woothash_test(const void *input, int len, const void *seed, void *out)
 {
   *(uint64_t *) out = woothash((const unsigned char *)input, (uint64_t) len, *((const uint64_t *)seed));
+}
+/*
+            long result = 0x9E3779B97F4A7C94L, a = 0x632BE59BD9B4E019L;
+            final int len = data.length;
+            for (int i = 0; i < len; i++) {
+                result += (a ^= 0x8329C6EB9E6AD3E3L * data[i]);
+            }
+            return result * (a | 1L) ^ (result << 37 | result >>> 27);
+
+*/
+
+
+void
+puller_test(const void *key, int len, const void *state, void *out)
+{
+	const uint8_t *data = (const uint8_t *)key;
+	const int nblocks = len / 8;
+	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
+	uint64_t a = *((uint64_t *)state) ^ 0x9E3779B97F4A7C15UL - len, d = 0x632BE59BD9B4E019UL;// , a = 0x632BE59BD9B4E019UL * len;
+	for (int i = -nblocks; i; i++) {
+		//a += (read64u(blocks, i)) * 0x880355F21E6D1965UL; //0x2127599BF4325C37UL
+		//result ^= a ^ a >> 47 ^ a >> 29 ^ a >> 19; //fast-hash 0x880355F21E6D1965 // also tried 0x8329C6EB9E6AD3E3UL for multiplier
+		//a ^= (result = (blocks[i] ^ 0x9E3779B97F4A7C15UL) * 0x8329C6EB9E6AD3E3UL + ROTL64(result, 23));
+		//result += (blocks[i] ^ 0x880355F21E6D1965UL) * (a += 0x9E3779B97F4A7C16UL);
+		//result = ROTL64(result, 41);
+
+		//result += (a ^= blocks[i] * 0x880355F21E6D1965UL);
+
+		//a = (a * 0xAC564B05UL + blocks[i]) * 0x818102004182A025UL;
+		//a = ROTL64(a, 29);
+		//((state = (state << 29 | state >> > 35) * 0xAC564B05L) * 0x818102004182A025L);
+    //a += blocks[i] * (d += 0x9E3779B97F4A7C16UL);
+    //a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+    //a ^= a >> 28;
+    //(d = __rolq(d, 29u) * 0xAC564B05ULL) * 0x818102004182A025ULL
+    //a += (d = __rolq(d, 29u) + 0xDB4F0B9175AE2165UL) * blocks[i] + 0x8329C6EB9E6AD3E3UL;
+    //a += (d = ((d ^ __rolq(d, 23u) ^ __rolq(d, 47u)) + blocks[i]) * 0xDB4F0B9175AE2165UL);
+    //a = __rolq(a, 25u);
+    //a += (d ^= __rolq(d, 50u) ^ __rolq(d, 25u));
+//    a += (d ^= __rolq(d, 50u) ^ __rolq(d, 25u));
+
+//    a += __rolq(a, 25) + (d += (blocks[i] + 0xDB4F0B9175AE2165UL) * 0x818102004182A025ULL);
+    a = __rolq(a, 25) + blocks[i] * 0x818102004182A025UL + 0xDB4F0B9175AE2165UL;
+
+	}
+	const uint8_t * tail = (const uint8_t*)(data + nblocks * 8);
+	switch (len & 7)
+	{
+	case 7: a += (tail[6] ^ UINT64_C(0x55076507395F3485)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ a >> 27;
+	case 6: a += (tail[5] ^ UINT64_C(0xE2CE02C1DBEA2845)) * UINT64_C(0xD7EF17178C46ABE3) ^ a >> 26;
+	case 5: a += (tail[4] ^ UINT64_C(0x6096A6800704E7C5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ a >> 25;
+	case 4: a += (tail[3] ^ UINT64_C(0xB2F97045254154A5)) * UINT64_C(0xD7EF17178C46ABE3) ^ a >> 24;
+	case 3: a += (tail[2] ^ UINT64_C(0x414C6E02D8B72D05)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ a >> 23;
+	case 2: a += (tail[1] ^ UINT64_C(0xF6FDE799B4A0DBA5)) * UINT64_C(0xD7EF17178C46ABE3) ^ a >> 22;
+	case 1: a += (tail[0] ^ UINT64_C(0x735664783B1136B5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ a >> 21;
+		a ^= (a + UINT64_C(0x9E3779B97F4A7C15)) * UINT64_C(0xC6BC279692B5CC83);
+	};
+  a = (a ^ __rolq(a, 41u) ^ __rolq(a, 17u)) * 0x369DEA0F31A53F85UL;
+  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+  a ^= a >> 28;
+
+	*(uint64_t *)out = a;
+}
+const uint32_t _gwoemul0 = 0xa0761d65u, _gwoemul1 = 0xe7037ed1u, _gwoemul2 = 0x8ebc6af1u, _gwoemul3 = 0x589965cdu;
+
+void
+Gwoemul_with_state(const void *key, int len, const void *state, void *out)
+{
+	const uint8_t *data = (const uint8_t *)key;
+  const int nblocks = len / 4;
+	const uint32_t * blocks = (const uint32_t *)(data + nblocks * 4);
+  uint32_t hash = *((uint32_t *)state);
+  //uint32_t g = _gwoemul1;
+  uint32_t d;
+	for (int i = -nblocks; i; i++) {
+    d = blocks[i];
+    hash +=  _gwoemul3;
+    hash += ((d ^ d >> 16)) * (hash >> 12 | 1U);
+//    hash ^= hash >> 16;
+//    hash += (g += _gwoemul3);
+//    hash *= 0xAC451U;
+    hash ^= hash >> 15;
+  }
+	const uint8_t * tail = (const uint8_t*)(data + nblocks * 4);
+  switch(len & 3)
+  {
+    case 3: hash ^= tail[2] * 0xAC451U + _gwoemul2 ^ hash >> 14;
+    case 2: hash ^= tail[1] * 0xC4519U + _gwoemul1 ^ hash >> 12;
+    case 1: hash ^= tail[0] * 0x8A235U + _gwoemul0 ^ hash >> 10;
+  }
+  hash ^= hash >> 17;
+  hash *= UINT32_C(0x0002aaa9);
+  hash ^= hash >> 15;
+  hash *= UINT32_C(0x000a4c25);
+  hash ^= hash >> 16;
+  *(uint32_t *) out = hash;
 }

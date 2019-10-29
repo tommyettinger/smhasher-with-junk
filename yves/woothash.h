@@ -25,7 +25,7 @@ static inline uint64_t __wootr64(const uint8_t *p){ return (_wootr32(p) << 32) |
 
 static inline uint64_t woothash(const void* key, uint64_t len, uint64_t seed) {
 	const uint8_t *p = (const uint8_t*)key;
-	seed += _wootp0;
+	seed += _wootp1;
 	seed ^= seed >> 23 ^ seed >> 48 ^ seed << 7 ^ seed << 53;
 	uint64_t i, a = seed ^ _wootp4, b = ROTL64(seed, 17) ^ _wootp3, c = ROTL64(seed, 31) ^ _wootp2, d = ROTL64(seed, 47) ^ _wootp1;
 	for (i = 0; i + 32 <= len; i += 32, p += 32)
