@@ -343,7 +343,7 @@ HashInfo g_hashes[] =
   { "woothash", "woothash 64bit result",
   64, 64, 64, 0x24B78E70, NULL, woothash_test}, //0x83E6248D
   { "puller", "puller 64bit result",
-  64, 64, 64, 0xAFC475FA, NULL, puller_test},
+  64, 64, 64, 0x378E3687, NULL, puller_test},
 
 #endif
 

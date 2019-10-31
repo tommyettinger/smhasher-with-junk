@@ -672,7 +672,7 @@ puller_test(const void *key, int len, const void *state, void *out)
 	const uint8_t *data = (const uint8_t *)key;
 	const int nblocks = len / 8;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
-	uint64_t a = *((uint64_t *)state) ^ 0x9E3779B97F4A7C15UL - len, d = 0x632BE59BD9B4E019UL;// , a = 0x632BE59BD9B4E019UL * len;
+	uint64_t a = *((uint64_t *)state) ^ 0xDB4F0B9175AE2165UL, d = 0x632BE59BD9B4E019UL;// , a = 0x632BE59BD9B4E019UL * len;
 	for (int i = -nblocks; i; i++) {
 		//a += (read64u(blocks, i)) * 0x880355F21E6D1965UL; //0x2127599BF4325C37UL
 		//result ^= a ^ a >> 47 ^ a >> 29 ^ a >> 19; //fast-hash 0x880355F21E6D1965 // also tried 0x8329C6EB9E6AD3E3UL for multiplier
@@ -696,7 +696,9 @@ puller_test(const void *key, int len, const void *state, void *out)
 //    a += (d ^= __rolq(d, 50u) ^ __rolq(d, 25u));
 
 //    a += __rolq(a, 25) + (d += (blocks[i] + 0xDB4F0B9175AE2165UL) * 0x818102004182A025ULL);
-    a = __rolq(a, 25) + blocks[i] * 0x818102004182A025UL + 0xDB4F0B9175AE2165UL;
+    a ^= (blocks[i]) * (d += 0x9E3779B97F4A7C16UL);
+    a += __rolq(a, 17);
+    //a = __rolq(a, 25) + blocks[i] * 0x818102004182A025UL + 0xDB4F0B9175AE2165UL;
 
 	}
 	const uint8_t * tail = (const uint8_t*)(data + nblocks * 8);
