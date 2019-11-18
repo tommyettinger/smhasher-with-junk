@@ -696,8 +696,20 @@ puller_test(const void *key, int len, const void *state, void *out)
 //    a += (d ^= __rolq(d, 50u) ^ __rolq(d, 25u));
 
 //    a += __rolq(a, 25) + (d += (blocks[i] + 0xDB4F0B9175AE2165UL) * 0x818102004182A025ULL);
-    a ^= (blocks[i]) * (d += 0x9E3779B97F4A7C16UL);
-    a += __rolq(a, 17);
+    //a += (d += blocks[i]) * 0x818102004182A025ULL + __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
+    
+    //works
+    a += blocks[i] * 0x818102004182A025ULL ^ __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
+    
+    //a ^= blocks[i] * (d += 0x9E3779B97F4A7C16UL) + __rolq(a, 17);
+    //a += blocks[i] * (d += 0x9E3779B97F4A7C16UL) ^ __rolq(a, 17);
+    //a += a >> 29;
+    //a += __rolq(a, 17);
+    
+    //a += blocks[i] * (d += 0x9E3779B97F4A7C16UL);
+    //a += a >> 13;
+    //a = __rolq(a, 17);
+    //a += __rolq(a, 17);
     //a = __rolq(a, 25) + blocks[i] * 0x818102004182A025UL + 0xDB4F0B9175AE2165UL;
 
 	}
@@ -713,7 +725,7 @@ puller_test(const void *key, int len, const void *state, void *out)
 	case 1: a += (tail[0] ^ UINT64_C(0x735664783B1136B5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ a >> 21;
 		a ^= (a + UINT64_C(0x9E3779B97F4A7C15)) * UINT64_C(0xC6BC279692B5CC83);
 	};
-  a = (a ^ __rolq(a, 41u) ^ __rolq(a, 17u)) * 0x369DEA0F31A53F85UL;
+  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
   a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
   a ^= a >> 28;
 

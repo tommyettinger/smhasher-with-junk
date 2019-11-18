@@ -335,15 +335,15 @@ HashInfo g_hashes[] =
     64, 64, 64, 0xACB02426,
     NULL, fasthash64_test },
   { "wyhash", "wyhash 64bit",
-  64, 64, 64, 0x472AACAA, NULL, wyhash_test}, //0x3653DA37
+  64, 64, 64, 0x3653DA37, NULL, wyhash_test}, //0x3653DA37 for v1, 0x472AACAA for v2
   { "waterhash", "waterhash 32bit result",
   64, 64, 32, 0x06377306, NULL, waterhash_test}, //0xC97DE72F
   { "wheathash", "wheathash 64bit result",
   64, 64, 64, 0x5EB8ACE1, NULL, wheathash_test},
   { "woothash", "woothash 64bit result",
-  64, 64, 64, 0x24B78E70, NULL, woothash_test}, //0x83E6248D
+  64, 64, 64, 0x9EE012F5, NULL, woothash_test},
   { "puller", "puller 64bit result",
-  64, 64, 64, 0x378E3687, NULL, puller_test},
+  64, 64, 64, 0x1F612F17, NULL, puller_test},
 
 #endif
 
