@@ -336,12 +336,21 @@ HashInfo g_hashes[] =
     NULL, fasthash64_test },
   { "wyhash", "wyhash 64bit",
   64, 64, 64, 0x3653DA37, NULL, wyhash_test}, //0x3653DA37 for v1, 0x472AACAA for v2
+#if defined(WOOT)
+  { "wyhash3", "woot(wyhash3) 64bit", // the symbol WOOT is defined in Hashes.h
+  64, 64, 64, 0x3B1D82ED, NULL, wyhash3_test},
+#else
+  { "wyhash3", "wyhash3 64bit",
+  64, 64, 64, 0xB4306FD0, NULL, wyhash3_test},
+#endif
   { "waterhash", "waterhash 32bit result",
   64, 64, 32, 0x06377306, NULL, waterhash_test}, //0xC97DE72F
   { "wheathash", "wheathash 64bit result",
   64, 64, 64, 0x5EB8ACE1, NULL, wheathash_test},
   { "woothash", "woothash 64bit result",
   64, 64, 64, 0x9EE012F5, NULL, woothash_test},
+  { "wickethash", "wickethash 64bit result",
+  64, 64, 64, 0x9EE012F5, NULL, wickethash_test},
   { "puller", "puller 64bit result",
   64, 64, 64, 0x1F612F17, NULL, puller_test},
 
@@ -489,7 +498,7 @@ HashInfo g_hashes[] =
     32, 32, 32, 0x45072060,
     NULL, Gwoemul_with_state },
   { "xxh3", "XXH3, 64-bit output",
-    64, 64, 64, 0xDD0D4F96,
+    64, 64, 64, 0xB603D3B9,
     NULL, xxh3_with_state_test}
 
 };

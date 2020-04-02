@@ -169,7 +169,7 @@ inline void xxHash64_with_state_test( const void * key, int len, const void *sta
 }
 
 inline void xxh3_with_state_test( const void * key, int len, const void *state, void * out ) {
-  *(uint64_t*)out = (uint64_t) XXH3_64bits_withSeed(key, (size_t) len, *((uint64_t*)state));
+  *(uint64_t*)out = (uint64_t) XXH3_64bits_withSeed(key, (size_t) len, *((unsigned long long *)state));
 }
 
 inline void metrohash64_1_with_state_test ( const void * key, int len, const void *state, void * out ) {
@@ -314,6 +314,10 @@ void fanom_hash64_with_versionstate_test(const void *key, int len, const void * 
 #include "wyhash.h"
 void wyhash_test( const void * key, int len, const void * seed, void * out );
 
+//#define WOOT
+#include "wyhash3.h"
+void wyhash3_test( const void * key, int len, const void * seed, void * out );
+
 #include "waterhash.h"
 void waterhash_test( const void * key, int len, const void * seed, void * out );
 
@@ -322,6 +326,10 @@ void wheathash_test( const void * key, int len, const void * seed, void * out );
 
 #include "woothash.h"
 void woothash_test( const void * key, int len, const void * seed, void * out );
+
+#include "wickethash.h"
+void wickethash_test( const void * key, int len, const void * seed, void * out );
+
 void puller_test( const void * key, int len, const void * seed, void * out );
 
 void Gwoemul_with_state  ( const void * key, int len, const void *state, void * out );
