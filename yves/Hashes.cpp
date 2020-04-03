@@ -787,7 +787,7 @@ uint64_t WobbleOAAT(const void *key, int len, uint64_t seed)
   for (int i = 0; i < len; i++) {
     h += data[i] + 0xC6BC279692B5C323ULL;
     h *= (m += 0x9479D2858AF899E6ULL);
-    h ^= h >> 8;
+    //h ^= h >> 8;
   }
 
   h ^= h >> 27;

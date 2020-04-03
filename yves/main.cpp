@@ -355,7 +355,7 @@ HashInfo g_hashes[] =
   64, 64, 64, 0x1F612F17, NULL, puller_test},
 
   { "wobble", "wobble OAAT, 64bit result",
-  64, 64, 64, 0xF610404D, NULL, WobbleOAAT_with_state_test},
+  64, 64, 64, 0xEAA07A4E, NULL, WobbleOAAT_with_state_test},
 
 #endif
 
