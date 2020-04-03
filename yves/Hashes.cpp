@@ -777,3 +777,29 @@ Gwoemul_with_state(const void *key, int len, const void *state, void *out)
   hash ^= hash >> 16;
   *(uint32_t *) out = hash;
 }
+
+
+uint64_t WobbleOAAT(const void *key, int len, uint64_t seed)
+{
+  const uint8_t  *data = (const uint8_t *)key;
+  uint64_t	  h = seed + len, m = ~(seed << 1);
+
+  for (int i = 0; i < len; i++) {
+    h += data[i] + 0xC6BC279692B5C323ULL;
+    h *= (m += 0x9479D2858AF899E6ULL);
+    h ^= h >> 8;
+  }
+
+  h ^= h >> 27;
+  h *= 0x3C79AC492BA7B653ULL;
+  h ^= h >> 33;
+  h *= 0x1C69B3F74AC4AE35ULL;
+  h ^= h >> 27;
+  return h;
+}
+
+void
+WobbleOAAT_with_state_test(const void *key, int len, const void *state, void *out)
+{
+  *(uint64_t *) out = WobbleOAAT(key, len, *((uint64_t*)state));
+}
