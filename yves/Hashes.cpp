@@ -657,6 +657,12 @@ wheathash_test(const void *input, int len, const void *seed, void *out)
 }
 
 void
+wheatoaathash_test(const void *input, int len, const void *seed, void *out)
+{
+  *(uint64_t *) out = wheatoaathash((const unsigned char *)input, (uint64_t) len, *((const uint64_t *)seed));
+}
+
+void
 woothash_test(const void *input, int len, const void *seed, void *out)
 {
   *(uint64_t *) out = woothash((const unsigned char *)input, (uint64_t) len, *((const uint64_t *)seed));

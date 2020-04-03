@@ -52,4 +52,25 @@ static inline uint64_t wheathash(const void* key, uint64_t len, uint64_t seed){
     seed = (seed ^ seed << 16) * (len ^ _wheatp0);
     return seed - (seed >> 31) + (seed << 33);
 }
+static inline uint64_t wheatoaathash(const void* key, uint64_t len, uint64_t seed){
+    const uint8_t *p = (const uint8_t*)key;
+    uint32_t i;
+    seed += _wheatp1;
+    //seed ^= seed >> 41 ^ seed << 53;
+    seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
+    for (i = 0; i + 4 <= len; i += 4, p += 4)
+    {
+        seed = _wheatmum(
+            _wheatmum(_wheatr08(p) ^ _wheatp1, _wheatr08(p + 1) ^ _wheatp2) + seed,
+            _wheatmum(_wheatr08(p + 2) ^ _wheatp3, _wheatr08(p + 3) ^ _wheatp4));
+    }
+    switch (len & 3) {
+	case 0:  seed = _wheatmum(_wheatp1 ^ seed, _wheatp4 + seed); break;
+    case 1:  seed = _wheatmum(_wheatp2 ^ seed, _wheatr08(p) ^ _wheatp1); break;
+    case 2:  seed = _wheatmum(_wheatp3 ^ seed, _wheatr16(p) ^ _wheatp4); break;
+    case 3:  seed = _wheatmum(_wheatr16(p) ^ seed, _wheatr08(p + 2) ^ _wheatp2); break;
+    }
+    seed = (seed ^ seed << 16) * (len ^ _wheatp0);
+    return seed - (seed >> 31) + (seed << 33);
+}
 #endif

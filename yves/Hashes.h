@@ -323,6 +323,7 @@ void waterhash_test( const void * key, int len, const void * seed, void * out );
 
 #include "wheathash.h"
 void wheathash_test( const void * key, int len, const void * seed, void * out );
+void wheatoaathash_test( const void * key, int len, const void * seed, void * out );
 
 #include "woothash.h"
 void woothash_test( const void * key, int len, const void * seed, void * out );

@@ -347,6 +347,8 @@ HashInfo g_hashes[] =
   64, 64, 32, 0x06377306, NULL, waterhash_test}, //0xC97DE72F
   { "wheathash", "wheathash 64bit result",
   64, 64, 64, 0x5EB8ACE1, NULL, wheathash_test},
+  { "wheatoaathash", "wheatOAAThash 64bit result",
+  64, 64, 64, 0xEC02A015, NULL, wheatoaathash_test},
   { "woothash", "woothash 64bit result",
   64, 64, 64, 0x9EE012F5, NULL, woothash_test},
   { "wickethash", "wickethash 64bit result",
