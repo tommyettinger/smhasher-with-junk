@@ -757,31 +757,24 @@ Gwoemul_with_state(const void *key, int len, const void *state, void *out)
 	const uint8_t *data = (const uint8_t *)key;
   const int nblocks = len / 4;
 	const uint32_t * blocks = (const uint32_t *)(data + nblocks * 4);
-  uint32_t hash = *((uint32_t *)state);
-  //uint32_t g = _gwoemul1;
-  uint32_t d;
+  uint64_t seed = *((uint64_t *)state);
+  uint64_t	  h = seed + len, m = ~(len << 1);
 	for (int i = -nblocks; i; i++) {
-    d = blocks[i];
-    hash +=  _gwoemul3;
-    hash += ((d ^ d >> 16)) * (hash >> 12 | 1U);
-//    hash ^= hash >> 16;
-//    hash += (g += _gwoemul3);
-//    hash *= 0xAC451U;
-    hash ^= hash >> 15;
+    h = (h + blocks[i]) * (m += 0x9479D2858AF899E6ULL);
   }
 	const uint8_t * tail = (const uint8_t*)(data + nblocks * 4);
   switch(len & 3)
   {
-    case 3: hash ^= tail[2] * 0xAC451U + _gwoemul2 ^ hash >> 14;
-    case 2: hash ^= tail[1] * 0xC4519U + _gwoemul1 ^ hash >> 12;
-    case 1: hash ^= tail[0] * 0x8A235U + _gwoemul0 ^ hash >> 10;
+    case 3: h = (h + tail[2]) * _gwoemul2;
+    case 2: h = (h + tail[1]) * _gwoemul1;
+    case 1: h = (h + tail[0]) * _gwoemul0;
   }
-  hash ^= hash >> 17;
-  hash *= UINT32_C(0x0002aaa9);
-  hash ^= hash >> 15;
-  hash *= UINT32_C(0x000a4c25);
-  hash ^= hash >> 16;
-  *(uint32_t *) out = hash;
+  h ^= h >> 27;
+  h *= 0x3C79AC492BA7B653ULL;
+  h ^= h >> 33;
+  h *= 0x1C69B3F74AC4AE35ULL;
+  h ^= h >> 27;
+  *(uint64_t *) out = h;
 }
 
 
