@@ -759,18 +759,18 @@ Gwoemul_with_state(const void *key, int len, const void *state, void *out)
 	const uint32_t * blocks = (const uint32_t *)(data + nblocks * 4);
   uint64_t s = *((uint64_t *)state);
   // 0xDB4F0B9175AE2165ULL 0xC6BC279692B5C323ULL
-  uint64_t h = len + s;
+  uint64_t h = len + s ^ 0xC6BC279692B5C323ULL;
   uint64_t m = ~(s << 1);
 	for (int i = -nblocks; i; i++) {
-     h ^= __rolq((0xDB4F0B9175AE2165ULL + blocks[i]) * m, (m += 0x9479D2858AF899E6ULL) >> 58);
+     h ^= __rolq(blocks[i] * m, (m += 0x9479D2858AF899E6ULL) >> 58);
      //h ^= __rolq(((s += 0xDB4F0B9175AE2165ULL) + blocks[i]) * (m += 0x9479D2858AF899E6ULL), m & 63);
   }
 	const uint8_t * tail = (const uint8_t*)(data + nblocks * 4);
   switch(len & 3)
   {
-    case 3: h ^= __rolq((0xDB4F0B9175AE2165ULL + tail[2]) * m, (m += 0x9479D2858AF899E6ULL) >> 58);// * (m += 0x9479D2858AF899E6ULL);
-    case 2: h ^= __rolq((0xDB4F0B9175AE2165ULL + tail[1]) * m, (m += 0x9479D2858AF899E6ULL) >> 58);// * (m += 0x9479D2858AF899E6ULL);
-    case 1: h ^= __rolq((0xDB4F0B9175AE2165ULL + tail[0]) * m, (m += 0x9479D2858AF899E6ULL) >> 58);// * (m +  0x9479D2858AF899E6ULL);
+    case 3: h ^= __rolq(tail[2] * m, (m += 0x9479D2858AF899E6ULL) >> 58);// * (m += 0x9479D2858AF899E6ULL);
+    case 2: h ^= __rolq(tail[1] * m, (m += 0x9479D2858AF899E6ULL) >> 58);// * (m += 0x9479D2858AF899E6ULL);
+    case 1: h ^= __rolq(tail[0] * m, (m +  0x9479D2858AF899E6ULL) >> 58);// * (m +  0x9479D2858AF899E6ULL);
   }
   h ^= h >> 27;
   h *= 0x3C79AC492BA7B653ULL;
