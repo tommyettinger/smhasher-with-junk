@@ -500,7 +500,7 @@ HashInfo g_hashes[] =
     NULL, mum_hash_with_state_test },
 
   { "gwoemul", "Gwoemul, 32-bit",
-    64, 64, 64, 0x88DC07D9,
+    64, 64, 64, 0x9B82BFE8,
     NULL, Gwoemul_with_state },
   { "xxh3", "XXH3, 64-bit output",
     64, 64, 64, 0xB603D3B9,
