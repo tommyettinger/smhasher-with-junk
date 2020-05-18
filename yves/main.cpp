@@ -355,6 +355,8 @@ HashInfo g_hashes[] =
   64, 64, 64, 0x9EE012F5, NULL, wickethash_test},
   { "puller", "puller 64bit result",
   64, 64, 64, 0x1F612F17, NULL, puller_test},
+  { "curlup", "curlup 64bit result",
+  64, 64, 64, 0x9E98B4FA, NULL, curlup_test},
 
   { "wobble", "wobble OAAT, 64bit result",
   64, 64, 64, 0xEAA07A4E, NULL, WobbleOAAT_with_state_test},
