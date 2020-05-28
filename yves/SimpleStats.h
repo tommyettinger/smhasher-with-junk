@@ -25,7 +25,7 @@ inline double _logoe(double o, double e) {
 }
 
 #define GTEST_PROB(bins,gval) \
-  ( 1.0 - gsl_sf_gamma_inc_Q( ( double(bins) - 1.0) / 2.0, (gval) ) )
+  ( 1.0 - gsl_sf_gamma_inc_Q( fabs( double(bins) - 1.0) * 0.5, fabs(gval) ) )
 #define GTEST_ADD(gtest,observed,expected) \
     if (observed) gtest += ( double(observed) * _logoe( double(observed), double(expected) ) )
 

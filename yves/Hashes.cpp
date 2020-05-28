@@ -816,33 +816,36 @@ curlup_test(const void *key, int len, const void *state, void *out)
 	uint64_t a = *((uint64_t *)state) ^ len * 0x9E3779B97F4A7C15UL;
 	for (int i = -nblocks; i; i+=8) {
     a = 0xEBEDEED9D803C815UL * a
-                    + 0xD96EB1A810CAAF5FUL * blocks[i]
-                    + 0xC862B36DAF790DD5UL * blocks[i + 1]
-                    + 0xB8ACD90C142FE10BUL * blocks[i + 2]
-                    + 0xAA324F90DED86B69UL * blocks[i + 3]
-                    + 0x9CDA5E693FEA10AFUL * blocks[i + 4]
-                    + 0x908E3D2C82567A73UL * blocks[i + 5]
-                    + 0x8538ECB5BD456EA3UL * blocks[i + 6]
-                    + 0xD1B54A32D192ED03UL * blocks[i + 7];
+      + 0xD96EB1A810CAAF5FUL * blocks[i]
+      + 0xC862B36DAF790DD5UL * blocks[i + 1]
+      + 0xB8ACD90C142FE10BUL * blocks[i + 2]
+      + 0xAA324F90DED86B69UL * blocks[i + 3]
+      + 0x9CDA5E693FEA10AFUL * blocks[i + 4]
+      + 0x908E3D2C82567A73UL * blocks[i + 5]
+      + 0x8538ECB5BD456EA3UL * blocks[i + 6]
+      + 0xD1B54A32D192ED03UL * blocks[i + 7];
 	}
   const int nflank = (len / 4) - nblocks;
   for (int i = 0; i < nflank; i++) {
-    a = 0x9E3779B97F4A7C15UL * a + blocks[i];
+    a = 0xCC62FCEB9202FAADUL * (a + blocks[i]);
   }
 
-  a *= 0x94D049BB133111EBL;
+//  a *= 0x94D049BB133111EBL;
 
 	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 4);
 	switch (len & 3)
 	{
-	case 3: a += (tail[2] ^ UINT64_C(0x414C6E02D8B72D05)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ a >> 23;
-	case 2: a += (tail[1] ^ UINT64_C(0xF6FDE799B4A0DBA5)) * UINT64_C(0xD7EF17178C46ABE3) ^ a >> 22;
-	case 1: a += (tail[0] ^ UINT64_C(0x735664783B1136B5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ a >> 21;
-		a ^= (a + UINT64_C(0x9E3779B97F4A7C15)) * UINT64_C(0xC6BC279692B5CC83);
+	case 3: a += (tail[2] * 0x414C6E02D8B72D05UL) ^ a >> 23;
+	case 2: a += (tail[1] * 0xF6FDE799B4A0DBA5UL) ^ a >> 22;
+	case 1: a += (tail[0] * 0x735664783B1136B5UL) ^ a >> 21;
+		a ^= (a + 0x9E3779B97F4A7C15UL) * 0xC6BC279692B5CC83UL;
 	};
+
 //  a = (a ^ a >> 27) * 0x3C79AC492BA7B653L;
+//  a ^= a >> 25;
 //  a = (a ^ a >> 33) * 0x1C69B3F74AC4AE35L;
 //  a ^= a >> 27;
+
   a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
   a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
   a ^= a >> 28;
