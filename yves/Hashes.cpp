@@ -813,7 +813,10 @@ curlup_test(const void *key, int len, const void *state, void *out)
 	const uint8_t *data = (const uint8_t *)key;
 	const int nblocks = (len / 32) * 8;
 	const uint32_t * blocks = (const uint32_t *)(data + nblocks * 4);
-	uint64_t a = *((uint64_t *)state) ^ len * 0x9E3779B97F4A7C15UL;
+	uint64_t a = *((uint64_t *)state);
+  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
+
+  a ^= len * 0x9E3779B97F4A7C15UL;
 	for (int i = -nblocks; i; i+=8) {
     a = 0xEBEDEED9D803C815UL * a
       + 0xD96EB1A810CAAF5FUL * blocks[i]
@@ -827,18 +830,18 @@ curlup_test(const void *key, int len, const void *state, void *out)
 	}
   const int nflank = (len / 4) - nblocks;
   for (int i = 0; i < nflank; i++) {
-    a = 0xCC62FCEB9202FAADUL * (a + blocks[i]);
+    a = 0xCC62FCEB9202FAADUL * a + blocks[i];
   }
 
 //  a *= 0x94D049BB133111EBL;
-
+  a *= 0xCB9C59B3F9F87D4DUL;
 	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 4);
 	switch (len & 3)
 	{
-	case 3: a += (tail[2] * 0x414C6E02D8B72D05UL) ^ a >> 23;
-	case 2: a += (tail[1] * 0xF6FDE799B4A0DBA5UL) ^ a >> 22;
-	case 1: a += (tail[0] * 0x735664783B1136B5UL) ^ a >> 21;
-		a ^= (a + 0x9E3779B97F4A7C15UL) * 0xC6BC279692B5CC83UL;
+	case 3: a = (tail[2] + a * 0xD1342543DE82EF95UL);
+	case 2: a = (tail[1] + a * 0xF7C2EBC08F67F2B5UL);
+	case 1: a = (tail[0] + a * 0xCB9C59B3F9F87D4DUL);
+		a = (a ^ 0x9E3779B97F4A7C15UL) * 0xC6BC279692B5CC83UL;
 	};
 
 //  a = (a ^ a >> 27) * 0x3C79AC492BA7B653L;
@@ -846,9 +849,10 @@ curlup_test(const void *key, int len, const void *state, void *out)
 //  a = (a ^ a >> 33) * 0x1C69B3F74AC4AE35L;
 //  a ^= a >> 27;
 
-  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
+//  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
+//  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+//  a ^= a >> 28;
   a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
   a ^= a >> 28;
-
 	*(uint64_t *)out = a;
 }
