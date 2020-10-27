@@ -356,10 +356,13 @@ HashInfo g_hashes[] =
   { "puller", "puller 64bit result",
   64, 64, 64, 0x1F612F17, NULL, puller_test},
   { "curlup", "curlup 64bit result",
-  64, 64, 64, 0x2CD2CA3D, NULL, curlup_test},
+  64, 64, 64, 0x52063FBE, NULL, curlup_test},
 
   { "wobble", "wobble OAAT, 64bit result",
   64, 64, 64, 0xEAA07A4E, NULL, WobbleOAAT_with_state_test},
+
+  { "frost", "frost 32bit result",
+  64, 64, 32, 0xFC789C35, NULL, Frost_with_state},
 
 #endif
 

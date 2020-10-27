@@ -338,3 +338,5 @@ void Gwoemul_with_state  ( const void * key, int len, const void *state, void * 
 void WobbleOAAT_with_state_test( const void * key, int len, const void * seed, void * out );
 
 void curlup_test  ( const void * key, int len, const void *state, void * out );
+
+void Frost_with_state  ( const void * key, int len, const void *state, void * out );
