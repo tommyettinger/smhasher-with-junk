@@ -956,12 +956,11 @@ Frost64_with_state(const void *key, int len, const void *state, void *out)
 	const uint8_t *data = (const uint8_t *)key;
   const int nblocks = len / 8;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
-  uint64_t h = *((uint64_t *)state) + (uint64_t)len ^ 0x94D049BB133111EBUL;
-  uint64_t m = 0xDB4F0B9175AE2165UL ^ (h << 1);
-  uint64_t t;
+  uint64_t h = *((uint64_t *)state) + (uint64_t)len;// ^ 0x94D049BB133111EBUL;
+  uint64_t m = 0xDB4F0B9175AE2165UL;
 	for (int i = -nblocks; i; i++) {
-    t = blocks[i];
-    h += __rolq((t ^ t >> 29 ^ t >> 7) * m, (m += 0x95B534A1ACCD52DAUL) >> 58) ^ m;//0xC6BC279692B5C323UL
+    uint64_t t = blocks[i];
+    h += __rolq((t ^ t >> 27) * m, m >> 58) ^ (m += 0x95B534A1ACCD52DAUL);
   }
   const uint8_t * tail = (const uint8_t*)(data + nblocks * 8);
 

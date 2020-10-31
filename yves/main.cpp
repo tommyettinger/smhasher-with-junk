@@ -352,7 +352,7 @@ HashInfo g_hashes[] =
   { "woothash", "woothash 64bit result",
   64, 64, 64, 0x9EE012F5, NULL, woothash_test},
   { "wickethash", "wickethash 64bit result",
-  64, 64, 64, 0x9EE012F5, NULL, wickethash_test},
+  64, 64, 64, 0xEB57F61C, NULL, wickethash_test},
   { "puller", "puller 64bit result",
   64, 64, 64, 0x1F612F17, NULL, puller_test},
   { "curlup", "curlup 32bit inputs 64bit result",
@@ -367,7 +367,7 @@ HashInfo g_hashes[] =
   64, 64, 32, 0x9DECFED1, NULL, Frost_with_state},
 
   { "frost64", "frost64 64bit inputs 64bit result",
-  64, 64, 64, 0xCF025D70, NULL, Frost64_with_state},
+  64, 64, 64, 0x558802A2, NULL, Frost64_with_state},
 
 #endif
 
