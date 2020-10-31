@@ -819,10 +819,11 @@ curlup_test(const void *key, int len, const void *state, void *out)
 	const uint32_t * blocks = (const uint32_t *)(data + nblocks * 4);
 	uint64_t a = *((uint64_t *)state);
   a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
-  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
-  a ^= a >> 28;
+//  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+//  a ^= a >> 28;
 
-  a ^= len * 0x9E3779B97F4A7C15UL;
+  a = (a ^ len) * 0x9E3779B97F4A7C15UL;
+  a ^- a >> 28;
 	for (int i = -nblocks; i; i+=8) {
     a = 0xEBEDEED9D803C815UL * a
       + 0xD96EB1A810CAAF5FUL * blocks[i]
@@ -834,7 +835,7 @@ curlup_test(const void *key, int len, const void *state, void *out)
       + 0x8538ECB5BD456EA3UL * blocks[i + 6]
       + 0xD1B54A32D192ED03UL * blocks[i + 7];
 	}
-  a ^= a >> 37;
+  //a ^= a >> 37;
   const int nflank = (len / 4) - nblocks;
   for (int i = 0; i < nflank; i++) {
     a = 0xCC62FCEB9202FAADUL * (a + blocks[i]);
@@ -845,10 +846,65 @@ curlup_test(const void *key, int len, const void *state, void *out)
 	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 4);
 	switch (len & 3)
 	{
-	case 3: a = (tail[2] + a * 0xD1342543DE82EF95UL);
-	case 2: a = (tail[1] + a * 0xF7C2EBC08F67F2B5UL);
-	case 1: a = (tail[0] + a * 0xCB9C59B3F9F87D4DUL);
+	case 3: a = (tail[2] + a) * 0xD1342543DE82EF95UL;
+	case 2: a = (tail[1] + a) * 0xF7C2EBC08F67F2B5UL;
+	case 1: a = (tail[0] + a) * 0xCB9C59B3F9F87D4DUL;
     a = (a ^ 0x9E3779B97F4A7C15UL) * 0xC6BC279692B5CC83UL;
+	}
+//  a = (a ^ a >> 27) * 0x3C79AC492BA7B653L;
+//  a ^= a >> 25;
+//  a = (a ^ a >> 33) * 0x1C69B3F74AC4AE35L;
+//  a ^= a >> 27;
+
+//  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
+  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+  a ^= a >> 28;
+	*(uint64_t *)out = a;
+}
+
+void
+curlup64_test(const void *key, int len, const void *state, void *out)
+{
+	const uint8_t *data = (const uint8_t *)key;
+	const int nblocks = (len / 64) * 8;
+	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
+	uint64_t a = *((uint64_t *)state);
+  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
+//  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+//  a ^= a >> 28;
+
+  a = (a ^ len) * 0x9E3779B97F4A7C15UL;
+  a ^- a >> 28;
+	for (int i = -nblocks; i; i+=8) {
+    a = 0xEBEDEED9D803C815UL * (a ^ a >> 31)
+      + 0xD96EB1A810CAAF5FUL * blocks[i]
+      + 0xC862B36DAF790DD5UL * blocks[i + 1]
+      + 0xB8ACD90C142FE10BUL * blocks[i + 2]
+      + 0xAA324F90DED86B69UL * blocks[i + 3]
+      + 0x9CDA5E693FEA10AFUL * blocks[i + 4]
+      + 0x908E3D2C82567A73UL * blocks[i + 5]
+      + 0x8538ECB5BD456EA3UL * blocks[i + 6]
+      + 0xD1B54A32D192ED03UL * blocks[i + 7];
+	}
+  //a ^= a >> 37;
+  const int nflank = (len / 8) - nblocks;
+  for (int i = 0; i < nflank; i++) {
+    a = 0xCC62FCEB9202FAADUL * (a ^ a >> 31 ^ blocks[i]);
+  }
+
+//  a *= 0x94D049BB133111EBL;
+  //a *= 0xCB9C59B3F9F87D4DUL;
+	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 8);
+	switch (len & 7)
+	{
+	case 7: a = (tail[6] ^ a ^ a >> 29) * 0xCB9C59B3F9F87D4DUL;
+	case 6: a = (tail[5] ^ a ^ a >> 28) * 0xD1342543DE82EF95UL;
+	case 5: a = (tail[4] ^ a ^ a >> 27) * 0xF7C2EBC08F67F2B5UL;
+	case 4: a = (tail[3] ^ a ^ a >> 28) * 0xCB9C59B3F9F87D4DUL;
+	case 3: a = (tail[2] ^ a ^ a >> 29) * 0xD1342543DE82EF95UL;
+	case 2: a = (tail[1] ^ a ^ a >> 28) * 0xF7C2EBC08F67F2B5UL;
+	case 1: a = (tail[0] ^ a ^ a >> 27) * 0xCB9C59B3F9F87D4DUL;
+    a = (a ^ a >> 26 ^ 0x9E3779B97F4A7C15UL) * 0xC6BC279692B5CC83UL;
 	}
 //  a = (a ^ a >> 27) * 0x3C79AC492BA7B653L;
 //  a ^= a >> 25;
@@ -883,15 +939,47 @@ Frost_with_state(const void *key, int len, const void *state, void *out)
     h ^= __rolq(( 0x3C79AC492BA7B653UL +  ((const uint8_t*)(data + nblocks * 2))[0]) * m, (m + 0x95B534A1ACCD52DAUL) >> 58);
   }
 
-  h = (h ^ __rolq(h, 41) ^ __rolq(h, 17)) * 0x369DEA0F31A53F85UL;
-  h = (h ^ h >> 31) * 0xDB4F0B9175AE2165UL;
-  h ^= h >> 28;
+//  h = (h ^ __rolq(h, 41) ^ __rolq(h, 17)) * 0x369DEA0F31A53F85UL;
+//  h = (h ^ h >> 31) * 0xDB4F0B9175AE2165UL;
+//  h ^= h >> 28;
 
-//=  h ^= h >> 27;
-//=  h *= 0x3C79AC492BA7B653UL;
-//=  h ^= h >> 33;
-//=  h *= 0x1C69B3F74AC4AE35UL;
-//=  h ^= h >> 27;
+  h ^= h >> 27;
+  h *= 0x3C79AC492BA7B653UL;
+  h ^= h >> 33;
+  h *= 0x1C69B3F74AC4AE35UL;
+  h ^= h >> 27;
   *(uint32_t *) out = h;
+}
+void
+Frost64_with_state(const void *key, int len, const void *state, void *out)
+{
+	const uint8_t *data = (const uint8_t *)key;
+  const int nblocks = len / 8;
+	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
+  uint64_t h = *((uint64_t *)state) + (uint64_t)len ^ 0x94D049BB133111EBUL;
+  uint64_t m = 0xDB4F0B9175AE2165UL ^ (h << 1);
+  uint64_t t;
+	for (int i = -nblocks; i; i++) {
+    t = blocks[i];
+    h += __rolq((t ^ t >> 29 ^ t >> 7) * m, (m += 0x95B534A1ACCD52DAUL) >> 58) ^ m;//0xC6BC279692B5C323UL
+  }
+  const uint8_t * tail = (const uint8_t*)(data + nblocks * 8);
+
+  for(int ln = (len & 7); ln;)
+  {
+    h += __rolq((0xC6BC279692B5C323UL ^ tail[--ln]) * m, (m += 0x95B534A1ACCD52DAUL) >> 58);
+  }
+
+//// Pelican unary hash, in case avalanche needs to be better. Slightly slower.
+//  h = (h ^ __rolq(h, 41) ^ __rolq(h, 17)) * 0x369DEA0F31A53F85UL;
+//  h = (h ^ h >> 31) * 0xDB4F0B9175AE2165UL;
+//  h ^= h >> 28;
+
+  h ^= h >> 27;
+  h *= 0x3C79AC492BA7B653UL;
+  h ^= h >> 33;
+  h *= 0x1C69B3F74AC4AE35UL;
+  h ^= h >> 27;
+  *(uint64_t *) out = h;
 }
 

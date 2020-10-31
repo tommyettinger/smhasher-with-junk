@@ -339,4 +339,8 @@ void WobbleOAAT_with_state_test( const void * key, int len, const void * seed, v
 
 void curlup_test  ( const void * key, int len, const void *state, void * out );
 
+void curlup64_test  ( const void * key, int len, const void *state, void * out );
+
 void Frost_with_state  ( const void * key, int len, const void *state, void * out );
+
+void Frost64_with_state  ( const void * key, int len, const void *state, void * out );
