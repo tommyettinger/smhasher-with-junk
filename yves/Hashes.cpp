@@ -928,15 +928,16 @@ Frost_with_state(const void *key, int len, const void *state, void *out)
 	const uint8_t *data = (const uint8_t *)key;
   const int nblocks = len / 2;
 	const uint16_t * blocks = (const uint16_t *)(data + nblocks * 2);
-  uint64_t s = *((uint64_t *)state);
-  uint64_t h = (uint64_t)len + s ^ 0xC6BC279692B5C323UL;
-  uint64_t m = 0xDB4F0B9175AE2165UL ^ (s << 1);
+  uint64_t h = (uint64_t)len + *((uint64_t *)state);
+  uint64_t m = 0xDB4F0B9175AE2165UL;
 	for (int i = -nblocks; i; i++) {
-    h ^= __rolq((0x3C79AC492BA7B653UL +  blocks[i]) * m, (m += 0x95B534A1ACCD52DAUL) >> 58);
+    h += (blocks[i] ^ 0xC6BC279692B5C323ULL) * (m += 0x95B534A1ACCD52DAUL);
+    h = __rolq(h, 27);
   }
   if(len & 1)
   {
-    h ^= __rolq(( 0x3C79AC492BA7B653UL +  ((const uint8_t*)(data + nblocks * 2))[0]) * m, (m + 0x95B534A1ACCD52DAUL) >> 58);
+    h += (((const uint8_t*)(data + nblocks * 2))[0] ^ 0xC6BC279692B5C323ULL) * (m + 0x95B534A1ACCD52DAUL);
+    h = __rolq(h, 27);
   }
 
 //  h = (h ^ __rolq(h, 41) ^ __rolq(h, 17)) * 0x369DEA0F31A53F85UL;
