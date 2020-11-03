@@ -916,6 +916,17 @@ curlup64_test(const void *key, int len, const void *state, void *out)
   a ^= a >> 28;
 	*(uint64_t *)out = a;
 }
+/*
+0xEBEDEED9D803C815UL 3 fail
+0xD96EB1A810CAAF5FUL 2 fail
+0xC862B36DAF790DD5UL
+0xB8ACD90C142FE10BUL
+0xAA324F90DED86B69UL
+0x9CDA5E693FEA10AFUL
+0x908E3D2C82567A73UL
+0x8538ECB5BD456EA3UL
+0xD1B54A32D192ED03UL
+*/
 void
 Frost_with_state(const void *key, int len, const void *state, void *out)
 {
@@ -929,14 +940,14 @@ Frost_with_state(const void *key, int len, const void *state, void *out)
   const int nblocks = len / 2;
 	const uint16_t * blocks = (const uint16_t *)(data + nblocks * 2);
   uint64_t h = (uint64_t)len + *((uint64_t *)state);
-  uint64_t m = 0xDB4F0B9175AE2165UL;
+  uint64_t m = 0xC862B36DAF790DD5UL;//0xF7C2EBC08F67F2B5UL;//0x9E3779B97F4A7C15UL;
 	for (int i = -nblocks; i; i++) {
-    h += (blocks[i] ^ 0xC6BC279692B5C323ULL) * (m += 0x95B534A1ACCD52DAUL);
+    h += (blocks[i] ^ 0xC6BC279692B5C323UL) * (m += 0x95B534A1ACCD52DAUL);
     h = __rolq(h, 27);
   }
   if(len & 1)
   {
-    h += (((const uint8_t*)(data + nblocks * 2))[0] ^ 0xC6BC279692B5C323ULL) * (m + 0x95B534A1ACCD52DAUL);
+    h += (((const uint8_t*)(data + nblocks * 2))[0] ^ 0xC6BC279692B5C323UL) * (m + 0x95B534A1ACCD52DAUL);
     h = __rolq(h, 27);
   }
 
@@ -949,7 +960,7 @@ Frost_with_state(const void *key, int len, const void *state, void *out)
   h ^= h >> 33;
   h *= 0x1C69B3F74AC4AE35UL;
   h ^= h >> 27;
-  *(uint32_t *) out = h;
+  *(uint64_t *) out = h;
 }
 void
 Frost64_with_state(const void *key, int len, const void *state, void *out)

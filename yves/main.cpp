@@ -363,8 +363,8 @@ HashInfo g_hashes[] =
   { "wobble", "wobble OAAT, 64bit result",
   64, 64, 64, 0xEAA07A4E, NULL, WobbleOAAT_with_state_test},
 
-  { "frost", "frost 16bit inputs 32bit result",
-  64, 64, 32, 0x3EB92C92, NULL, Frost_with_state},
+  { "frost", "frost 16bit inputs 64bit result",
+  64, 64, 64, 0xBDAA9C67, NULL, Frost_with_state},
 
   { "frost64", "frost64 64bit inputs 64bit result",
   64, 64, 64, 0x558802A2, NULL, Frost64_with_state},
