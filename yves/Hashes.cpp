@@ -861,6 +861,12 @@ curlup_test(const void *key, int len, const void *state, void *out)
   a ^= a >> 28;
 	*(uint64_t *)out = a;
 }
+uint64_t
+roller(uint64_t a)
+{
+  //return a ^ __rolq(a, 23) ^ __rolq(a, 47);
+  return a ^ a >> 23 ^ a >> 47;
+}
 
 void
 curlup64_test(const void *key, int len, const void *state, void *out)
@@ -868,28 +874,28 @@ curlup64_test(const void *key, int len, const void *state, void *out)
 	const uint8_t *data = (const uint8_t *)key;
 	const int nblocks = (len / 64) * 8;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
-	uint64_t a = *((uint64_t *)state);
-  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
+	uint64_t a = *((uint64_t *)state) ^ len, m = 0xDB4F0B9175AE2165UL;
+//  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
+
 //  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
 //  a ^= a >> 28;
-
-  a = (a ^ len) * 0x9E3779B97F4A7C15UL;
-  a ^- a >> 28;
 	for (int i = -nblocks; i; i+=8) {
-    a = 0xEBEDEED9D803C815UL * (a ^ a >> 31)
-      + 0xD96EB1A810CAAF5FUL * blocks[i]
-      + 0xC862B36DAF790DD5UL * blocks[i + 1]
-      + 0xB8ACD90C142FE10BUL * blocks[i + 2]
-      + 0xAA324F90DED86B69UL * blocks[i + 3]
-      + 0x9CDA5E693FEA10AFUL * blocks[i + 4]
-      + 0x908E3D2C82567A73UL * blocks[i + 5]
-      + 0x8538ECB5BD456EA3UL * blocks[i + 6]
-      + 0xD1B54A32D192ED03UL * blocks[i + 7];
+    a = 0xEBEDEED9D803C815UL * roller(a)
+      + 0xD96EB1A810CAAF5FUL * roller(blocks[i])
+      + 0xC862B36DAF790DD5UL * roller(blocks[i + 1])
+      + 0xB8ACD90C142FE10BUL * roller(blocks[i + 2])
+      + 0xAA324F90DED86B69UL * roller(blocks[i + 3])
+      + 0x9CDA5E693FEA10AFUL * roller(blocks[i + 4])
+      + 0x908E3D2C82567A73UL * roller(blocks[i + 5])
+      + 0x8538ECB5BD456EA3UL * roller(blocks[i + 6])
+      + 0xD1B54A32D192ED03UL * roller(blocks[i + 7])
+      ;
+    //a ^= __rolq(a, 23) ^ __rolq(a, 47);    
 	}
   //a ^= a >> 37;
   const int nflank = (len / 8) - nblocks;
   for (int i = 0; i < nflank; i++) {
-    a = 0xCC62FCEB9202FAADUL * (a ^ a >> 31 ^ blocks[i]);
+    a += roller(blocks[i]) * (m += 0x95B534A1ACCD52DAUL);
   }
 
 //  a *= 0x94D049BB133111EBL;
@@ -897,13 +903,13 @@ curlup64_test(const void *key, int len, const void *state, void *out)
 	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 8);
 	switch (len & 7)
 	{
-	case 7: a = (tail[6] ^ a ^ a >> 29) * 0xCB9C59B3F9F87D4DUL;
-	case 6: a = (tail[5] ^ a ^ a >> 28) * 0xD1342543DE82EF95UL;
-	case 5: a = (tail[4] ^ a ^ a >> 27) * 0xF7C2EBC08F67F2B5UL;
-	case 4: a = (tail[3] ^ a ^ a >> 28) * 0xCB9C59B3F9F87D4DUL;
-	case 3: a = (tail[2] ^ a ^ a >> 29) * 0xD1342543DE82EF95UL;
-	case 2: a = (tail[1] ^ a ^ a >> 28) * 0xF7C2EBC08F67F2B5UL;
-	case 1: a = (tail[0] ^ a ^ a >> 27) * 0xCB9C59B3F9F87D4DUL;
+	case 7: a += roller(tail[6]) * 0xC862B36DAF790DD5UL;
+	case 6: a += roller(tail[5]) * 0xB8ACD90C142FE10BUL;
+	case 5: a += roller(tail[4]) * 0xAA324F90DED86B69UL;
+	case 4: a += roller(tail[3]) * 0x9CDA5E693FEA10AFUL;
+	case 3: a += roller(tail[2]) * 0x908E3D2C82567A73UL;
+	case 2: a += roller(tail[1]) * 0x8538ECB5BD456EA3UL;
+	case 1: a += roller(tail[0]) * 0xD1B54A32D192ED03UL;
     a = (a ^ a >> 26 ^ 0x9E3779B97F4A7C15UL) * 0xC6BC279692B5CC83UL;
 	}
 //  a = (a ^ a >> 27) * 0x3C79AC492BA7B653L;
@@ -912,7 +918,14 @@ curlup64_test(const void *key, int len, const void *state, void *out)
 //  a ^= a >> 27;
 
 //  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
-  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+
+//  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+
+//            a *= 0x94D049BB133111EBL;
+            a ^= __rolq(a, 41) ^ __rolq(a, 17);
+            a *= 0x369DEA0F31A53F85L;
+            a ^= a >> 31;
+            a *= 0xDB4F0B9175AE2165L;
   a ^= a >> 28;
 	*(uint64_t *)out = a;
 }
@@ -969,7 +982,7 @@ Frost64_with_state(const void *key, int len, const void *state, void *out)
   const int nblocks = len / 8;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
   uint64_t h = *((uint64_t *)state) + (uint64_t)len;// ^ 0x94D049BB133111EBUL;
-  uint64_t m = 0xDB4F0B9175AE2165UL;
+  uint64_t m = 0xDB4F0B9175AE2165UL; //(m += 0x95B534A1ACCD52DAUL)
 	for (int i = -nblocks; i; i++) {
     uint64_t t = blocks[i];
     h += __rolq((t ^ t >> 27) * m, m >> 58) ^ (m += 0x95B534A1ACCD52DAUL);

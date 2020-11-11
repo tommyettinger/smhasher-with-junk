@@ -358,7 +358,7 @@ HashInfo g_hashes[] =
   { "curlup", "curlup 32bit inputs 64bit result",
   64, 64, 64, 0xBFDD4B9B, NULL, curlup_test},
   { "curlup64", "curlup64 64bit inputs 64bit result",
-  64, 64, 64, 0xBFDD4B9B, NULL, curlup64_test},
+  64, 64, 64, 0x22C45651, NULL, curlup64_test},
 
   { "wobble", "wobble OAAT, 64bit result",
   64, 64, 64, 0xEAA07A4E, NULL, WobbleOAAT_with_state_test},
