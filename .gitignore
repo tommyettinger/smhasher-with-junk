@@ -61,3 +61,8 @@ yves/Makefile
 yves/CMakeCache\.txt
 
 yves/cmake_install\.cmake
+
+seed_check/SHA-Intrinsics/
+seed_check/hash-garage/
+seed_check/mx3/
+seed_check/prvhash/
