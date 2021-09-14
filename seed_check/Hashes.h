@@ -710,6 +710,11 @@ inline void woothash_test (const void * key, int len, uint32_t seed, void * out)
   *(uint64_t*)out = woothash(key, (uint64_t)len, (uint64_t)seed);
 }
 
+#include "wheathash.h"
+inline void wheathash_test (const void * key, int len, uint32_t seed, void * out) {
+  *(uint64_t*)out = wheathash(key, len, (uint64_t)seed);
+}
+
 //TODO MSVC
 #ifndef _MSC_VER
 void tsip_init();

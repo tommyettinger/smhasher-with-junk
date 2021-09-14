@@ -248,6 +248,10 @@ HashInfo g_hashes[] =
   { woothash_test,        64, 0xD07A51EB, "woothash",    "woothash seeded, from wyhash", POOR, 
     { 0xa0761d6478bd642full, 0xe7037ed1a0b428dbull, 0x8ebc6af09c88c6e3ull,
       0x589965cc75374cc3ull, 0x1d8e4e27c47d124full, 0xeb44accab455d165ull, 23, 47, 7, 51, 4, 42, 0} },
+  { wheathash_test,       64, 0x243812D4, "wheathash",    "wheathash seeded, from wyhash", POOR, 
+    { 0xa0761d6478bd642full, 0xe7037ed1a0b428dbull, 0x8ebc6af09c88c6e3ull,
+      0x589965cc75374cc3ull, 0x1d8e4e27c47d124full, 0xeb44accab455d165ull, 29, 43, 7, 53, 31, 33, 0} },
+
 #endif
 #if 0 && defined(__x86_64__) && (defined(__linux__) || defined(__APPLE__))
   // elf64 or macho64 only
