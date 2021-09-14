@@ -707,7 +707,7 @@ inline void waterhash_test (const void * key, int len, uint32_t seed, void * out
 
 #include "woothash.h"
 inline void woothash_test (const void * key, int len, uint32_t seed, void * out) {
-  *(uint64_t*)out = woothash(key, len, (uint64_t)seed);
+  *(uint64_t*)out = woothash(key, (uint64_t)len, (uint64_t)seed);
 }
 
 //TODO MSVC

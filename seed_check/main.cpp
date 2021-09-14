@@ -245,9 +245,9 @@ HashInfo g_hashes[] =
   { waterhash_test,       32, 0xE970A691, "waterhash",    "waterhash seeded, from wyhash", POOR, 
     { 0xa0761d6478bd642full, 0xe7037ed1a0b428dbull, 0x8ebc6af09c88c6e3ull,
       0x589965cc75374cc3ull, 0x1d8e4e27c47d124full, 0xeb44accab455d165ull, 29, 43, 7, 53, 0} },
-  { woothash_test,        64, 0x32FF350C, "woothash",    "woothash seeded, from wyhash", POOR, 
+  { woothash_test,        64, 0xD07A51EB, "woothash",    "woothash seeded, from wyhash", POOR, 
     { 0xa0761d6478bd642full, 0xe7037ed1a0b428dbull, 0x8ebc6af09c88c6e3ull,
-      0x589965cc75374cc3ull, 0x1d8e4e27c47d124full, 0xeb44accab455d165ull, 29, 43, 7, 53, 0} },
+      0x589965cc75374cc3ull, 0x1d8e4e27c47d124full, 0xeb44accab455d165ull, 23, 47, 7, 51, 4, 42, 0} },
 #endif
 #if 0 && defined(__x86_64__) && (defined(__linux__) || defined(__APPLE__))
   // elf64 or macho64 only
