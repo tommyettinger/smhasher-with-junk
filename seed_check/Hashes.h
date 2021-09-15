@@ -148,6 +148,13 @@ uint32_t FNV1A_Pippip_Yurii(const char *key, int wrdlen, uint32_t seed);
 inline void FNV1A_PY_test(const void *key, int len, uint32_t seed, void *out) {
   *(uint32_t *)out = FNV1A_Pippip_Yurii((const char *)key, len, seed);
 }
+uint64_t curlup(const uint8_t *key, int len, uint64_t seed);
+inline void curlup_test  ( const void *key, int len, uint32_t seed, void *out ) {
+  *(uint64_t *)out = curlup((const uint8_t *)key, len, (uint64_t)seed);
+}
+
+
+
 #endif
 uint64_t FNV64a(const char *key, int len, uint64_t seed);
 inline void FNV64a_test(const void *key, int len, uint32_t seed, void *out) {

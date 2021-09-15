@@ -270,6 +270,28 @@ HashInfo g_hashes[] =
     {0x811c9dc5, 0x23d4a49d} /* !! */ },
   { FNV64a_test,          64, 0x103455FC, "FNV64",       "Fowler-Noll-Vo hash, 64-bit", POOR,
     {0x811c9dc5, 0xcbf29ce4, 0x84222325, 0xcbf29ce484222325} /* TODO */},
+  { curlup_test,          64, 0x057637EA, "curlup",      "Curlup hash, 32-bit inputs, 64-bit out", POOR,
+    {
+      0xDB4F0B9175AE2165ULL,
+      0xEBEDEED9D803C815ULL,
+      0xD96EB1A810CAAF5FULL,
+      0xC862B36DAF790DD5ULL,
+      0xB8ACD90C142FE10BULL,
+      0xAA324F90DED86B69ULL,
+      0x9CDA5E693FEA10AFULL,
+      0x908E3D2C82567A73ULL,
+      0x8538ECB5BD456EA3ULL,
+      0xD1B54A32D192ED03ULL,
+      0x9E3779B97F4A7C15ULL,
+      0xC6BC279692B5CC83ULL,
+      0x369DEA0F31A53F85ULL,
+      0xCC62FCEB9202FAADULL,
+      0xD1342543DE82EF95ULL,
+      0xF7C2EBC08F67F2B5ULL,
+      0xCB9C59B3F9F87D4DULL,
+      0 } },
+
+
 #endif
   { FNV2_test,    __WORDSIZE, FNV2_VERIF, "FNV2",        "wordwise FNV", POOR, {} },
   { fletcher2_test,       64, 0x890767C0, "fletcher2",   "fletcher2 ZFS", POOR, {0UL} /* !! */ },

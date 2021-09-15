@@ -823,7 +823,7 @@ curlup_test(const void *key, int len, const void *state, void *out)
 //  a ^= a >> 28;
 
   a = (a ^ len) * 0x9E3779B97F4A7C15UL;
-  a ^- a >> 28;
+  a ^= a >> 28;
 	for (int i = -nblocks; i; i+=8) {
     a = 0xEBEDEED9D803C815UL * a
       + 0xD96EB1A810CAAF5FUL * blocks[i]

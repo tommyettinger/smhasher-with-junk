@@ -7,6 +7,7 @@
 #include <assert.h>
 //#include <emmintrin.h>
 //#include <xmmintrin.h>
+#include <x86intrin.h>
 
 // ----------------------------------------------------------------------------
 //fake / bad hashes
@@ -345,6 +346,45 @@ FNV64a(const char *key, int len, uint64_t seed)
     h *= UINT64_C(0x100000001b3);
   }
   return h;
+}
+
+uint64_t
+curlup(const uint8_t *data, int len, uint64_t seed)
+{
+	const int nblocks = (len / 32) * 8;
+	const uint32_t * blocks = (const uint32_t *)(data + nblocks * 4);
+	uint64_t a = (seed ^ __rolq(seed, 41) ^ __rolq(seed, 17)) * 0x369DEA0F31A53F85UL;
+
+  a = (a ^ a >> 31 ^ len) * 0x9E3779B97F4A7C15UL;
+  a ^= a >> 28;
+	for (int i = -nblocks; i; i+=8) {
+    a = 0xEBEDEED9D803C815UL * (a ^ a >> 31)
+      + 0xD96EB1A810CAAF5FUL * blocks[i]
+      + 0xC862B36DAF790DD5UL * blocks[i + 1]
+      + 0xB8ACD90C142FE10BUL * blocks[i + 2]
+      + 0xAA324F90DED86B69UL * blocks[i + 3]
+      + 0x9CDA5E693FEA10AFUL * blocks[i + 4]
+      + 0x908E3D2C82567A73UL * blocks[i + 5]
+      + 0x8538ECB5BD456EA3UL * blocks[i + 6]
+      + 0xD1B54A32D192ED03UL * blocks[i + 7];
+	}
+
+  const int nflank = (len / 4) - nblocks;
+  for (int i = 0; i < nflank; i++) {
+    a = 0xCC62FCEB9202FAADUL * ((a ^ a >> 31) + blocks[i]);
+  }
+
+	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 4);
+	switch (len & 3)
+	{
+	case 3: a = (tail[2] + (a ^ a >> 31)) * 0xD1342543DE82EF95UL;
+	case 2: a = (tail[1] + (a ^ a >> 30)) * 0xF7C2EBC08F67F2B5UL;
+	case 1: a = (tail[0] + (a ^ a >> 29)) * 0xCB9C59B3F9F87D4DUL;
+    a = (a ^ 0x9E3779B97F4A7C15UL) * 0xC6BC279692B5CC83UL;
+	}
+  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+  a ^= a >> 28;
+	return a;
 }
 
 #endif
