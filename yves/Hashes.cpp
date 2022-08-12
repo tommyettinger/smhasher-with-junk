@@ -1007,3 +1007,67 @@ Frost64_with_state(const void *key, int len, const void *state, void *out)
   *(uint64_t *) out = h;
 }
 
+void
+snout64_test(const void *key, int len, const void *state, void *out)
+{
+	const uint8_t *data = (const uint8_t *)key;
+	const int nblocks = (len / 64) * 4;
+	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
+  uint64_t m = 0xDB4F0B9175AE2165UL;
+	uint64_t a = *((uint64_t *)state) ^ len, b = ~a, c = a ^ m, d = b ^ m;
+
+	for (int i = -nblocks; i; i+=4) {
+      uint64_t fa = a ^ blocks[i];
+      uint64_t fb = b - blocks[i + 1];
+      uint64_t fc = c ^ blocks[i + 2];
+      uint64_t fd = d + blocks[i + 3];
+      a = (fb ^ __rolq(fd, 25)) * 0xF1357AEA2E62A9C5UL;
+	    b = __rolq(fa, 44) * 0xF1357AEA2E62A9C5UL + fc;
+	    c = (__rolq(fb, 37) + fa) * 0x9E3779B97F4A7C15UL;
+	    d = fa ^ __rolq(fc, 50) * 0x9E3779B97F4A7C15UL;
+	}
+  d ^= c += b ^= a -= m;
+  const int nflank = (len / 8) - nblocks;
+  for (int i = 0; i < nflank; i++) {
+      uint64_t blk = blocks[i];
+      uint64_t fa = a + blk;
+      uint64_t fb = b ^ blk;
+      uint64_t fc = c - blk;
+      uint64_t fd = d ^ blk;
+      a = (fb ^ __rolq(fd, 25)) * 0xF1357AEA2E62A9C5UL;
+	    b = __rolq(fa, 44) * 0xF1357AEA2E62A9C5UL + fc;
+	    c = (__rolq(fb, 37) + fa) * 0x9E3779B97F4A7C15UL;
+	    d = fa ^ __rolq(fc, 50) * 0x9E3779B97F4A7C15UL;
+  }
+  d ^= c + (b ^ a - m);
+//  a *= 0x94D049BB133111EBL;
+  //a *= 0xCB9C59B3F9F87D4DUL;
+	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 8);
+	switch (len & 7)
+	{
+	case 7: d += (tail[6] ^ UINT64_C(0x55076507395F3485)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ __rolq(d, 27);
+	case 6: d += (tail[5] ^ UINT64_C(0xE2CE02C1DBEA2845)) * UINT64_C(0xD7EF17178C46ABE3) ^ __rolq(d, 26);
+	case 5: d += (tail[4] ^ UINT64_C(0x6096A6800704E7C5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ __rolq(d, 25);
+	case 4: d += (tail[3] ^ UINT64_C(0xB2F97045254154A5)) * UINT64_C(0xD7EF17178C46ABE3) ^ __rolq(d, 24);
+	case 3: d += (tail[2] ^ UINT64_C(0x414C6E02D8B72D05)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ __rolq(d, 23);
+	case 2: d += (tail[1] ^ UINT64_C(0xF6FDE799B4A0DBA5)) * UINT64_C(0xD7EF17178C46ABE3) ^ __rolq(d, 22);
+	case 1: d += (tail[0] ^ UINT64_C(0x735664783B1136B5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ __rolq(d, 21);
+		d ^= (__rolq(d, 35) + UINT64_C(0x9E3779B97F4A7C15)) * UINT64_C(0xC6BC279692B5CC83);
+	};
+  d ^= d >> 32;
+  d *= 0xbea225f9eb34556dULL;
+  d ^= d >> 32;
+  d *= 0xbea225f9eb34556dULL;
+  d ^= d >> 32;
+  d *= 0xbea225f9eb34556dULL;
+  d ^= d >> 32;
+	*(uint64_t *)out = d;
+}
+
+
+void
+mx3_hash_test(const void *input, int len, const void *seed, void *out)
+{
+  *(uint64_t *) out = mx3::mx3_hash((const unsigned char *)input, (uint64_t) len, *((const uint64_t *)seed));
+}
+

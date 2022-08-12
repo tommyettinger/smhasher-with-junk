@@ -369,6 +369,12 @@ HashInfo g_hashes[] =
   { "frost64", "frost64 64bit inputs 64bit result",
   64, 64, 64, 0x558802A2, NULL, Frost64_with_state},
 
+  { "snout64", "snout64 64bit inputs 64bit result",
+  64, 64, 64, 0xCF6B2079, NULL, snout64_test},
+
+  { "mx3", "mx3 64bit inputs 64bit result",
+  64, 64, 64, 0x691DCEC5, NULL, mx3_hash_test  },
+
 #endif
 
   // CityHash

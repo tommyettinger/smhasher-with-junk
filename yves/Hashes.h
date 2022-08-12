@@ -344,3 +344,9 @@ void curlup64_test  ( const void * key, int len, const void *state, void * out )
 void Frost_with_state  ( const void * key, int len, const void *state, void * out );
 
 void Frost64_with_state  ( const void * key, int len, const void *state, void * out );
+
+void snout64_test ( const void * key, int len, const void *state, void * out );
+
+#include "mx3.h"
+
+void mx3_hash_test ( const void *input, int len, const void *seed, void *out );
