@@ -39,8 +39,8 @@ private:
 
 inline uint64_t mix_stream(uint64_t h, uint64_t x) {
 	x *= C;
-	x ^= x >> 39;
-	h += x * C;
+	x ^= x >> 37;
+	h += x;
 	h *= C;
 	return h;
 }
