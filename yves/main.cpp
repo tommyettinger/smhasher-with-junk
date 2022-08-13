@@ -375,6 +375,9 @@ HashInfo g_hashes[] =
   { "mx3", "mx3 64bit inputs 64bit result",
   64, 64, 64, 0x691DCEC5, NULL, mx3_hash_test  },
 
+  { "murk", "murk 64bit inputs 64bit result",
+  64, 64, 64, 0x53EE7214, NULL, murk_hash_test  },
+
 #endif
 
   // CityHash
