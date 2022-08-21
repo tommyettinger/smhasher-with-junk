@@ -690,7 +690,12 @@ puller_test(const void *key, int len, const void *state, void *out)
 	const uint8_t *data = (const uint8_t *)key;
 	const int nblocks = len / 8;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
-	uint64_t a = *((uint64_t *)state) ^ 0xDB4F0B9175AE2165UL, d = 0x632BE59BD9B4E019UL;// , a = 0x632BE59BD9B4E019UL * len;
+	uint64_t a = *((uint64_t *)state) ^ 0xDB4F0B9175AE2165UL;
+  // uint64_t x = 0x9E3779B97F4A7C15UL;
+  uint64_t m = 0x818102004182A025UL;
+  // uint64_t m = 0xC6BC279692B5CC83UL;
+  // uint64_t m = 0xF1357AEA2E62A9C5UL;
+  // const uint64_t mi = 0x632BE59BD9B4E018UL;//, xi = 0xB9175AE2165DB4F0UL;// , a = 0x632BE59BD9B4E019UL * len;
 	for (int i = -nblocks; i; i++) {
 		//a += (read64u(blocks, i)) * 0x880355F21E6D1965UL; //0x2127599BF4325C37UL
 		//result ^= a ^ a >> 47 ^ a >> 29 ^ a >> 19; //fast-hash 0x880355F21E6D1965 // also tried 0x8329C6EB9E6AD3E3UL for multiplier
@@ -717,8 +722,10 @@ puller_test(const void *key, int len, const void *state, void *out)
     //a += (d += blocks[i]) * 0x818102004182A025ULL + __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
     
     //works
-    a += blocks[i] * 0x818102004182A025ULL ^ __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
-    
+   a += blocks[i] * m ^ __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
+    // a += (blocks[i] ^ x) * m ^ __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
+    //a += blocks[i] * m ^ __rolq(a, 37);// ^ (d += 0x9E3779B97F4A7C15UL));
+    // a += (blocks[i]) * m ^ __rolq(a, 17);
     //a ^= blocks[i] * (d += 0x9E3779B97F4A7C16UL) + __rolq(a, 17);
     //a += blocks[i] * (d += 0x9E3779B97F4A7C16UL) ^ __rolq(a, 17);
     //a += a >> 29;
@@ -743,9 +750,24 @@ puller_test(const void *key, int len, const void *state, void *out)
 	case 1: a += (tail[0] ^ UINT64_C(0x735664783B1136B5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ a >> 21;
 		a ^= (a + UINT64_C(0x9E3779B97F4A7C15)) * UINT64_C(0xC6BC279692B5CC83);
 	};
-  a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
-  a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
-  a ^= a >> 28;
+  // a = (a ^ __rolq(a, 41) ^ __rolq(a, 17)) * 0x369DEA0F31A53F85UL;
+  // a = (a ^ a >> 31) * 0xDB4F0B9175AE2165UL;
+  // a ^= a >> 28;
+
+  a ^= a >> 27;
+  a *= 0x3C79AC492BA7B653ULL;
+  a ^= a >> 33;
+  a *= 0x1C69B3F74AC4AE35ULL;
+  a ^= a >> 27;
+
+
+  // a ^= a >> 32;
+  // a *= 0xbea225f9eb34556dUL;
+  // a ^= a >> 29;
+  // a *= 0xbea225f9eb34556dUL;
+  // a ^= a >> 32;
+  // a *= 0xbea225f9eb34556dUL;
+  // a ^= a >> 29;
 
 	*(uint64_t *)out = a;
 }
@@ -953,7 +975,7 @@ Frost_with_state(const void *key, int len, const void *state, void *out)
   const int nblocks = len / 2;
 	const uint16_t * blocks = (const uint16_t *)(data + nblocks * 2);
   uint64_t h = (uint64_t)len + *((uint64_t *)state);
-  uint64_t m = 0xC862B36DAF790DD5UL;//0xF7C2EBC08F67F2B5UL;//0x9E3779B97F4A7C15UL;
+  uint64_t m = 0xC862B36DAF790DD5UL;//0xF7C2EBC08F67F2B5UL;//0x9E3779B97F4A7C15UL; //0xDB4F0B9175AE2165ULL;
 	for (int i = -nblocks; i; i++) {
     h += (blocks[i] ^ 0xC6BC279692B5C323UL) * (m += 0x95B534A1ACCD52DAUL);
     h = __rolq(h, 27);
@@ -1010,58 +1032,122 @@ Frost64_with_state(const void *key, int len, const void *state, void *out)
 void
 snout64_test(const void *key, int len, const void *state, void *out)
 {
+  const uint64_t C = 0xbea225f9eb34556d;
 	const uint8_t *data = (const uint8_t *)key;
 	const int nblocks = (len / 64) * 4;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
-  uint64_t m = 0xDB4F0B9175AE2165UL;
-	uint64_t a = *((uint64_t *)state) ^ len, b = ~a, c = a ^ m, d = b ^ m;
+  uint64_t m = 0xDB4F0B9175AE2165UL; //0xF7C2EBC08F67F2B5UL;//0x9E3779B97F4A7C15UL; //0x1C69B3F74AC4AE35UL; //0x369DEA0F31A53F85UL;
+	uint64_t a = *((uint64_t *)state) ^ len, b = a + 0xF7C2EBC08F67F2B5UL, c = ~a + 0x94D049BB133111EBUL, d = ~b + 0x8538ECB5BD456EA3UL;
+
+  uint64_t fa = 0xF1357AEA2E62A9C5UL;
+  uint64_t fb = 0x1C69B3F74AC4AE35UL;
+  uint64_t fc = 0x9E3779B97F4A7C15UL;
+  uint64_t fd = 0x369DEA0F31A53F85UL;
 
 	for (int i = -nblocks; i; i+=4) {
-      uint64_t fa = a ^ blocks[i];
-      uint64_t fb = b - blocks[i + 1];
-      uint64_t fc = c ^ blocks[i + 2];
-      uint64_t fd = d + blocks[i + 3];
-      a = (fb ^ __rolq(fd, 25)) * 0xF1357AEA2E62A9C5UL;
-	    b = __rolq(fa, 44) * 0xF1357AEA2E62A9C5UL + fc;
-	    c = (__rolq(fb, 37) + fa) * 0x9E3779B97F4A7C15UL;
-	    d = fa ^ __rolq(fc, 50) * 0x9E3779B97F4A7C15UL;
+      fa ^= b + blocks[i    ];// + 0x3C79AC492BA7B653UL;
+      fb ^= c + blocks[i + 1];// + 0xB6533C79AC492BA7UL;
+      fc ^= d + blocks[i + 2];// + 0x2BA7B6533C79AC49UL;
+      fd ^= a + blocks[i + 3];// + 0xAC492BA7B6533C71UL;
+      d = __rolq(fa, 11) * 0xF1357AEA2E62A9C5UL;
+	    a = __rolq(fb, 11) * 0x1C69B3F74AC4AE35UL;
+	    b = __rolq(fc, 11) * 0x9E3779B97F4A7C15UL;
+	    c = __rolq(fd, 11) * 0x369DEA0F31A53F85UL;
 	}
-  d ^= c += b ^= a -= m;
+  fa ^= b + 0x3C79AC492BA7B653UL;
+  fb ^= c + 0xB6533C79AC492BA7UL;
+  fc ^= d + 0x2BA7B6533C79AC49UL;
+  fd ^= a + 0xAC492BA7B6533C71UL;
+  d = __rolq(fa, 11) * 0xF1357AEA2E62A9C5UL;
+	a = __rolq(fb, 11) * 0x1C69B3F74AC4AE35UL;
+	b = __rolq(fc, 11) * 0x9E3779B97F4A7C15UL;
+	c = __rolq(fd, 11) * 0x369DEA0F31A53F85UL;
+
+  // fa = a;
+  // fb = b;
+  // fc = c;
+  // fd = d;
+  // a = fd * 0xF1357AEA2E62A9C5UL;
+  // b = __rolq(fa, 44);
+  // c = fb + 0x9E3779B97F4A7C15UL;
+  // d = fa ^ fc;
+  
   const int nflank = (len / 8) - nblocks;
   for (int i = 0; i < nflank; i++) {
       uint64_t blk = blocks[i];
-      uint64_t fa = a + blk;
-      uint64_t fb = b ^ blk;
-      uint64_t fc = c - blk;
-      uint64_t fd = d ^ blk;
-      a = (fb ^ __rolq(fd, 25)) * 0xF1357AEA2E62A9C5UL;
-	    b = __rolq(fa, 44) * 0xF1357AEA2E62A9C5UL + fc;
-	    c = (__rolq(fb, 37) + fa) * 0x9E3779B97F4A7C15UL;
-	    d = fa ^ __rolq(fc, 50) * 0x9E3779B97F4A7C15UL;
+      fa ^= b + blk;// + 0x3C79AC492BA7B653UL;
+      fb ^= c + blk;// + 0xB6533C79AC492BA7UL;
+      fc ^= d + blk;// + 0x2BA7B6533C79AC49UL;
+      fd ^= a + blk;// + 0xAC492BA7B6533C71UL;
+      
+      d = __rolq(fa, 11) * 0xF1357AEA2E62A9C5UL;
+	    a = __rolq(fb, 11) * 0x1C69B3F74AC4AE35UL;
+	    b = __rolq(fc, 11) * 0x9E3779B97F4A7C15UL;
+	    c = __rolq(fd, 11) * 0x369DEA0F31A53F85UL;
+
+//      b = (fa ^ fa >> 36) * C + 0x3C79AC492BA7B653UL; // * 0xF1357AEA2E62A9C5UL
+//	    c = (fb ^ fb >> 36) * C + 0xB6533C79AC492BA7UL; // * 0x1C69B3F74AC4AE35UL
+//	    d = (fc ^ fc >> 36) * C + 0x2BA7B6533C79AC49UL; // * 0x9E3779B97F4A7C15UL
+//	    a = (fd ^ fd >> 36) * C + 0xAC492BA7B6533C79UL; // * 0x369DEA0F31A53F85UL
   }
-  d ^= c + (b ^ a - m);
+
+  // fa = a;
+  // fb = b;
+  // fc = c;
+  // fd = d;
+  // a = fd * 0xF1357AEA2E62A9C5UL;
+  // b = __rolq(fa, 44);
+  // c = fb + 0x9E3779B97F4A7C15UL;
+  // d = fa ^ fc;
+
+  fa ^= b + 0x3C79AC492BA7B653UL;
+  fb ^= c + 0xB6533C79AC492BA7UL;
+  fc ^= d + 0x2BA7B6533C79AC49UL;
+  fd ^= a + 0xAC492BA7B6533C71UL;
+  d = __rolq(fa, 11) * 0xF1357AEA2E62A9C5UL;
+	a = __rolq(fb, 11) * 0x1C69B3F74AC4AE35UL;
+	b = __rolq(fc, 11) * 0x9E3779B97F4A7C15UL;
+	c = __rolq(fd, 11) * 0x369DEA0F31A53F85UL;
+
+  a *= C;
+	b *= C;
+	c *= C;
+	d *= C;
+	a ^= a >> 39;
+	b ^= b >> 39;
+	c ^= c >> 39;
+	d ^= d >> 39;
+	m += a * C;
+	m *= C;
+	m += b * C;
+	m *= C;
+	m += c * C;
+	m *= C;
+	m += d * C;
+	m *= C;
+
 //  a *= 0x94D049BB133111EBL;
   //a *= 0xCB9C59B3F9F87D4DUL;
 	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 8);
 	switch (len & 7)
 	{
-	case 7: d += (tail[6] ^ UINT64_C(0x55076507395F3485)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ __rolq(d, 27);
-	case 6: d += (tail[5] ^ UINT64_C(0xE2CE02C1DBEA2845)) * UINT64_C(0xD7EF17178C46ABE3) ^ __rolq(d, 26);
-	case 5: d += (tail[4] ^ UINT64_C(0x6096A6800704E7C5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ __rolq(d, 25);
-	case 4: d += (tail[3] ^ UINT64_C(0xB2F97045254154A5)) * UINT64_C(0xD7EF17178C46ABE3) ^ __rolq(d, 24);
-	case 3: d += (tail[2] ^ UINT64_C(0x414C6E02D8B72D05)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ __rolq(d, 23);
-	case 2: d += (tail[1] ^ UINT64_C(0xF6FDE799B4A0DBA5)) * UINT64_C(0xD7EF17178C46ABE3) ^ __rolq(d, 22);
-	case 1: d += (tail[0] ^ UINT64_C(0x735664783B1136B5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ __rolq(d, 21);
-		d ^= (__rolq(d, 35) + UINT64_C(0x9E3779B97F4A7C15)) * UINT64_C(0xC6BC279692B5CC83);
+	case 7: m = (tail[6] ^ 0x55076507395F3485UL) * 0x8329C6EB9E6AD3E3UL + __rolq(m, 27);
+	case 6: m = (tail[5] ^ 0xE2CE02C1DBEA2845UL) * 0xD7EF17178C46ABE3UL + __rolq(m, 26);
+	case 5: m = (tail[4] ^ 0x6096A6800704E7C5UL) * 0x8329C6EB9E6AD3E3UL + __rolq(m, 25);
+	case 4: m = (tail[3] ^ 0xB2F97045254154A5UL) * 0xD7EF17178C46ABE3UL + __rolq(m, 24);
+	case 3: m = (tail[2] ^ 0x414C6E02D8B72D05UL) * 0x8329C6EB9E6AD3E3UL + __rolq(m, 23);
+	case 2: m = (tail[1] ^ 0xF6FDE799B4A0DBA5UL) * 0xD7EF17178C46ABE3UL + __rolq(m, 22);
+	case 1: m = (tail[0] ^ 0x735664783B1136B5UL) * 0x8329C6EB9E6AD3E3UL + __rolq(m, 21);
+		m ^= (__rolq(m, 34) + 0xC6BC279692B5CC83UL) * 0x9E3779B97F4A7C15UL;
 	};
-  d ^= d >> 32;
-  d *= 0xbea225f9eb34556dULL;
-  d ^= d >> 32;
-  d *= 0xbea225f9eb34556dULL;
-  d ^= d >> 32;
-  d *= 0xbea225f9eb34556dULL;
-  d ^= d >> 32;
-	*(uint64_t *)out = d;
+  m ^= m >> 32;
+  m *= C;
+  m ^= m >> 29;
+  m *= C;
+  m ^= m >> 32;
+  m *= C;
+  m ^= m >> 29;
+	*(uint64_t *)out = m;
 }
 
 

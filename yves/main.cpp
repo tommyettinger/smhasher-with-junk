@@ -354,7 +354,7 @@ HashInfo g_hashes[] =
   { "wickethash", "wickethash 64bit result",
   64, 64, 64, 0xEB57F61C, NULL, wickethash_test},
   { "puller", "puller 64bit result",
-  64, 64, 64, 0x1F612F17, NULL, puller_test},
+  64, 64, 64, 0x58443176, NULL, puller_test},
   { "curlup", "curlup 32bit inputs 64bit result",
   64, 64, 64, 0xBFDD4B9B, NULL, curlup_test},
   { "curlup64", "curlup64 64bit inputs 64bit result",
@@ -370,7 +370,7 @@ HashInfo g_hashes[] =
   64, 64, 64, 0x558802A2, NULL, Frost64_with_state},
 
   { "snout64", "snout64 64bit inputs 64bit result",
-  64, 64, 64, 0xCF6B2079, NULL, snout64_test},
+  64, 64, 64, 0x07E917D3, NULL, snout64_test},
 
   { "mx3", "mx3 64bit inputs 64bit result",
   64, 64, 64, 0x691DCEC5, NULL, mx3_hash_test  },
