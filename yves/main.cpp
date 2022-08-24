@@ -366,8 +366,8 @@ HashInfo g_hashes[] =
   { "frost", "frost 16bit inputs 64bit result",
   64, 64, 64, 0xBDAA9C67, NULL, Frost_with_state},
 
-  { "frost64", "frost64 64bit inputs 64bit result",
-  64, 64, 64, 0x558802A2, NULL, Frost64_with_state},
+  { "wisp64", "wisp64 64bit inputs 64bit result",
+  64, 64, 64, 0xC9C69C1A, NULL, wisp64_with_state},
 
   { "snout64", "snout64 64bit inputs 64bit result",
   64, 64, 64, 0x07E917D3, NULL, snout64_test},

@@ -692,7 +692,7 @@ puller_test(const void *key, int len, const void *state, void *out)
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
 	uint64_t a = *((uint64_t *)state) ^ 0xDB4F0B9175AE2165UL;
   // uint64_t x = 0x9E3779B97F4A7C15UL;
-  uint64_t m = 0x818102004182A025UL;
+  // uint64_t m = 0x818102004182A025UL;
   // uint64_t m = 0xC6BC279692B5CC83UL;
   // uint64_t m = 0xF1357AEA2E62A9C5UL;
   // const uint64_t mi = 0x632BE59BD9B4E018UL;//, xi = 0xB9175AE2165DB4F0UL;// , a = 0x632BE59BD9B4E019UL * len;
@@ -722,7 +722,7 @@ puller_test(const void *key, int len, const void *state, void *out)
     //a += (d += blocks[i]) * 0x818102004182A025ULL + __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
     
     //works
-   a += blocks[i] * m ^ __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
+   a += blocks[i] * 0x818102004182A025UL ^ __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
     // a += (blocks[i] ^ x) * m ^ __rolq(a, 17);// ^ (d += 0x9E3779B97F4A7C15UL));
     //a += blocks[i] * m ^ __rolq(a, 37);// ^ (d += 0x9E3779B97F4A7C15UL));
     // a += (blocks[i]) * m ^ __rolq(a, 17);
@@ -998,34 +998,61 @@ Frost_with_state(const void *key, int len, const void *state, void *out)
   *(uint64_t *) out = h;
 }
 void
-Frost64_with_state(const void *key, int len, const void *state, void *out)
+wisp64_with_state(const void *key, int len, const void *state, void *out)
 {
 	const uint8_t *data = (const uint8_t *)key;
-  const int nblocks = len / 8;
+	const int nblocks = len / 8;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
-  uint64_t h = *((uint64_t *)state) + (uint64_t)len;// ^ 0x94D049BB133111EBUL;
-  uint64_t m = 0xDB4F0B9175AE2165UL; //(m += 0x95B534A1ACCD52DAUL)
+  uint64_t h = *((uint64_t *)state) ^ 0x94D049BB133111EBUL, a = 0x632BE59BD9B4E019UL ^ (uint64_t)len;// ^ 0x94D049BB133111EBUL;
+  // uint64_t m = 0xDB4F0B9175AE2165UL; //(m += 0x95B534A1ACCD52DAUL)
+	// for (int i = -nblocks; i; i++) {
+  //   uint64_t t = blocks[i];
+  //   h += __rolq((t ^ t >> 27) * m, m >> 58) ^ (m += 0x95B534A1ACCD52DAUL);
+  // }
+  // const uint8_t * tail = (const uint8_t*)(data + nblocks * 8);
+
+  // for(int ln = (len & 7); ln;)
+  // {
+  //   h += __rolq((0xC6BC279692B5C323UL ^ tail[--ln]) * m, (m += 0x95B534A1ACCD52DAUL) >> 58);
+  // }
 	for (int i = -nblocks; i; i++) {
-    uint64_t t = blocks[i];
-    h += __rolq((t ^ t >> 27) * m, m >> 58) ^ (m += 0x95B534A1ACCD52DAUL);
+    // h += blocks[i] * 0x818102004182A025UL ^ __rolq(h, 17);
+    h = __rolq(h, 17) - (a += 0xF1357AEA2E62A9C5UL ^ blocks[i]);//0x8329C6EB9E6AD3E3UL
   }
   const uint8_t * tail = (const uint8_t*)(data + nblocks * 8);
 
-  for(int ln = (len & 7); ln;)
-  {
-    h += __rolq((0xC6BC279692B5C323UL ^ tail[--ln]) * m, (m += 0x95B534A1ACCD52DAUL) >> 58);
-  }
+	switch (len & 7)
+	{
+	case 7: h += (tail[6] ^ UINT64_C(0x55076507395F3485)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ h >> 27;
+	case 6: h += (tail[5] ^ UINT64_C(0xE2CE02C1DBEA2845)) * UINT64_C(0xD7EF17178C46ABE3) ^ h >> 26;
+	case 5: h += (tail[4] ^ UINT64_C(0x6096A6800704E7C5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ h >> 25;
+	case 4: h += (tail[3] ^ UINT64_C(0xB2F97045254154A5)) * UINT64_C(0xD7EF17178C46ABE3) ^ h >> 24;
+	case 3: h += (tail[2] ^ UINT64_C(0x414C6E02D8B72D05)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ h >> 23;
+	case 2: h += (tail[1] ^ UINT64_C(0xF6FDE799B4A0DBA5)) * UINT64_C(0xD7EF17178C46ABE3) ^ h >> 22;
+	case 1: h += (tail[0] ^ UINT64_C(0x735664783B1136B5)) * UINT64_C(0x8329C6EB9E6AD3E3) ^ h >> 21;
+		h ^= (h + UINT64_C(0x9E3779B97F4A7C15)) * UINT64_C(0xC6BC279692B5CC83);
+	};
 
 //// Pelican unary hash, in case avalanche needs to be better. Slightly slower.
 //  h = (h ^ __rolq(h, 41) ^ __rolq(h, 17)) * 0x369DEA0F31A53F85UL;
 //  h = (h ^ h >> 31) * 0xDB4F0B9175AE2165UL;
 //  h ^= h >> 28;
 
-  h ^= h >> 27;
-  h *= 0x3C79AC492BA7B653UL;
-  h ^= h >> 33;
-  h *= 0x1C69B3F74AC4AE35UL;
-  h ^= h >> 27;
+//// murmurhash3 mixer or similar variant (2 multiply)
+  // h ^= h >> 27;
+  // h *= 0x3C79AC492BA7B653UL;
+  // h ^= h >> 33;
+  // h *= 0x1C69B3F74AC4AE35UL;
+  // h ^= h >> 27;
+
+  h ^= h >> 32;
+  h *= 0xbea225f9eb34556dUL;
+  h ^= h >> 29;
+  h *= 0xbea225f9eb34556dUL;
+  h ^= h >> 32;
+  h *= 0xbea225f9eb34556dUL;
+  h ^= h >> 29;
+
   *(uint64_t *) out = h;
 }
 
