@@ -343,8 +343,29 @@ HashInfo g_hashes[] =
   { "wyhash3", "wyhash3 64bit",
   64, 64, 64, 0xB4306FD0, NULL, wyhash3_test},
 #endif
+#if(WYHASH_CONDOM>1)
+#if(WYHASH_32BIT_MUM==2)
+  { "wyhash3final", "wyhash_final_3 64bit using wink, protective",
+  64, 64, 64, 0x6EC27598, NULL, wyhash3final_test},
+#elif(WYHASH_32BIT_MUM==1)
+  { "wyhash3final", "wyhash_final_3 64bit using 32bit mum, protective",
+  64, 64, 64, 0xBD8E608F, NULL, wyhash3final_test},
+#else 
+  { "wyhash3final", "wyhash_final_3 64bit, protective",
+  64, 64, 64, 0x258EFAEF, NULL, wyhash3final_test},
+#endif
+#else
+#if(WYHASH_32BIT_MUM==2)
+  { "wyhash3final", "wyhash_final_3 64bit using wink",
+  64, 64, 64, 0xA45BFE24, NULL, wyhash3final_test},
+#elif(WYHASH_32BIT_MUM==1)
+  { "wyhash3final", "wyhash_final_3 64bit using 32bit mum",
+  64, 64, 64, 0xECB656D8, NULL, wyhash3final_test},
+#else
   { "wyhash3final", "wyhash_final_3 64bit",
   64, 64, 64, 0xD57ECDAB, NULL, wyhash3final_test},
+#endif
+#endif
   { "waterhash", "waterhash 32bit result",
   64, 64, 32, 0x06377306, NULL, waterhash_test}, //0xC97DE72F
   { "wheathash", "wheathash 64bit result",

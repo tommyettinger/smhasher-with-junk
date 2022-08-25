@@ -15,13 +15,14 @@
 //protections that produce different results:
 //1: normal valid behavior
 //2: extra protection against entropy loss (probability=2^-63), aka. "blind multiplication"
-#define WYHASH_CONDOM 1
+#define WYHASH_CONDOM 2
 #endif
 
 #ifndef WYHASH_32BIT_MUM
 //0: normal version, slow on 32 bit systems
 //1: faster on 32 bit systems but produces different results, incompatible with wy2u0k function
-#define WYHASH_32BIT_MUM 0  
+//2: wink mode, uses a 64-bit multiply instead of a 128-bit multiply.
+#define WYHASH_32BIT_MUM 2
 #endif
 
 //includes
@@ -44,7 +45,16 @@
 //128bit multiply function
 static inline uint64_t _wy3frot(uint64_t x) { return (x>>32)|(x<<32); }
 static inline void _wy3fmum(uint64_t *A, uint64_t *B){
-#if(WYHASH_32BIT_MUM)
+#if(WYHASH_32BIT_MUM>1)
+  uint64_t m = (*A - ROTL64(*B, 38)) * (*B - ROTL64(*A, 40));
+  m^=m>>32;
+  #if(WYHASH_CONDOM>1)
+  *A^=*B+m; *B^=*A+m;
+  #else
+  *A=*B+m; *B=*A+m;
+  #endif
+//   *A ^= *A >> 32; *B ^= *B >> 32;
+#elif(WYHASH_32BIT_MUM==1)
   uint64_t hh=(*A>>32)*(*B>>32), hl=(*A>>32)*(uint32_t)*B, lh=(uint32_t)*A*(*B>>32), ll=(uint64_t)(uint32_t)*A*(uint32_t)*B;
   #if(WYHASH_CONDOM>1)
   *A^=_wy3frot(hl)^hh; *B^=_wy3frot(lh)^ll;
