@@ -343,6 +343,8 @@ HashInfo g_hashes[] =
   { "wyhash3", "wyhash3 64bit",
   64, 64, 64, 0xB4306FD0, NULL, wyhash3_test},
 #endif
+  { "wyhash3final", "wyhash_final_3 64bit",
+  64, 64, 64, 0xD57ECDAB, NULL, wyhash3final_test},
   { "waterhash", "waterhash 32bit result",
   64, 64, 32, 0x06377306, NULL, waterhash_test}, //0xC97DE72F
   { "wheathash", "wheathash 64bit result",
@@ -367,7 +369,7 @@ HashInfo g_hashes[] =
   64, 64, 64, 0xBDAA9C67, NULL, Frost_with_state},
 
   { "wisp64", "wisp64 64bit inputs 64bit result",
-  64, 64, 64, 0xC9C69C1A, NULL, wisp64_with_state},
+  64, 64, 64, 0x13FFF056, NULL, wisp64_with_state},
 
   { "snout64", "snout64 64bit inputs 64bit result",
   64, 64, 64, 0x07E917D3, NULL, snout64_test},

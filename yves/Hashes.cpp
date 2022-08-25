@@ -645,6 +645,12 @@ wyhash3_test(const void *input, int len, const void *seed, void *out)
 }
 
 void
+wyhash3final_test(const void *input, int len, const void *seed, void *out)
+{
+  *(uint64_t *) out = wyhash3f((const unsigned char *)input, (size_t) len, *((const uint64_t *)seed), _wy3fp);
+}
+
+void
 waterhash_test(const void *input, int len, const void *seed, void *out)
 {
   *(uint32_t *) out = waterhash((const unsigned char *)input, (uint32_t) len, *((const uint64_t *)seed));
@@ -1017,7 +1023,8 @@ wisp64_with_state(const void *key, int len, const void *state, void *out)
   // }
 	for (int i = -nblocks; i; i++) {
     // h += blocks[i] * 0x818102004182A025UL ^ __rolq(h, 17);
-    h = __rolq(h, 17) - (a += 0xF1357AEA2E62A9C5UL ^ blocks[i]);//0x8329C6EB9E6AD3E3UL
+    h += (a ^= 0x818102004182A025UL * blocks[i]);//0x8329C6EB9E6AD3E3UL
+    h = __rolq(h, 29) * 0xF1357AEA2E62A9C5UL;
   }
   const uint8_t * tail = (const uint8_t*)(data + nblocks * 8);
 

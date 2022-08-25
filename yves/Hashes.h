@@ -318,6 +318,9 @@ void wyhash_test( const void * key, int len, const void * seed, void * out );
 #include "wyhash3.h"
 void wyhash3_test( const void * key, int len, const void * seed, void * out );
 
+#include "wyhash_final_3.h"
+void wyhash3final_test( const void * key, int len, const void * seed, void * out );
+
 #include "waterhash.h"
 void waterhash_test( const void * key, int len, const void * seed, void * out );
 
