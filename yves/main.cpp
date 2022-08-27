@@ -341,7 +341,7 @@ HashInfo g_hashes[] =
   64, 64, 64, 0x3B1D82ED, NULL, wyhash3_test},
 #else
   { "wyhash3", "wyhash3 64bit",
-  64, 64, 64, 0xB4306FD0, NULL, wyhash3_test},
+  64, 64, 64, 0x08827DBF, NULL, wyhash3_test}, //0xB4306FD0
 #endif
 #if(WYHASH_CONDOM>1)
 #if(WYHASH_32BIT_MUM==2)
@@ -376,6 +376,8 @@ HashInfo g_hashes[] =
   64, 64, 64, 0x9EE012F5, NULL, woothash_test},
   { "wickethash", "wickethash 64bit result",
   64, 64, 64, 0xEB57F61C, NULL, wickethash_test},
+  { "wildhash", "wildhash 64bit result",
+  64, 64, 64, 0xC5B01589, NULL, wildhash_test},
   { "puller", "puller 64bit result",
   64, 64, 64, 0x58443176, NULL, puller_test},
   { "curlup", "curlup 32bit inputs 64bit result",

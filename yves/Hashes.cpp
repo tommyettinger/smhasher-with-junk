@@ -679,6 +679,13 @@ wickethash_test(const void *input, int len, const void *seed, void *out)
 {
   *(uint64_t *) out = wickethash((const unsigned char *)input, (uint64_t) len, *((const uint64_t *)seed));
 }
+
+void
+wildhash_test(const void *input, int len, const void *seed, void *out)
+{
+  *(uint64_t *) out = wildhash((const unsigned char *)input, (size_t) len, *((const uint64_t *)seed));
+}
+
 /*
             long result = 0x9E3779B97F4A7C94L, a = 0x632BE59BD9B4E019L;
             final int len = data.length;

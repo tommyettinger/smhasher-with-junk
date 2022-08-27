@@ -321,6 +321,9 @@ void wyhash3_test( const void * key, int len, const void * seed, void * out );
 #include "wyhash_final_3.h"
 void wyhash3final_test( const void * key, int len, const void * seed, void * out );
 
+#include "wildhash.h"
+void wildhash_test( const void * key, int len, const void * seed, void * out );
+
 #include "waterhash.h"
 void waterhash_test( const void * key, int len, const void * seed, void * out );
 
