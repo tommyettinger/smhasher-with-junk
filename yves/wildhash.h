@@ -32,6 +32,8 @@ static inline void _wildmum(uint64_t *A, uint64_t *B){
   uint64_t m = (*A - ROTL64(*B, 38)) * (*B - ROTL64(*A, 40));
   m^=m>>32;
   *A=*B+m; *B=*A+m;
+  // *A+=*B ^ ROTL64(*A, 38); *B+=*A ^ ROTL64(*B, 40);
+  // *A ^= *A >> 31; *B ^= *B >> 29;
   // uint64_t hh=(*A>>32)*(*B>>32), hl=(*A>>32)*(uint32_t)*B, lh=(uint32_t)*A*(*B>>32), ll=(uint64_t)(uint32_t)*A*(uint32_t)*B;
   // *A=ROTL64(hl,32)^hh; *B=ROTL64(lh,32)^ll;
 }
