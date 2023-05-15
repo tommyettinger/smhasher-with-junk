@@ -1232,15 +1232,11 @@ tern64_test(const void *key, int len, const void *state, void *out)
       fb = c + blocks[i + 1];// + 0xB6533C79AC492BA7UL;
       fc = d + blocks[i + 2];// + 0x2BA7B6533C79AC49UL;
       fd = a + blocks[i + 3];// + 0xAC492BA7B6533C71UL;
-      d += fa ^= __rolq(fa, 25) ^ __rolq(fa, 38);
-	    a += fb ^= __rolq(fb, 47) ^ __rolq(fb, 19);
-	    b += fc ^= __rolq(fc, 11) ^ __rolq(fc, 59);
-	    c += fd ^= __rolq(fd, 37) ^ __rolq(fd, 21);
+      d += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
+	    a += fb ^ __rolq(fb, 47) ^ __rolq(fb, 19);
+	    b += fc ^ __rolq(fc, 11) ^ __rolq(fc, 59);
+	    c += fd ^ __rolq(fd, 37) ^ __rolq(fd, 21);
 	}
-  fa ^= (b += 0x3C79AC492BA7B653UL);
-  fb ^= (c += 0xB6533C79AC492BA7UL);
-  fc ^= (d += 0x2BA7B6533C79AC49UL);
-  fd ^= (a += 0xAC492BA7B6533C71UL);
   
   const int nflank = (len / 8) - nblocks;
   for (int i = 0; i < nflank; i++) {
@@ -1249,16 +1245,11 @@ tern64_test(const void *key, int len, const void *state, void *out)
       fb = c + blk;// + 0xB6533C79AC492BA7UL;
       fc = d + blk;// + 0x2BA7B6533C79AC49UL;
       fd = a + blk;// + 0xAC492BA7B6533C71UL;
-      d += fa ^= __rolq(fa, 25) ^ __rolq(fa, 38);
-	    a += fb ^= __rolq(fb, 47) ^ __rolq(fb, 19);
-	    b += fc ^= __rolq(fc, 11) ^ __rolq(fc, 59);
-	    c += fd ^= __rolq(fd, 37) ^ __rolq(fd, 21);
+      d += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
+	    a += fb ^ __rolq(fb, 47) ^ __rolq(fb, 19);
+	    b += fc ^ __rolq(fc, 11) ^ __rolq(fc, 59);
+	    c += fd ^ __rolq(fd, 37) ^ __rolq(fd, 21);
   }
-
-  a ^= (fc + 0x3C79AC492BA7B653UL);
-  b ^= (fd + 0xB6533C79AC492BA7UL);
-  c ^= (fa + 0x2BA7B6533C79AC49UL);
-  d ^= (fb + 0xAC492BA7B6533C71UL);
 
 	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 8);
 	switch (len & 7)
@@ -1271,21 +1262,27 @@ tern64_test(const void *key, int len, const void *state, void *out)
 	case 2: m ^= (uint64_t)tail[1] <<  8;
 	case 1: m ^= (uint64_t)tail[0]      ;
 		m ^= __rolq(m, 23) ^ __rolq(m, 50);
-    m ^= m >> 33;
+    // m ^= m >> 33;
 	};
 
-  m += (fa ^ __rolq(fa, 25) ^ __rolq(fa, 38))
-     + (fb ^ __rolq(fb, 47) ^ __rolq(fb, 19))
-     + (fc ^ __rolq(fc, 11) ^ __rolq(fc, 59))
-     + (fd ^ __rolq(fd, 37) ^ __rolq(fd, 21));
+  m += (a ^ __rolq(a, 25) ^ __rolq(a, 38))
+     + (b ^ __rolq(b, 47) ^ __rolq(b, 19))
+     + (c ^ __rolq(c, 11) ^ __rolq(c, 59))
+     + (d ^ __rolq(d, 37) ^ __rolq(d, 21));
 
-  m ^= m >> 32;
-  m *= C;
-  m ^= m >> 29;
-  m *= C;
-  m ^= m >> 32;
-  m *= C;
-  m ^= m >> 29;
+  // m ^= m >> 32;
+  // m *= C;
+  // m ^= m >> 29;
+  // m *= C;
+  // m ^= m >> 32;
+  // m *= C;
+  // m ^= m >> 29;
+  m ^= m >> 27;
+  m *= 0x3C79AC492BA7B653UL;
+  m ^= m >> 33;
+  m *= 0x1C69B3F74AC4AE35UL;
+  m ^= m >> 27;
+
 	*(uint64_t *)out = m;
 }
 
@@ -1332,7 +1329,7 @@ puff64_test(const void *key, int len, const void *state, void *out)
 	case 2: m ^= (uint64_t)tail[1] <<  8;
 	case 1: m ^= (uint64_t)tail[0]      ;
 		m ^= __rolq(m, 23) ^ __rolq(m, 50);
-    m ^= m >> 33;
+    // m ^= m >> 33;
 	};
 
   // a ^= a >> 27;
@@ -1341,12 +1338,19 @@ puff64_test(const void *key, int len, const void *state, void *out)
   // a *= 0x1C69B3F74AC4AE35ULL;
   // a ^= a >> 27;
 
-  m ^= m >> 32;
-  m *= C;
-  m ^= m >> 29;
-  m *= C;
-  m ^= m >> 32;
-  m *= C;
-  m ^= m >> 29;
+//   m ^= m >> 32;
+//   m *= C;
+//   m ^= m >> 29;
+//   m *= C;
+//   m ^= m >> 32;
+//   m *= C;
+//   m ^= m >> 29;
+
+  m ^= m >> 27;
+  m *= 0x3C79AC492BA7B653UL;
+  m ^= m >> 33;
+  m *= 0x1C69B3F74AC4AE35UL;
+  m ^= m >> 27;
+
 	*(uint64_t *)out = m;
 }
