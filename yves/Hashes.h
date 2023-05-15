@@ -355,6 +355,8 @@ void snout64_test ( const void * key, int len, const void *state, void * out );
 
 void tern64_test ( const void * key, int len, const void *state, void * out );
 
+void puff64_test ( const void * key, int len, const void *state, void * out );
+
 #include "mx3.h"
 
 void mx3_hash_test ( const void *input, int len, const void *seed, void *out );

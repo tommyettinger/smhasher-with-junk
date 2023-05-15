@@ -398,7 +398,10 @@ HashInfo g_hashes[] =
   64, 64, 64, 0x07E917D3, NULL, snout64_test},
 
   { "tern64", "tern64 64bit inputs 64bit result",
-  64, 64, 64, 0xAB9D9D26, NULL, tern64_test},
+  64, 64, 64, 0x7AACA2BA, NULL, tern64_test},
+
+  { "puff64", "puff64 64bit inputs 64bit result",
+  64, 64, 64, 0xAB9D9D26, NULL, puff64_test},
 
   { "mx3", "mx3 64bit inputs 64bit result",
   64, 64, 64, 0x691DCEC5, NULL, mx3_hash_test  },
