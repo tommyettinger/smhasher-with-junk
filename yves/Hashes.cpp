@@ -1219,8 +1219,8 @@ tern64_test(const void *key, int len, const void *state, void *out)
 	const uint8_t *data = (const uint8_t *)key;
 	const int nblocks = (len / 32) * 4;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
-  uint64_t m = 0xDB4F0B9175AE2165UL; //0xF7C2EBC08F67F2B5UL;//0x9E3779B97F4A7C15UL; //0x1C69B3F74AC4AE35UL; //0x369DEA0F31A53F85UL;
 	uint64_t a = *((uint64_t *)state) ^ len, b = a + 0xF7C2EBC08F67F2B5UL, c = ~a + 0x94D049BB133111EBUL, d = ~b + 0x8538ECB5BD456EA3UL;
+  uint64_t m = 0xDB4F0B9175AE2165UL ^ a; //0xF7C2EBC08F67F2B5UL;//0x9E3779B97F4A7C15UL; //0x1C69B3F74AC4AE35UL; //0x369DEA0F31A53F85UL;
 
   uint64_t fa = 0xF1357AEA2E62A9C5UL;
   uint64_t fb = 0x1C69B3F74AC4AE35UL;
@@ -1232,23 +1232,33 @@ tern64_test(const void *key, int len, const void *state, void *out)
       fb = c + blocks[i + 1];// + 0xB6533C79AC492BA7UL;
       fc = d + blocks[i + 2];// + 0x2BA7B6533C79AC49UL;
       fd = a + blocks[i + 3];// + 0xAC492BA7B6533C71UL;
-      d += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
-	    a += fb ^ __rolq(fb, 47) ^ __rolq(fb, 19);
-	    b += fc ^ __rolq(fc, 11) ^ __rolq(fc, 59);
-	    c += fd ^ __rolq(fd, 37) ^ __rolq(fd, 21);
+      c = __rolq(fa, 25) ^ __rolq(fb, 58);
+	    d = __rolq(fb, 47) ^ __rolq(fc, 11);
+	    a = __rolq(fc, 38) ^ __rolq(fd, 21);
+	    b = __rolq(fd, 19) ^ __rolq(fa, 37);
+      // c += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
+	    // d += fb ^ __rolq(fb, 47) ^ __rolq(fb, 19);
+	    // a += fc ^ __rolq(fc, 11) ^ __rolq(fc, 58);
+	    // b += fd ^ __rolq(fd, 37) ^ __rolq(fd, 21);
+      m += a + b + c + d;
 	}
   
   const int nflank = (len / 8) - nblocks;
   for (int i = 0; i < nflank; i++) {
       uint64_t blk = blocks[i];
-      fa = b + blk;// + 0x3C79AC492BA7B653UL;
-      fb = c + blk;// + 0xB6533C79AC492BA7UL;
-      fc = d + blk;// + 0x2BA7B6533C79AC49UL;
-      fd = a + blk;// + 0xAC492BA7B6533C71UL;
-      d += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
-	    a += fb ^ __rolq(fb, 47) ^ __rolq(fb, 19);
-	    b += fc ^ __rolq(fc, 11) ^ __rolq(fc, 59);
-	    c += fd ^ __rolq(fd, 37) ^ __rolq(fd, 21);
+      fa = b + blk;//
+      fb = c + blk;//
+      fc = d + blk;//
+      fd = a + blk;//
+      c = __rolq(fa, 25) ^ __rolq(fb, 58);
+	    d = __rolq(fb, 47) ^ __rolq(fc, 11);
+	    a = __rolq(fc, 38) ^ __rolq(fd, 21);
+	    b = __rolq(fd, 19) ^ __rolq(fa, 37);
+      // c += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
+	    // d += fb ^ __rolq(fb, 47) ^ __rolq(fb, 19);
+	    // a += fc ^ __rolq(fc, 11) ^ __rolq(fc, 58);
+	    // b += fd ^ __rolq(fd, 37) ^ __rolq(fd, 21);
+      m += a + b + c + d;
   }
 
 	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 8);
@@ -1267,7 +1277,7 @@ tern64_test(const void *key, int len, const void *state, void *out)
 
   m += (a ^ __rolq(a, 25) ^ __rolq(a, 38))
      + (b ^ __rolq(b, 47) ^ __rolq(b, 19))
-     + (c ^ __rolq(c, 11) ^ __rolq(c, 59))
+     + (c ^ __rolq(c, 11) ^ __rolq(c, 58))
      + (d ^ __rolq(d, 37) ^ __rolq(d, 21));
 
   // m ^= m >> 32;
