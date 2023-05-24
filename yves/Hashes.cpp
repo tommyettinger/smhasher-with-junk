@@ -1232,13 +1232,20 @@ tern64_test(const void *key, int len, const void *state, void *out)
       fb = c ^ blocks[i + 1];// + 0xB6533C79AC492BA7UL;
       fc = d ^ blocks[i + 2];// + 0x2BA7B6533C79AC49UL;
       fd = a ^ blocks[i + 3];// + 0xAC492BA7B6533C71UL;
-      c ^= __rolq(fa, 25);// ^ __rolq(fb, 58);
-	    d ^= __rolq(fb, 46);// ^ __rolq(fc, 11);
-	    a ^= __rolq(fc, 37);// ^ __rolq(fd, 21);
-	    b ^= __rolq(fd, 18);// ^ __rolq(fa, 37);
-      m += a + b + c + d;
+      b += __rolq(fa, 25);
+	    c += __rolq(fb, 44);
+	    d += __rolq(fc, 37);
+	    a += __rolq(fd, 18);
+      m += a ^ b ^ c ^ d;
       m = __rolq(m, 42);
       // m += a + b + c + d;
+      // m = __rolq(m, 42) + (a ^ b ^ c ^ d);
+
+      // c ^= __rolq(fa, 25);// ^ __rolq(fb, 58);
+	    // d ^= __rolq(fb, 46);// ^ __rolq(fc, 11);
+	    // a ^= __rolq(fc, 37);// ^ __rolq(fd, 21);
+	    // b ^= __rolq(fd, 18);// ^ __rolq(fa, 37);
+
 
       // c += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
 	    // d += fb ^ __rolq(fb, 47) ^ __rolq(fb, 19);
@@ -1255,12 +1262,13 @@ tern64_test(const void *key, int len, const void *state, void *out)
       fb = c ^ blk;//
       fc = d ^ blk;//
       fd = a ^ blk;//
-      c ^= __rolq(fa, 25);// ^ __rolq(fb, 58);
-	    d ^= __rolq(fb, 46);// ^ __rolq(fc, 11);
-	    a ^= __rolq(fc, 37);// ^ __rolq(fd, 21);
-	    b ^= __rolq(fd, 18);// ^ __rolq(fa, 37);
-      m += a + b + c + d;
+      b += __rolq(fa, 25);
+	    c += __rolq(fb, 44);
+	    d += __rolq(fc, 37);
+	    a += __rolq(fd, 18);
+      m += a ^ b ^ c ^ d;
       m = __rolq(m, 42);
+      // m = __rolq(m, 42) + (a ^ b ^ c ^ d);
       // m += a + b + c + d;
 
       // c += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
