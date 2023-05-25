@@ -398,7 +398,7 @@ HashInfo g_hashes[] =
   64, 64, 64, 0x07E917D3, NULL, snout64_test},
 
   { "tern64", "tern64 64bit inputs 64bit result",
-  64, 64, 64, 0x46824C80, NULL, tern64_test},
+  64, 64, 64, 0x96182C42, NULL, tern64_test},
 
   { "puff64", "puff64 64bit inputs 64bit result",
   64, 64, 64, 0xAB9D9D26, NULL, puff64_test},
