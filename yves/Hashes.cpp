@@ -1215,7 +1215,6 @@ murk_hash_test(const void *input, int len, const void *seed, void *out)
 void
 tern64_test(const void *key, int len, const void *state, void *out)
 {
-  const uint64_t C = 0xBEA225F9EB34556D;
 	const uint8_t *data = (const uint8_t *)key;
 	const int nblocks = (len / 32) * 4;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
@@ -1305,6 +1304,7 @@ tern64_test(const void *key, int len, const void *state, void *out)
   // m ^= m >> 32;
   // m *= C;
   // m ^= m >> 29;
+
   m ^= m >> 27;
   m *= 0x3C79AC492BA7B653UL;
   m ^= m >> 33;
@@ -1317,62 +1317,101 @@ tern64_test(const void *key, int len, const void *state, void *out)
 void
 puff64_test(const void *key, int len, const void *state, void *out)
 {
-  const uint64_t C = 0xbea225f9eb34556d;
 	const uint8_t *data = (const uint8_t *)key;
-	const int nblocks = len / 8;
+	const int nblocks = (len / 32) * 4;
 	const uint64_t * blocks = (const uint64_t *)(data + nblocks * 8);
-  uint64_t m = 0xDB4F0B9175AE2165UL; //0xF7C2EBC08F67F2B5UL;//0x9E3779B97F4A7C15UL; //0x1C69B3F74AC4AE35UL; //0x369DEA0F31A53F85UL;
-	uint64_t a = *((uint64_t *)state) ^ len, b = a + 0xF7C2EBC08F67F2B5UL, c = ~a + 0x94D049BB133111EBUL, d = ~b + 0x8538ECB5BD456EA3UL;
+  uint64_t m = 0xDB4F0B9175AE2165UL + *((uint64_t *)state);
+	uint64_t a = __rolq(m, 53) ^ len, b = __rolq(a, 13) + 0xF7C2EBC08F67F2B5UL, c = ~__rolq(a, 29) + 0x94D049BB133111EBUL, d = ~__rolq(b, 43) + 0x8538ECB5BD456EA3UL;
+  uint64_t aa = 0xF1357AEA2E62A9C5UL ^ c;
+  uint64_t bb = 0x1C69B3F74AC4AE35UL ^ d;
+  uint64_t cc = 0x9E3779B97F4A7C15UL ^ a;
+  uint64_t dd = 0x369DEA0F31A53F85UL ^ b;
+  uint64_t fa = a + bb, fb = b + cc, fc = c + dd, fd = d + aa;
 
-	for (int i = -nblocks; i; i++) {
-					const uint64_t fa = a;
-					const uint64_t fb = b;
-					const uint64_t fc = c;
-					const uint64_t fd = d;
-					a = fa + blocks[i];
-					b = fd * 0xD1342543DE82EF95UL;
-					c = fa ^ fb;
-					d = __rolq(fc, 21);
-					m ^= fd - fc;
+	for (int i = -nblocks; i; i+=4) {
+      fa = d - __rolq(a, 25) + blocks[i    ];
+      fb = a - __rolq(b, 46) + blocks[i + 1];
+      fc = b - __rolq(c, 37) + blocks[i + 2];
+      fd = c - __rolq(d, 18) + blocks[i + 3];
+			a = fd * 0xF1357AEA2E62A9C5L;
+			b = fa * 0xDB4F0B9175AE2165L;
+			c = fb * 0x9E3779B97F4A7C15L;
+			d = fc * 0xF7C2EBC08F67F2B5L;
+      aa ^= a;
+      bb ^= b;
+      cc ^= c;
+      dd ^= d;
+      // m = __rolq(m, 42) + (a ^ b ^ c ^ d);
+
+      // c ^= __rolq(fa, 25);// ^ __rolq(fb, 58);
+	    // d ^= __rolq(fb, 46);// ^ __rolq(fc, 11);
+	    // a ^= __rolq(fc, 37);// ^ __rolq(fd, 21);
+	    // b ^= __rolq(fd, 18);// ^ __rolq(fa, 37);
+
+
+      // c += fa ^ __rolq(fa, 25) ^ __rolq(fa, 38);
+	    // d += fb ^ __rolq(fb, 47) ^ __rolq(fb, 19);
+	    // a += fc ^ __rolq(fc, 11) ^ __rolq(fc, 58);
+	    // b += fd ^ __rolq(fd, 37) ^ __rolq(fd, 21);
+
+      // m ^= __rolq(m, 43) + 0xBEA225F9EB34556D;
 	}
-  for (int i = 0; i < 4; i++) {
-					const uint64_t ga = a;
-					const uint64_t gb = b;
-					const uint64_t gc = c;
-					const uint64_t gd = d;
-					a = ga + 0x9E3779B97F4A7C15UL;
-					b = gd * 0xD1342543DE82EF95UL;
-					c = ga ^ gb;
-					d = __rolq(gc, 21);
-					m ^= gd - gc;
+  
+  const int nflank = (len / 8) - nblocks;
+  for (int i = 0; i < nflank; i++) {
+      uint64_t blk = blocks[i];
+      fa = blk + d - __rolq(a, 25);
+      fb = blk + a - __rolq(b, 46);
+      fc = blk + b - __rolq(c, 37);
+      fd = blk + c - __rolq(d, 18);
+			a = fd * 0xF1357AEA2E62A9C5L;
+			b = fa * 0xDB4F0B9175AE2165L;
+			c = fb * 0x9E3779B97F4A7C15L;
+			d = fc * 0xF7C2EBC08F67F2B5L;
+      aa ^= a;
+      bb ^= b;
+      cc ^= c;
+      dd ^= d;
   }
-	const uint8_t * tail = (const uint8_t*)(data + nblocks * 8);
+
+	const uint8_t * tail = (const uint8_t*)(data + (nblocks + nflank) * 8);
 	switch (len & 7)
 	{
-	case 7: m ^= (uint64_t)tail[6] << 48;
-	case 6: m ^= (uint64_t)tail[5] << 40;
-	case 5: m ^= (uint64_t)tail[4] << 32;
-	case 4: m ^= (uint64_t)tail[3] << 24;
-	case 3: m ^= (uint64_t)tail[2] << 16;
-	case 2: m ^= (uint64_t)tail[1] <<  8;
-	case 1: m ^= (uint64_t)tail[0]      ;
-		m ^= __rolq(m, 23) ^ __rolq(m, 50);
+	case 7: a += (uint64_t)tail[6] << 48 ^ 0x3C79AC492BA7B653L;
+	case 6: a += (uint64_t)tail[5] << 40 ^ 0xB6533C79AC492BA7L;
+	case 5: a += (uint64_t)tail[4] << 32 ^ 0x2BA7B6533C79AC49L;
+	case 4: a += (uint64_t)tail[3] << 24 ^ 0xAC492BA7B6533C71L;
+	case 3: a += (uint64_t)tail[2] << 16 ^ 0xBEA225F9EB34556DL;
+	case 2: a += (uint64_t)tail[1] <<  8 ^ 0xF1357AEA2E62A9C5L;
+	case 1: a += (uint64_t)tail[0]       ^ 0xC6BC279692B5C323L;
+		a ^= __rolq(a, 23) ^ __rolq(a, 50);
     // m ^= m >> 33;
-	};
+	}
+ for (int i = 0; i < 4; i++) {
+      fa = d - __rolq(a, 25);
+      fb = a - __rolq(b, 46);
+      fc = b - __rolq(c, 37);
+      fd = c - __rolq(d, 18);
+			a = fd * 0xF1357AEA2E62A9C5L;
+			b = fa * 0xDB4F0B9175AE2165L;
+			c = fb * 0x9E3779B97F4A7C15L;
+			d = fc * 0xF7C2EBC08F67F2B5L;
+      aa ^= a;
+      bb ^= b;
+      cc ^= c;
+      dd ^= d;
+ }
 
-  // a ^= a >> 27;
-  // a *= 0x3C79AC492BA7B653ULL;
-  // a ^= a >> 33;
-  // a *= 0x1C69B3F74AC4AE35ULL;
-  // a ^= a >> 27;
+  
+					// a = fd * 0xF1357AEA2E62A9C5L;
+					// b = __rolq(fa, 44);
+					// c = fb + 0x9E3779B97F4A7C15L;
+					// d = fb ^ fc;
 
-//   m ^= m >> 32;
-//   m *= C;
-//   m ^= m >> 29;
-//   m *= C;
-//   m ^= m >> 32;
-//   m *= C;
-//   m ^= m >> 29;
+  m += a + (aa ^ __rolq(aa, 25) ^ __rolq(aa, 38))
+     + b + (bb ^ __rolq(bb, 47) ^ __rolq(bb, 19))
+     + c + (cc ^ __rolq(cc, 11) ^ __rolq(cc, 58))
+     + d + (dd ^ __rolq(dd, 37) ^ __rolq(dd, 21));
 
   m ^= m >> 27;
   m *= 0x3C79AC492BA7B653UL;
