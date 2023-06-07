@@ -1326,17 +1326,19 @@ puff64_test(const void *key, int len, const void *state, void *out)
   uint64_t bb = 0x1C69B3F74AC4AE35UL ^ d;
   uint64_t cc = 0x9E3779B97F4A7C15UL ^ a;
   uint64_t dd = 0x369DEA0F31A53F85UL ^ b;
-  uint64_t fa = a + bb, fb = b + cc, fc = c + dd, fd = d + aa;
+  //uint64_t fa = a + bb, fb = b + cc, fc = c + dd, fd = d + aa;
+  uint64_t fa, fb, fc, fd;
+  
 
 	for (int i = -nblocks; i; i+=4) {
       fa = d - __rolq(a, 25) + blocks[i    ];
       fb = a - __rolq(b, 46) + blocks[i + 1];
       fc = b - __rolq(c, 37) + blocks[i + 2];
       fd = c - __rolq(d, 18) + blocks[i + 3];
-			a = fd * 0xF1357AEA2E62A9C5L;
-			b = fa * 0xDB4F0B9175AE2165L;
-			c = fb * 0x9E3779B97F4A7C15L;
-			d = fc * 0xF7C2EBC08F67F2B5L;
+			a = __rolq(fb, 57);
+			b = __rolq(fc, 11);
+			c = fa + fb;
+			d = fd + 0xADB5B12149E93C39L;
       aa ^= a;
       bb ^= b;
       cc ^= c;
@@ -1364,10 +1366,14 @@ puff64_test(const void *key, int len, const void *state, void *out)
       fb = blk + a - __rolq(b, 46);
       fc = blk + b - __rolq(c, 37);
       fd = blk + c - __rolq(d, 18);
-			a = fd * 0xF1357AEA2E62A9C5L;
-			b = fa * 0xDB4F0B9175AE2165L;
-			c = fb * 0x9E3779B97F4A7C15L;
-			d = fc * 0xF7C2EBC08F67F2B5L;
+			a = __rolq(fb, 57);
+			b = __rolq(fc, 11);
+			c = fa + fb;
+			d = fd + 0xADB5B12149E93C39L;
+			// a = fd * 0xF1357AEA2E62A9C5L;
+			// b = fa * 0xDB4F0B9175AE2165L;
+			// c = fb * 0x9E3779B97F4A7C15L;
+			// d = fc * 0xF7C2EBC08F67F2B5L;
       aa ^= a;
       bb ^= b;
       cc ^= c;
@@ -1388,14 +1394,14 @@ puff64_test(const void *key, int len, const void *state, void *out)
     // m ^= m >> 33;
 	}
  for (int i = 0; i < 4; i++) {
-      fa = d - __rolq(a, 25);
-      fb = a - __rolq(b, 46);
-      fc = b - __rolq(c, 37);
-      fd = c - __rolq(d, 18);
-			a = fd * 0xF1357AEA2E62A9C5L;
-			b = fa * 0xDB4F0B9175AE2165L;
-			c = fb * 0x9E3779B97F4A7C15L;
-			d = fc * 0xF7C2EBC08F67F2B5L;
+      fa = b - __rolq(a, 25);
+      fb = c - __rolq(b, 46);
+      fc = d - __rolq(c, 37);
+      fd = a - __rolq(d, 18);
+			a = __rolq(fb, 57);
+			b = __rolq(fc, 11);
+			c = fa + fb;
+			d = fd + 0xADB5B12149E93C39L;
       aa ^= a;
       bb ^= b;
       cc ^= c;
