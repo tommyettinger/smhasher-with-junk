@@ -47,6 +47,7 @@ void metrohash128_2(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * 
 void metrohash128crc_1(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * out);
 void metrohash128crc_2(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * out);
 
+void speckleHash(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * out);
 
 /* rotate right idiom recognized by compiler*/
 inline static uint64_t rotate_right(uint64_t v, unsigned k)
@@ -75,5 +76,8 @@ inline static uint64_t read_u8 (const void * const ptr)
     return static_cast<uint64_t>(*reinterpret_cast<const uint8_t *>(ptr));
 }
 
+#define ROR64(x, r) ((x >> r) | (x << (64 - r)))
+#define ROL64(x, r) ((x << r) | (x >> (64 - r)))
+#define SPECK(x, y, k) (x = ROR64(x, 8), x += y, x ^= k, y = ROL64(y, 3), y ^= x)
 
 #endif // #ifndef METROHASH_METROHASH_H

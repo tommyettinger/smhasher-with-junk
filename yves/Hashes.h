@@ -184,6 +184,9 @@ inline void metrohash128_1_with_state_test ( const void * key, int len, const vo
 inline void metrohash128_2_with_state_test ( const void * key, int len, const void *state, void * out ) {
   metrohash128_2((const uint8_t *)key,(uint64_t)len,*((uint64_t*)state),(uint8_t *)out);
 }
+inline void speckle_with_state_test ( const void * key, int len, const void *state, void * out ) {
+  speckleHash((const uint8_t *)key,(uint64_t)len,*((uint64_t*)state),(uint8_t *)out);
+}
 #if defined(__SSE4_2__) && defined(__x86_64__)
 
 inline void metrohash64crc_1_with_state_test ( const void * key, int len, const void *state, void * out ) {

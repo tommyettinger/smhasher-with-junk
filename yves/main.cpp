@@ -469,6 +469,9 @@ HashInfo g_hashes[] =
   { "metrohash128_2", "MetroHash128_2 for 64-bit",
     64, 64, 128, 0x2EFAD245,
     NULL, metrohash128_2_with_state_test },
+  { "speckle", "speckleHash for 64-bit, 128-bit output",
+    64, 64, 128, 0x2EFAD245,
+    NULL, speckle_with_state_test },
 #endif
 #if defined(__SSE4_2__) && defined(__x86_64__)
   { "metrohash64crc_1", "MetroHash64crc_1 for x64",

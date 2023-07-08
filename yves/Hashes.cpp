@@ -1427,3 +1427,4 @@ puff64_test(const void *key, int len, const void *state, void *out)
 
 	*(uint64_t *)out = m;
 }
+

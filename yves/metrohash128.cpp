@@ -176,3 +176,104 @@ void metrohash128_2(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * 
     memcpy(out, v, 16);
 }
 
+
+
+
+void speckleHash(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * out)
+{
+    static const uint64_t k0 = 0xF1357AEA2E62A9C5UL;
+    static const uint64_t k1 = 0x1C69B3F74AC4AE35UL;
+    static const uint64_t k2 = 0x9E3779B97F4A7C15UL;
+    static const uint64_t k3 = 0x369DEA0F31A53F85UL;
+
+    const uint8_t * ptr = reinterpret_cast<const uint8_t*>(key);
+    const uint8_t * const end = ptr + len;
+    
+    uint64_t v[4];
+    uint64_t item = 1;
+    
+    v[0] = ((static_cast<uint64_t>(seed) + k0) * k3) ^ len;
+    v[1] = ((static_cast<uint64_t>(seed) + k1) * k2) + len;
+    v[2] = ((static_cast<uint64_t>(seed) + k2) * k0) + len;
+    v[3] = ((static_cast<uint64_t>(seed) + k3) * k1) ^ len;
+
+    SPECK(v[0], v[1], k3);
+    SPECK(v[1], v[0], k2);
+    SPECK(v[2], v[3], k1);
+    SPECK(v[3], v[2], k0);
+
+    if (len >= 32)
+    {        
+        do
+        {
+            item += read_u64(ptr); SPECK(v[2], v[0], item); ptr += 8;
+            item += read_u64(ptr); SPECK(v[0], v[1], item); ptr += 8;
+            item += read_u64(ptr); SPECK(v[1], v[2], item); ptr += 8;
+            item += read_u64(ptr); SPECK(v[3], v[3], item); ptr += 8;
+            SPECK(v[0], v[1], k3);
+            SPECK(v[1], v[2], k1);
+            SPECK(v[2], v[3], k0);
+            SPECK(v[3], v[0], k2);
+        }
+        while (ptr <= (end - 32));
+
+            SPECK(v[0], v[1], k0);
+            SPECK(v[1], v[2], k2);
+            SPECK(v[2], v[3], k3);
+            SPECK(v[3], v[0], k1);
+            // SPECK(v[0], v[1], k2);
+            // SPECK(v[1], v[2], k0);
+            // SPECK(v[2], v[3], k1);
+            // SPECK(v[3], v[0], k3);
+    }
+    
+    if ((end - ptr) >= 16)
+    {
+            item += read_u64(ptr); SPECK(v[1], v[0], item); ptr += 8;
+            item += read_u64(ptr); SPECK(v[0], v[1], item); ptr += 8;
+            SPECK(v[0], v[1], k2);
+            SPECK(v[1], v[2], k3);
+            // SPECK(v[2], v[3], k1);
+            // SPECK(v[3], v[0], k0);
+    }
+    
+    if ((end - ptr) >= 8)
+    {
+            item += read_u64(ptr); SPECK(v[1], v[0], item); ptr += 8;
+            SPECK(v[0], v[1], k1);
+            // SPECK(v[1], v[0], k3);
+    }
+    
+    if ((end - ptr) >= 4)
+    {
+            item += read_u32(ptr); SPECK(v[1], v[0], item); ptr += 4;
+            SPECK(v[0], v[1], k2);
+            // SPECK(v[1], v[0], k0);
+    }
+    
+    if ((end - ptr) >= 2)
+    {
+            item += read_u16(ptr); SPECK(v[1], v[0], item); ptr += 2;
+            SPECK(v[0], v[1], k0);
+            // SPECK(v[1], v[0], k2);
+    }
+    
+    if ((end - ptr) >= 1)
+    {
+            item += read_u8(ptr); SPECK(v[1], v[0], item);
+            SPECK(v[0], v[1], k3);
+            // SPECK(v[1], v[0], k1);
+    }
+    
+            SPECK(v[0], v[1], k3);
+            SPECK(v[1], v[2], k1);
+            SPECK(v[2], v[3], k2);
+            SPECK(v[3], v[0], k0);
+            SPECK(v[0], v[1], k1);
+            SPECK(v[1], v[2], k3);
+            SPECK(v[2], v[3], k0);
+            SPECK(v[3], v[0], k2);
+
+    memcpy(out, v, 16);
+}
+
