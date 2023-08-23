@@ -177,103 +177,77 @@ void metrohash128_2(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * 
 }
 
 
+const uint64_t _specklep0 = 0xa0761d6478bd642full, _specklep1 = 0xe7037ed1a0b428dbull, _specklep2 = 0x8ebc6af09c88c6e3ull;
+const uint64_t _specklep3 = 0x589965cc75374cc3ull, _specklep4 = 0x1d8e4e27c47d124full, _specklep5 = 0xeb44accab455d165ull;
 
-
-void speckleHash(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * out)
-{
-    static const uint64_t k0 = 0xF1357AEA2E62A9C5UL;
-    static const uint64_t k1 = 0x1C69B3F74AC4AE35UL;
-    static const uint64_t k2 = 0x9E3779B97F4A7C15UL;
-    static const uint64_t k3 = 0x369DEA0F31A53F85UL;
-
-    const uint8_t * ptr = reinterpret_cast<const uint8_t*>(key);
-    const uint8_t * const end = ptr + len;
-    
-    uint64_t v[4];
-    uint64_t item = 1;
-    
-    v[0] = ((static_cast<uint64_t>(seed) + k0) * k3) ^ len;
-    v[1] = ((static_cast<uint64_t>(seed) + k1) * k2) + len;
-    v[2] = ((static_cast<uint64_t>(seed) + k2) * k0) + len;
-    v[3] = ((static_cast<uint64_t>(seed) + k3) * k1) ^ len;
-
-    SPECK(v[0], v[1], k3);
-    SPECK(v[1], v[0], k2);
-    SPECK(v[2], v[3], k1);
-    SPECK(v[3], v[2], k0);
-
-    if (len >= 32)
-    {        
-        do
-        {
-            item += read_u64(ptr); SPECK(v[2], v[0], item); ptr += 8;
-            item += read_u64(ptr); SPECK(v[0], v[1], item); ptr += 8;
-            item += read_u64(ptr); SPECK(v[1], v[2], item); ptr += 8;
-            item += read_u64(ptr); SPECK(v[3], v[3], item); ptr += 8;
-            SPECK(v[0], v[1], k3);
-            SPECK(v[1], v[2], k1);
-            SPECK(v[2], v[3], k0);
-            SPECK(v[3], v[0], k2);
-        }
-        while (ptr <= (end - 32));
-
-            SPECK(v[0], v[1], k0);
-            SPECK(v[1], v[2], k2);
-            SPECK(v[2], v[3], k3);
-            SPECK(v[3], v[0], k1);
-            // SPECK(v[0], v[1], k2);
-            // SPECK(v[1], v[2], k0);
-            // SPECK(v[2], v[3], k1);
-            // SPECK(v[3], v[0], k3);
-    }
-    
-    if ((end - ptr) >= 16)
-    {
-            item += read_u64(ptr); SPECK(v[1], v[0], item); ptr += 8;
-            item += read_u64(ptr); SPECK(v[0], v[1], item); ptr += 8;
-            SPECK(v[0], v[1], k2);
-            SPECK(v[1], v[2], k3);
-            // SPECK(v[2], v[3], k1);
-            // SPECK(v[3], v[0], k0);
-    }
-    
-    if ((end - ptr) >= 8)
-    {
-            item += read_u64(ptr); SPECK(v[1], v[0], item); ptr += 8;
-            SPECK(v[0], v[1], k1);
-            // SPECK(v[1], v[0], k3);
-    }
-    
-    if ((end - ptr) >= 4)
-    {
-            item += read_u32(ptr); SPECK(v[1], v[0], item); ptr += 4;
-            SPECK(v[0], v[1], k2);
-            // SPECK(v[1], v[0], k0);
-    }
-    
-    if ((end - ptr) >= 2)
-    {
-            item += read_u16(ptr); SPECK(v[1], v[0], item); ptr += 2;
-            SPECK(v[0], v[1], k0);
-            // SPECK(v[1], v[0], k2);
-    }
-    
-    if ((end - ptr) >= 1)
-    {
-            item += read_u8(ptr); SPECK(v[1], v[0], item);
-            SPECK(v[0], v[1], k3);
-            // SPECK(v[1], v[0], k1);
-    }
-    
-            SPECK(v[0], v[1], k3);
-            SPECK(v[1], v[2], k1);
-            SPECK(v[2], v[3], k2);
-            SPECK(v[3], v[0], k0);
-            SPECK(v[0], v[1], k1);
-            SPECK(v[1], v[2], k3);
-            SPECK(v[2], v[3], k0);
-            SPECK(v[3], v[0], k2);
-
-    memcpy(out, v, 16);
+static inline uint64_t _specklemum(const uint64_t A, const uint64_t B) {
+	uint64_t r = (A ^ rotate_left(B, 39)) * (B ^ rotate_left(A, 39));
+	return r ^ (r >> 32);
 }
 
+static inline uint64_t _speckler08(const uint8_t *p){ uint8_t  v; memcpy(&v, p, 1); return v; }
+static inline uint64_t _speckler16(const uint8_t *p){ uint16_t v; memcpy(&v, p, 2); return v; }
+static inline uint64_t _speckler32(const uint8_t *p){ uint32_t v; memcpy(&v, p, 4); return v; }
+static inline uint64_t _speckler64(const uint8_t *p){ uint64_t v; memcpy(&v, p, 8); return v; }
+static inline uint64_t __speckler64(const uint8_t *p){ return (_speckler32(p) << 32) | _speckler32(p + 4); }
+
+
+void speckleHash(const uint8_t * key, uint64_t len, uint64_t seed, uint8_t * out) {
+    const uint8_t * p = key;
+    uint64_t v[2];
+    seed += _specklep1;
+    seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
+    v[0] = seed;
+    seed += _specklep2;
+    seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
+    v[1] = seed;
+    seed += _specklep3;
+    seed ^= seed >> 29 ^ seed >> 43 ^ seed << 7 ^ seed << 53;
+
+	uint64_t i, a = seed + _specklep4, b = seed + _specklep3, c = seed + _specklep2, d = seed + _specklep1;
+	for (i = 0; i + 32 <= len; i += 32, p += 32)
+	{
+		a ^= (_speckler64(p     )) + _specklep1; a = rotate_left(a, 23) * _specklep3;
+		b ^= (_speckler64(p +  8)) + _specklep2; b = rotate_left(b, 25) * _specklep4;
+		c ^= (_speckler64(p + 16)) + _specklep3; c = rotate_left(c, 29) * _specklep5;
+		d ^= (_speckler64(p + 24)) + _specklep4; d = rotate_left(d, 31) * _specklep1;
+		seed += a + b + c + d;
+	}
+	seed += _specklep5;
+	switch (len & 31) {
+	case	1:	seed = _specklemum(seed, _speckler08(p) ^ _specklep1);	break;
+	case	2:	seed = _specklemum(seed, _speckler16(p) ^ _specklep1);	break;
+	case	3:	seed = _specklemum(seed, ((_speckler16(p) << 8) | _speckler08(p + 2)) ^ _specklep1);	break;
+	case	4:	seed = _specklemum(seed, _speckler32(p) ^ _specklep1);	break;
+	case	5:	seed = _specklemum(seed, ((_speckler32(p) << 8) | _speckler08(p + 4)) ^ _specklep1);	break;
+	case	6:	seed = _specklemum(seed, ((_speckler32(p) << 16) | _speckler16(p + 4)) ^ _specklep1);	break;
+	case	7:	seed = _specklemum(seed, ((_speckler32(p) << 24) | (_speckler16(p + 4) << 8) | _speckler08(p + 6)) ^ _specklep1);	break;
+	case	8:	seed = _specklemum(seed, __speckler64(p) ^ _specklep1);	break;
+	case	9:	seed = _specklemum(__speckler64(p) + seed, _speckler08(p + 8) ^ _specklep2);	break;
+	case	10:	seed = _specklemum(__speckler64(p) + seed, _speckler16(p + 8) ^ _specklep2);	break;
+	case	11:	seed = _specklemum(__speckler64(p) + seed, ((_speckler16(p + 8) << 8) | _speckler08(p + 8 + 2)) ^ _specklep2);	break;
+	case	12:	seed = _specklemum(__speckler64(p) + seed, _speckler32(p + 8) ^ _specklep2);	break;
+	case	13:	seed = _specklemum(__speckler64(p) + seed, ((_speckler32(p + 8) << 8) | _speckler08(p + 8 + 4)) ^ _specklep2);	break;
+	case	14:	seed = _specklemum(__speckler64(p) + seed, ((_speckler32(p + 8) << 16) | _speckler16(p + 8 + 4)) ^ _specklep2);	break;
+	case	15:	seed = _specklemum(__speckler64(p) + seed, ((_speckler32(p + 8) << 24) | (_speckler16(p + 8 + 4) << 8) | _speckler08(p + 8 + 6)) ^ _specklep2);	break;
+	case	16:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2);	break;
+	case	17:	seed = _specklemum(__speckler64(p) + seed, _speckler32(p + 8) + _specklep2) + _specklemum(_speckler32(p + 12) ^ seed, _speckler08(p + 16) ^ _specklep3);	break;
+	case	18:	seed = _specklemum(__speckler64(p) + seed, _speckler32(p + 8) + _specklep2) + _specklemum(_speckler32(p + 12) ^ seed, _speckler16(p + 16) ^ _specklep3);	break;
+	case	19:	seed = _specklemum(__speckler64(p) + seed, _speckler32(p + 8) + _specklep2) + _specklemum(_speckler32(p + 12) ^ seed, ((_speckler16(p + 16) << 8) | _speckler08(p + 16 + 2)) ^ _specklep3);	break;
+	case	20:	seed = _specklemum(__speckler64(p) + seed, _speckler32(p + 8) + _specklep2) + _specklemum(_speckler32(p + 12) ^ seed, _speckler32(p + 16) ^ _specklep3);	break;
+	case	21:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(_speckler16(p + 16) ^ seed, ((_speckler16(p + 18) << 8) | _speckler08(p + 16 + 4)) ^ _specklep3);	break;
+	case	22:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(_speckler16(p + 16) ^ seed, (_speckler32(p + 18) << 16) ^ _specklep3);	break;
+	case	23:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(_specklep4 + seed, ((_speckler32(p + 16) << 24) | (_speckler16(p + 16 + 4) << 8) | _speckler08(p + 16 + 6)) ^ _specklep3);	break;
+	case	24:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(__speckler64(p + 16) + seed, seed ^ _specklep3);	break;
+	case	25:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(__speckler64(p + 16) ^ seed, _speckler08(p + 24) ^ _specklep4);	break;
+	case	26:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(__speckler64(p + 16) ^ seed, _speckler16(p + 24) ^ _specklep4);	break;
+	case	27:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(__speckler64(p + 16) ^ seed, ((_speckler16(p + 24) << 8) | _speckler08(p + 24 + 2)) ^ _specklep4);	break;
+	case	28:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(__speckler64(p + 16) ^ seed, _speckler32(p + 24) ^ _specklep4);	break;
+	case	29:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(__speckler64(p + 16) ^ seed, ((_speckler32(p + 24) << 8) | _speckler08(p + 24 + 4)) ^ _specklep4);	break;
+	case	30:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(__speckler64(p + 16) ^ seed, ((_speckler32(p + 24) << 16) | _speckler16(p + 24 + 4)) ^ _specklep4);	break;
+	case	31:	seed = _specklemum(__speckler64(p) + seed, __speckler64(p + 8) + _specklep2) + _specklemum(__speckler64(p + 16) ^ seed, ((_speckler32(p + 24) << 24) | (_speckler16(p + 24 + 4) << 8) | _speckler08(p + 24 + 6)) ^ _specklep4);	break;
+	}
+    v[0] += (seed ^ rotate_left(seed, 31) ^ rotate_left(seed, 17)) * _specklep0 ^ len;
+    v[1] += (seed ^ rotate_left(seed, 21) ^ rotate_left(seed, 53)) * (_specklep5 ^ len << 1);
+    memcpy(out, v, 16);
+}

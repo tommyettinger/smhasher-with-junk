@@ -15,7 +15,7 @@ const uint64_t _waterp3 = 0x589965cc75374cc3ull, _waterp4 = 0x1d8e4e27c47d124ful
 
 static inline uint64_t _watermum(const uint64_t A, const uint64_t B) {
     uint64_t r = A * B;
-    return r - (r >> 32);
+    return r ^ (r >> 31);
 }
 
 static inline uint64_t _waterr08(const uint8_t *p){ uint8_t  v; memcpy(&v, p, 1); return v; }
@@ -51,8 +51,8 @@ static inline uint32_t waterhash(const void* key, size_t len, uint64_t seed){
 	case 14: seed = _watermum(_waterr32(p) ^ seed, _waterr32(p + 4) ^ _waterp2) ^ _watermum(seed ^ _waterr32(p + 8), (_waterr16(p + 12)) ^ _waterp4); break;
 	case 15: seed = _watermum(_waterr32(p) ^ seed, _waterr32(p + 4) ^ _waterp2) ^ _watermum(seed ^ _waterr32(p + 8), (_waterr16(p + 12) << 8 | _waterr08(p + 14)) ^ _waterp4); break;
 	}
-	seed = (seed ^ seed << 16) * (len ^ _waterp0);
-	return (uint32_t)(seed - (seed >> 32));
+	seed = (seed ^ seed << 16 ^ len) * _waterp0;
+	return (uint32_t)(seed ^ (seed >> 31));
 }
 #endif
 

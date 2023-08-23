@@ -367,7 +367,7 @@ HashInfo g_hashes[] =
 #endif
 #endif
   { "waterhash", "waterhash 32bit result",
-  64, 64, 32, 0x06377306, NULL, waterhash_test}, //0xC97DE72F
+  64, 64, 32, 0xADCEB31E, NULL, waterhash_test}, //0x06377306
   { "wheathash", "wheathash 64bit result",
   64, 64, 64, 0x5EB8ACE1, NULL, wheathash_test},
   { "wheatoaathash", "wheatOAAThash 64bit result",
@@ -470,7 +470,7 @@ HashInfo g_hashes[] =
     64, 64, 128, 0x2EFAD245,
     NULL, metrohash128_2_with_state_test },
   { "speckle", "speckleHash for 64-bit, 128-bit output",
-    64, 64, 128, 0x2EFAD245,
+    64, 64, 128, 0xED78FE33,
     NULL, speckle_with_state_test },
 #endif
 #if defined(__SSE4_2__) && defined(__x86_64__)

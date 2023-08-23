@@ -55,6 +55,12 @@ inline static uint64_t rotate_right(uint64_t v, unsigned k)
     return (v >> k) | (v << (64 - k));
 }
 
+/* rotate left idiom recognized by compiler*/
+inline static uint64_t rotate_left(uint64_t v, unsigned k)
+{
+    return (v << k) | (v >> (64 - k));
+}
+
 // unaligned reads, fast and safe on Nehalem and later microarchitectures
 inline static uint64_t read_u64(const void * const ptr)
 {
