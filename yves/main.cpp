@@ -373,7 +373,7 @@ HashInfo g_hashes[] =
   { "wheatoaathash", "wheatOAAThash 64bit result",
   64, 64, 64, 0xEC02A015, NULL, wheatoaathash_test},
   { "woothash", "woothash 64bit result",
-  64, 64, 64, 0x9EE012F5, NULL, woothash_test},
+  64, 64, 64, 0x4A098D76, NULL, woothash_test}, //0x9EE012F5
   { "wickethash", "wickethash 64bit result",
   64, 64, 64, 0xEB57F61C, NULL, wickethash_test},
   { "wildhash", "wildhash 64bit result",
