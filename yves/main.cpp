@@ -367,7 +367,7 @@ HashInfo g_hashes[] =
 #endif
 #endif
   { "waterhash", "waterhash 32bit result",
-  64, 64, 32, 0xADCEB31E, NULL, waterhash_test}, //0x06377306
+  64, 64, 32, 0x89FB9237, NULL, waterhash_test}, //0x06377306
   { "wheathash", "wheathash 64bit result",
   64, 64, 64, 0xFCE35E6E, NULL, wheathash_test}, //0x5EB8ACE1
   { "wheatoaathash", "wheatOAAThash 64bit result",
