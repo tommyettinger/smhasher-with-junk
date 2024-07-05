@@ -1,0 +1,4703 @@
+--- Testing donothing32 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000127 seconds
+--- Testing donothing64 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000104 seconds
+--- Testing donothing128 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000052 seconds
+--- Testing NOP_OAAT_read64 "Noop function (measure call + OAAT reading overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 4: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000110 seconds
+--- Testing BadHash "very simple XOR shift" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xAB432E23 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.659868 seconds
+--- Testing sumhash "sum all bytes" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0000A9AC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.237258 seconds
+--- Testing sumhash32 "sum all 32bit words" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3D6DC280 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 1.685149 seconds
+--- Testing multiply_shift "Dietzfelbinger Multiply-shift on strings" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x34D74ED6 ....... FAIL! (Expected 0xfce355a6)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.456773 seconds
+--- Testing pair_multiply_shift "Pair-multiply-shift" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC2FBD3BE ....... FAIL! (Expected 0xd4b20347)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.155768 seconds
+--- Testing crc32 "CRC-32 soft" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3719DB20 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 33.510987 seconds
+--- Testing md5-128 "MD5" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF263F96F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 49.750673 seconds
+--- Testing md5_64 "MD5, bits 32-95" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x12F0BA8E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 49.346057 seconds
+--- Testing md5_32 "MD5, bits 32-63" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF3DFF19F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 49.044431 seconds
+--- Testing sha1-160 "SHA1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6AF411D8 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 41.042061 seconds
+--- Testing sha1_32 "SHA1, low 32 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB3122757 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 40.770473 seconds
+--- Testing sha1_64 "SHA1, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x995397D5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 40.915485 seconds
+--- Testing sha2-224 "SHA2-224" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x407AA518 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 74.076167 seconds
+--- Testing sha2-224_64 "SHA2-224, low 64 bits" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF3E40ECA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 73.404626 seconds
+--- Testing sha2-256 "SHA2-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEBDA2FB1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 73.167392 seconds
+--- Testing sha2-256_64 "SHA2-256, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC1C4FA72 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 73.476056 seconds
+--- Testing sha1ni "SHA1_NI (amd64 HW SHA ext)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x375755A4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 12.512151 seconds
+--- Testing sha1ni_32 "hardened SHA1_NI (amd64 HW SHA ext), low 32 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE70686CC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 12.641758 seconds
+--- Testing sha2ni-256 "SHA2_NI-256 (amd64 HW SHA ext)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x4E3BB25E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 12.826960 seconds
+--- Testing sha2ni-256_64 "hardened SHA2_NI-256 (amd64 HW SHA ext), low 64 bits" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF938E80E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 12.552149 seconds
+--- Testing rmd128 "RIPEMD-128" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFF576977 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 57.125165 seconds
+--- Testing rmd160 "RIPEMD-160" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x30B37AC6 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 85.571231 seconds
+--- Testing rmd256 "RIPEMD-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEB16FAD7 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 46.390397 seconds
+--- Testing blake3_c "BLAKE3 c" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x50E4CD91 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 23.265911 seconds
+--- Testing blake2s-128 "blake2s-128" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE8D8FCDF ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 49.893708 seconds
+--- Testing blake2s-160 "blake2s-160" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD50FF144 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 50.217896 seconds
+--- Testing blake2s-224 "blake2s-224" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x19B36D2C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 50.633523 seconds
+--- Testing blake2s-256 "blake2s-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x841D6354 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 50.471422 seconds
+--- Testing blake2s-256_64 "blake2s-256, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x53000BB2 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 50.663604 seconds
+--- Testing blake2b-160 "blake2b-160" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x28ADDA30 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 35.538582 seconds
+--- Testing blake2b-224 "blake2b-224" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x101A62A4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 35.712094 seconds
+--- Testing blake2b-256 "blake2b-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC9D8D995 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 35.159540 seconds
+--- Testing blake2b-256_64 "blake2b-256, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xCF4F7EC3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 35.196159 seconds
+--- Testing asconhashv12 "asconhashv12 256bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA969C160 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 98.321392 seconds
+--- Testing asconhashv12_64 "asconhashv12, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE7DEF300 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 84.382266 seconds
+--- Testing sha3-256 "SHA3-256 (Keccak)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x21048CE3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 154.374579 seconds
+--- Testing sha3-256_64 "SHA3-256 (Keccak), low 64 bits" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE62E5CC0 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 153.238498 seconds
+--- Testing hasshe2 "SSE2 hasshe2, 256-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF5D39DFE ....... PASS
+Running sanity check 1     . 0: 0x9A != 0x77  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000078 seconds
+--- Testing poly_1_mersenne "Degree 1 Hashing mod 2^61-1" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0CE2F957 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.586315 seconds
+--- Testing poly_2_mersenne "Degree 2 Hashing mod 2^61-1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7006A38C ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.814571 seconds
+--- Testing poly_3_mersenne "Degree 3 Hashing mod 2^61-1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x283BDD96 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.031576 seconds
+--- Testing poly_4_mersenne "Degree 4 Hashing mod 2^61-1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x79C2AE22 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.219504 seconds
+--- Testing tabulation "64-bit Tabulation with Multiply-Shift Mixer" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB49C607C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.868850 seconds
+--- Testing tabulation32 "32-bit Tabulation with Multiply-Shift Mixer" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x335F64EA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.567544 seconds
+--- Testing crc32_hw "SSE4.2 crc32 in HW" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0C7346F0 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.061866 seconds
+--- Testing crc64_hw "SSE4.2 crc64 in HW" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE7C3FD0E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.973446 seconds
+--- Testing crc32_hw1 "Faster Adler SSE4.2 crc32 on Intel HW" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0C7346F0 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.396280 seconds
+--- Testing crc32_pclmul "-mpclmul crc32 in asm on HW" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x83276F66 ....... SKIP (self- or unseeded)
+Running sanity check 1     . 0: 0xF5 != 0xE6  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000146 seconds
+--- Testing o1hash "o(1)hash unseeded, from wyhash" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x85051E87 ....... PASS
+Running sanity check 1     . 0: 0x6C == 0x6C  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000350 seconds
+--- Testing fibonacci "wordwise Fibonacci" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFE3BD380 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 1.863390 seconds
+--- Testing k-hash32 "K-Hash mixer, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x99B3FFCD ....... PASS
+Running sanity check 1     . 0: 0x69 != 0x01  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000107 seconds
+--- Testing k-hash64 "K-Hash mixer, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xAB5518A1 ....... PASS
+Running sanity check 1     . 0: 0x23 == 0x23  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000092 seconds
+--- Testing FNV1a "Fowler-Noll-Vo hash, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE3CBBE91 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.126499 seconds
+--- Testing FNV1A_Totenschiff "FNV1A_Totenschiff_v1 64-bit sanmayce" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x95D95ACF ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.615739 seconds
+--- Testing FNV1A_Pippip_Yurii "FNV1A-Pippip_Yurii 32-bit sanmayce" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE79AE3E4 ....... PASS
+Running sanity check 1     . 0: 0xA5 == 0xA5  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.001669 seconds
+--- Testing FNV1a_YT "FNV1a-YoshimitsuTRIAD 32-bit sanmayce" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD8AFFD71 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.214650 seconds
+--- Testing FNV64 "Fowler-Noll-Vo hash, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x103455FC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.938508 seconds
+--- Testing FNV128 "Go variant of FNV, 128-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBCAA1426 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 33.938590 seconds
+--- Testing FNV2 "wordwise FNV" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1967C625 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.422426 seconds
+--- Testing fletcher2 "fletcher2 ZFS" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x890767C0 ....... PASS
+Running sanity check 1     . 0: 0x7A == 0x7A  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000246 seconds
+--- Testing fletcher4 "fletcher4 ZFS" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x890767C0 ....... PASS
+Running sanity check 1     . 0: 0x7A == 0x7A  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000278 seconds
+--- Testing bernstein "Bernstein, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBDB4B640 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 13.091307 seconds
+--- Testing sdbm "sdbm as in perl5" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x582AF769 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.833339 seconds
+--- Testing x17 "x17" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8128E14C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.657329 seconds
+--- Testing libiberty "libiberty htab_hash_string" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x584FBC20 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 20.935174 seconds
+--- Testing gcc "gcc libcpp" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC6239327 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 20.874960 seconds
+--- Testing JenkinsOOAT "Bob Jenkins' OOAT as in perl 5.18" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x83E133DA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 21.780754 seconds
+--- Testing JenkinsOOAT_perl "Bob Jenkins' OOAT as in old perl5" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEE05869B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 21.590578 seconds
+--- Testing pearsonhash64 "Pearson hash, 64-bit SSSE3" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x12E4C8CD ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 28.336952 seconds
+--- Testing pearsonhash128 "Pearson hash, 128-bit SSSE3, low 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6CCBB7B3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 28.535973 seconds
+--- Testing pearsonhash256 "Pearson hash, 256-bit SSSE3, low 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7F8BEB21 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 29.824615 seconds
+--- Testing pearsonbhash64 "Pearson block hash, 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB6FF2DFC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.778765 seconds
+--- Testing pearsonbhash128 "Pearson block hash, 128-bit, low 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6BEFE6EA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.151822 seconds
+--- Testing pearsonbhash256 "Pearson block hash, 256-bit, low 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x999B3C19 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 12.232837 seconds
+--- Testing VHASH_32 "VHASH_32 by Ted Krovetz and Wei Dai" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF0077651 ....... PASS
+Running sanity check 1     . 0: 0x08 != 0xA1  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000178 seconds
+--- Testing VHASH_64 "VHASH_64 by Ted Krovetz and Wei Dai" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF97D84FE ....... PASS
+Running sanity check 1     . 0: 0x08 != 0xA1  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000177 seconds
+--- Testing MicroOAAT "Small non-multiplicative OAAT (by funny-falcon)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x16F1BA97 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 21.065298 seconds
+--- Testing farsh32 "FARSH 32bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBCDE332C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.454978 seconds
+--- Testing farsh64 "FARSH 64bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDE2FDAEE ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.182893 seconds
+--- Testing farsh128 "FARSH 128bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x82B6CBEC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.398208 seconds
+--- Testing farsh256 "FARSH 256bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFEBEA0BC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.310403 seconds
+--- Testing jodyhash32 "jodyhash, 32-bit (v5)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFB47D60D ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.360707 seconds
+--- Testing jodyhash64 "jodyhash, 64-bit (v5)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9F09E57F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.938239 seconds
+--- Testing lookup3 "Bob Jenkins' lookup3" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3D83917A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.477125 seconds
+--- Testing superfast "Paul Hsieh's SuperFastHash" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0C80403A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.189529 seconds
+--- Testing MurmurOAAT "Murmur one-at-a-time" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x5363BD98 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 26.550819 seconds
+--- Testing Crap8 "Crap8" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x743E97A1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.785590 seconds
+--- Testing xxHash32 "xxHash, 32-bit for x86" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBA88B743 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.596783 seconds
+--- Testing Murmur1 "MurmurHash1" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9EA7D056 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.084003 seconds
+--- Testing Murmur2 "MurmurHash2 for x86, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x27864C1E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.934356 seconds
+--- Testing Murmur2A "MurmurHash2A for x86, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7FBD4396 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.979495 seconds
+--- Testing Murmur2B "MurmurHash64A for x64, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1F0D3804 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.043881 seconds
+--- Testing Murmur2C "MurmurHash64B for x86, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDD537C05 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.170994 seconds
+--- Testing Murmur3A "MurmurHash3 for x86, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB0F57EE3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.467204 seconds
+--- Testing PMurHash32 "Shane Day's portable-ized MurmurHash3 for x86, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB0F57EE3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.758128 seconds
+--- Testing Murmur3C "MurmurHash3 for x86, 128-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB3ECE62A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.174543 seconds
+--- Testing PMPML_32 "PMP_Multilinear 32-bit unseeded" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEAE2E3CC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.439329 seconds
+--- Testing PMPML_64 "PMP_Multilinear 64-bit unseeded" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x584CC9DF ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.597748 seconds
+--- Testing City32 "Google CityHash32WithSeed (old)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x5C28AD62 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.988557 seconds
+--- Testing metrohash64 "MetroHash64, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6FA828C9 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.615269 seconds
+--- Testing metrohash64_1 "MetroHash64_1, 64-bit (legacy)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEE88F7D2 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.593936 seconds
+--- Testing metrohash64_2 "MetroHash64_2, 64-bit (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE1FC7C6E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.523832 seconds
+--- Testing metrohash128 "MetroHash128, 128-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x4A6673E7 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.819136 seconds
+--- Testing metrohash128_1 "MetroHash128_1, 128-bit (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x20E8A1D7 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.834158 seconds
+--- Testing metrohash128_2 "MetroHash128_2, 128-bit (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x5437C684 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.643559 seconds
+--- Testing metrohash64crc_1 "MetroHash64crc_1 for x64 (legacy)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x29C68A50 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.174938 seconds
+--- Testing metrohash64crc_2 "MetroHash64crc_2 for x64 (legacy)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x2C00BD9F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.291682 seconds
+--- Testing cmetrohash64_1o "cmetrohash64_1 (shorter key optimized), 64-bit for x64" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEE88F7D2 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.680209 seconds
+--- Testing cmetrohash64_1 "cmetrohash64_1, 64-bit for x64" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEE88F7D2 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.476498 seconds
+--- Testing cmetrohash64_2 "cmetrohash64_2, 64-bit for x64" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE1FC7C6E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.528027 seconds
+--- Testing metrohash128crc_1 "MetroHash128crc_1 for x64 (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x5E75144E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.207309 seconds
+--- Testing metrohash128crc_2 "MetroHash128crc_2 for x64 (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1ACF3E77 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.543824 seconds
+--- Testing City64noSeed "Google CityHash64 without seed (default version, misses one final avalanche)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x63FC6063 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.597517 seconds
+--- Testing City64 "Google CityHash64WithSeed (old)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x25A20825 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.559577 seconds
+--- Testing aesnihash "majek's seeded aesnihash with aesenc, 64-bit for x64" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA68E0D42 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.247587 seconds
+--- Testing aesni "aesni 128bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD82C9011 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.696423 seconds
+--- Testing aesni-low "aesni 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x84DB5954 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.503495 seconds
+--- Testing falkhash "falkhash.asm with aesenc, 64-bit for x64" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x2F99B071 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.604098 seconds
+--- Testing MeowHash32low "MeowHash (requires x64 AES-NI)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8872DE1A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.124925 seconds
+--- Testing MeowHash64low "MeowHash (requires x64 AES-NI)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB04AC842 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.084770 seconds
+--- Testing MeowHash "MeowHash (requires x64 AES-NI)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA0D29861 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.455294 seconds
+--- Testing t1ha1_64le "Fast Positive Hash (portable, aims 64-bit, little-endian)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD6836381 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.164859 seconds
+--- Testing t1ha1_64be "Fast Positive Hash (portable, aims 64-bit, big-endian)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x93F864DE ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.317568 seconds
+--- Testing t1ha0_32le "Fast Positive Hash (portable, aims 32-bit, little-endian)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7F7D7B29 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.234994 seconds
+--- Testing t1ha0_32be "Fast Positive Hash (portable, aims 32-bit, big-endian)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDA6A4061 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.826573 seconds
+--- Testing tifuhash_64 "Tiny Floatingpoint Unique Hash with continued egyptian fractions" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x644236D4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 94.852459 seconds
+--- Testing beamsplitter "A possibly universal hash made with a 10x64 s-box." GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x17703D82 ....... FAIL! (Expected 0x1bdf358b)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 69.875176 seconds
+--- Testing DISCoHAsH "DISCoHAsH 64" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDISCoHAsH ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.609858 seconds
+--- Testing fasthash32 "fast-hash 32bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE9481AFC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.671614 seconds
+--- Testing fasthash64 "fast-hash 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA16231A7 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.610146 seconds
+--- Testing floppsyhash "slow hash designed for floating point hardware" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x090679B6 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 88.037644 seconds
+--- Testing chaskey "mouha.be/chaskey/ with added seed support" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBB4F6706 ....... FAIL! (Expected 0x81a90131)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.855186 seconds
+--- Testing SipHash "SipHash 2-4 - SSSE3 optimized" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC58D7F9C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.439913 seconds
+--- Testing HalfSipHash "HalfSipHash 2-4, 32bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA7A05F72 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.849870 seconds
+--- Testing GoodOAAT "Small non-multiplicative OAAT" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7B14EEE5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 22.802273 seconds
+--- Testing prvhash64_64m "prvhash64m 4.3 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD37C7E74 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.925228 seconds
+--- Testing prvhash64_64 "prvhash64 4.3 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD37C7E74 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.018494 seconds
+--- Testing prvhash64_128 "prvhash64 4.3 128bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB447480F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.490790 seconds
+--- Testing prvhash64s_64 "prvhash64s 4.3 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x891521D6 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 12.091496 seconds
+--- Testing prvhash64s_128 "prvhash64s 4.3 128bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0199728A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.486285 seconds
+--- Testing komihash "komihash 4.5" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x703624A4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.206445 seconds
+--- Testing SipHash13 "SipHash 1-3 - SSSE3 optimized" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x29C010BF ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.808496 seconds
+--- Testing TSip "Damian Gryski's Tiny SipHash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x354CBF08 ....... FAIL! (Expected 0x8e48155b)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.201969 seconds
+--- Testing seahash "seahash (64-bit, little-endian)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF0374078 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.439358 seconds
+--- Testing seahash32low "seahash - lower 32bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x712F0EE8 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.838182 seconds
+--- Testing clhash "carry-less mult. hash -DBITMIX (64-bit for x64, SSE4.2)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x2129B0F3 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.331691 seconds
+--- Testing HighwayHash64 "Google HighwayHash (portable with dylib overhead)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x98B8B976 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.016562 seconds
+--- Testing Murmur3F "MurmurHash3 for x64, 128-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6384BA69 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.630430 seconds
+--- Testing MUM "github.com/vnmakarov/mum-hash" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3EEAE2D4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.501609 seconds
+--- Testing MUMlow "github.com/vnmakarov/mum-hash" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x520263F5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.103761 seconds
+--- Testing mirhash "mirhash" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00A393C8 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.926696 seconds
+--- Testing mirhash32low "mirhash - lower 32bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE320CE68 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.883425 seconds
+--- Testing mirhashstrict "mirhashstrict (portable, 64-bit, little-endian)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x422A66FC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.684249 seconds
+--- Testing mirhashstrict32low "mirhashstrict - lower 32bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD50D1F09 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.360875 seconds
+--- Testing City64low "Google CityHash64WithSeed (low 32-bits)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xCC5BC861 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.631001 seconds
+--- Testing City128 "Google CityHash128WithSeed (old)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6531F54E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.050403 seconds
+--- Testing CityCrc128 "Google CityHashCrc128WithSeed SSE4.2 (old)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD4389C97 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.574170 seconds
+--- Testing FarmHash32 "Google FarmHash32WithSeed" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x47AB39AF ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.311173 seconds
+--- Testing FarmHash64 "Google FarmHash64WithSeed" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEBC4A679 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.661207 seconds
+--- Testing FarmHash128 "Google FarmHash128WithSeed" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x305C0D9A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.335912 seconds
+--- Testing farmhash32_c "farmhash32_with_seed (C99)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x47AB39AF ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.320970 seconds
+--- Testing farmhash64_c "farmhash64_with_seed (C99)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEBC4A679 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.594322 seconds
+--- Testing farmhash128_c "farmhash128_with_seed (C99)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x305C0D9A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.610907 seconds
+--- Testing xxHash64 "xxHash, 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x024B7CF4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.070732 seconds
+--- Testing Spooky32 "Bob Jenkins' SpookyHash, 32-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3F798BBB ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.768090 seconds
+--- Testing Spooky64 "Bob Jenkins' SpookyHash, 64-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA7F955F1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.250651 seconds
+--- Testing Spooky128 "Bob Jenkins' SpookyHash, 128-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8D263080 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.030219 seconds
+--- Testing SpookyV2_32 "Bob Jenkins' SpookyV2, 32-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA48BE265 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.977634 seconds
+--- Testing SpookyV2_64 "Bob Jenkins' SpookyV2, 64-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x972C4BDC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.441696 seconds
+--- Testing SpookyV2_128 "Bob Jenkins' SpookyV2, 128-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x893CFCBE ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.257986 seconds
+--- Testing pengyhash "pengyhash" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1FC2217B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.483249 seconds
+--- Testing mx3 "mx3 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x4DB51E5B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.779054 seconds
+--- Testing umash32 "umash 32" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9451AF3B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.383049 seconds
+--- Testing umash32_hi "umash 32 hi" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0CC4850F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.384856 seconds
+--- Testing umash64 "umash 64" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x161495C6 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.927577 seconds
+--- Testing umash128 "umash 128" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x36D4EC95 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.178973 seconds
+--- Testing halftime_hash64 "NH tree hash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x55F2A08F ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.366406 seconds
+--- Testing halftime_hash128 "NH tree hash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x43EEC3D3 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.025245 seconds
+--- Testing halftime_hash256 "NH tree hash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x554BF6A9 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.485994 seconds
+--- Testing halftime_hash512 "NH tree hash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0EB4F87B ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.085713 seconds
+--- Testing t1ha2_atonce "Fast Positive Hash (portable" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8F16C948 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.915507 seconds
+--- Testing t1ha2_stream "Fast Positive Hash (portable)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDED9B580 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.604805 seconds
+--- Testing t1ha2_atonce128 "Fast Positive Hash (portable)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB44C43A1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.064230 seconds
+--- Testing t1ha2_stream128 "Fast Positive Hash (portable)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE929E756 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.486159 seconds
+--- Testing t1ha0_aes_noavx "Fast Positive Hash (AES-NI)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF07C4DA5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.501067 seconds
+--- Testing t1ha0_aes_avx1 "Fast Positive Hash (AES-NI & AVX)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF07C4DA5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.437824 seconds
+--- Testing t1ha0_aes_avx2 "Fast Positive Hash (AES-NI & AVX2)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8B38C599 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.709987 seconds
+--- Testing ahash64 "ahash 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE15404B7 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.396284 seconds
+--- Testing xxh3 "xxHash v3, 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x39CD9E4A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.776076 seconds
+--- Testing xxh3low "xxHash v3, 64-bit, low 32-bits part" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFAE8467B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.813391 seconds
+--- Testing xxh128 "xxHash v3, 128-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEB61B3A0 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.827236 seconds
+--- Testing xxh128low "xxHash v3, 128-bit, low 64-bits part" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x54D1CC70 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.024963 seconds
+--- Testing wyhash32low "wyhash v4.1 lower 32bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x006B76C4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.411553 seconds
+--- Testing wyhash "wyhash v4.1 (64-bit)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBD5E840C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 1.930466 seconds
+--- Testing nmhash32 "nmhash32" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x12A30553 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.625445 seconds
+--- Testing nmhash32x "nmhash32x" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA8580227 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.985692 seconds
+--- Testing k-hashv32 "Vectorized K-HashV, 32-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB69DF8EB ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.904646 seconds
+--- Testing k-hashv64 "Vectorized K-HashV, 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA6B7E55B ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.372110 seconds
+./sanity.sh: line 5: build32/SMHasher: No such file or directory
+--- Testing donothing32 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000360 seconds
+--- Testing donothing64 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000331 seconds
+--- Testing donothing128 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000289 seconds
+--- Testing NOP_OAAT_read64 "Noop function (measure call + OAAT reading overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 4: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000500 seconds
+--- Testing BadHash "very simple XOR shift" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xAB432E23 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 32.370048 seconds
+--- Testing sumhash "sum all bytes" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0000A9AC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 18.484917 seconds
+--- Testing sumhash32 "sum all 32bit words" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3D6DC280 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.831263 seconds
+--- Testing multiply_shift "Dietzfelbinger Multiply-shift on strings" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x34D74ED6 ....... FAIL! (Expected 0xfce355a6)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 13.130251 seconds
+--- Testing pair_multiply_shift "Pair-multiply-shift" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC2FBD3BE ....... FAIL! (Expected 0xd4b20347)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.471883 seconds
+--- Testing crc32 "CRC-32 soft" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3719DB20 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 43.571236 seconds
+--- Testing md5-128 "MD5" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF263F96F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 82.189989 seconds
+--- Testing md5_64 "MD5, bits 32-95" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x12F0BA8E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 80.560526 seconds
+--- Testing md5_32 "MD5, bits 32-63" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF3DFF19F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 83.090328 seconds
+--- Testing sha1-160 "SHA1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6AF411D8 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 128.495695 seconds
+--- Testing sha1_32 "SHA1, low 32 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB3122757 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 119.633361 seconds
+--- Testing sha1_64 "SHA1, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x995397D5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 123.622585 seconds
+--- Testing sha2-224 "SHA2-224" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x407AA518 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 185.705075 seconds
+--- Testing sha2-224_64 "SHA2-224, low 64 bits" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF3E40ECA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 177.582353 seconds
+--- Testing sha2-256 "SHA2-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEBDA2FB1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 180.475678 seconds
+--- Testing sha2-256_64 "SHA2-256, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC1C4FA72 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 181.390909 seconds
+--- Testing sha1ni "SHA1_NI (amd64 HW SHA ext)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x375755A4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 49.641672 seconds
+--- Testing sha1ni_32 "hardened SHA1_NI (amd64 HW SHA ext), low 32 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE70686CC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 49.767910 seconds
+--- Testing sha2ni-256 "SHA2_NI-256 (amd64 HW SHA ext)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x4E3BB25E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 51.801234 seconds
+--- Testing sha2ni-256_64 "hardened SHA2_NI-256 (amd64 HW SHA ext), low 64 bits" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF938E80E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 50.601917 seconds
+--- Testing rmd128 "RIPEMD-128" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFF576977 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 88.212727 seconds
+--- Testing rmd160 "RIPEMD-160" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x30B37AC6 ....... PASS
+Running sanity check 1     ........--- Testing donothing32 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000232 seconds
+--- Testing donothing64 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000323 seconds
+--- Testing donothing128 "Do-Nothing function (measure call overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 0: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000263 seconds
+--- Testing NOP_OAAT_read64 "Noop function (measure call + OAAT reading overhead)" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00000000 ....... INSECURE (should not be 0)
+Running sanity check 1     . 4: 0x01 != 0x02  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000323 seconds
+--- Testing BadHash "very simple XOR shift" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xAB432E23 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 25.447268 seconds
+--- Testing sumhash "sum all bytes" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0000A9AC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 15.725249 seconds
+--- Testing sumhash32 "sum all 32bit words" SKIP
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3D6DC280 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.255980 seconds
+--- Testing multiply_shift "Dietzfelbinger Multiply-shift on strings" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x34D74ED6 ....... FAIL! (Expected 0xfce355a6)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.207025 seconds
+--- Testing pair_multiply_shift "Pair-multiply-shift" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC2FBD3BE ....... FAIL! (Expected 0xd4b20347)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.715327 seconds
+--- Testing crc32 "CRC-32 soft" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3719DB20 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 44.040681 seconds
+--- Testing md5-128 "MD5" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF263F96F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 84.719302 seconds
+--- Testing md5_64 "MD5, bits 32-95" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x12F0BA8E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 86.248874 seconds
+--- Testing md5_32 "MD5, bits 32-63" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF3DFF19F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 82.870668 seconds
+--- Testing sha1-160 "SHA1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6AF411D8 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 131.264803 seconds
+--- Testing sha1_32 "SHA1, low 32 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB3122757 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 124.769597 seconds
+--- Testing sha1_64 "SHA1, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x995397D5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 133.730798 seconds
+--- Testing sha2-224 "SHA2-224" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x407AA518 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 177.929452 seconds
+--- Testing sha2-224_64 "SHA2-224, low 64 bits" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF3E40ECA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 177.268257 seconds
+--- Testing sha2-256 "SHA2-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEBDA2FB1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 183.300696 seconds
+--- Testing sha2-256_64 "SHA2-256, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC1C4FA72 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 194.627173 seconds
+--- Testing sha1ni "SHA1_NI (amd64 HW SHA ext)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x375755A4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 48.869331 seconds
+--- Testing sha1ni_32 "hardened SHA1_NI (amd64 HW SHA ext), low 32 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE70686CC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 49.039495 seconds
+--- Testing sha2ni-256 "SHA2_NI-256 (amd64 HW SHA ext)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x4E3BB25E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 50.141019 seconds
+--- Testing sha2ni-256_64 "hardened SHA2_NI-256 (amd64 HW SHA ext), low 64 bits" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF938E80E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 48.638981 seconds
+--- Testing rmd128 "RIPEMD-128" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFF576977 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 91.417297 seconds
+--- Testing rmd160 "RIPEMD-160" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x30B37AC6 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 120.277614 seconds
+--- Testing rmd256 "RIPEMD-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEB16FAD7 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 82.673549 seconds
+--- Testing blake3_c "BLAKE3 c" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x50E4CD91 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 44.895801 seconds
+--- Testing blake2s-128 "blake2s-128" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE8D8FCDF ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 119.398601 seconds
+--- Testing blake2s-160 "blake2s-160" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD50FF144 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 120.441632 seconds
+--- Testing blake2s-224 "blake2s-224" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x19B36D2C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 109.816828 seconds
+--- Testing blake2s-256 "blake2s-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x841D6354 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 103.526985 seconds
+--- Testing blake2s-256_64 "blake2s-256, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x53000BB2 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 100.371819 seconds
+--- Testing blake2b-160 "blake2b-160" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x28ADDA30 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 66.764533 seconds
+--- Testing blake2b-224 "blake2b-224" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x101A62A4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 66.176404 seconds
+--- Testing blake2b-256 "blake2b-256" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC9D8D995 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 65.838301 seconds
+--- Testing blake2b-256_64 "blake2b-256, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xCF4F7EC3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 66.537065 seconds
+--- Testing asconhashv12 "asconhashv12 256bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA969C160 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 106.218378 seconds
+--- Testing asconhashv12_64 "asconhashv12, low 64 bits" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE7DEF300 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 94.090535 seconds
+--- Testing sha3-256 "SHA3-256 (Keccak)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x21048CE3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 851.744458 seconds
+--- Testing sha3-256_64 "SHA3-256 (Keccak), low 64 bits" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE62E5CC0 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 842.379415 seconds
+--- Testing hasshe2 "SSE2 hasshe2, 256-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF5D39DFE ....... PASS
+Running sanity check 1     . 0: 0x9A != 0x77  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000295 seconds
+--- Testing poly_1_mersenne "Degree 1 Hashing mod 2^61-1" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0CE2F957 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 14.544608 seconds
+--- Testing poly_2_mersenne "Degree 2 Hashing mod 2^61-1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7006A38C ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 15.006192 seconds
+--- Testing poly_3_mersenne "Degree 3 Hashing mod 2^61-1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x283BDD96 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 14.770077 seconds
+--- Testing poly_4_mersenne "Degree 4 Hashing mod 2^61-1" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x79C2AE22 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 15.132489 seconds
+--- Testing tabulation "64-bit Tabulation with Multiply-Shift Mixer" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB49C607C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.552275 seconds
+--- Testing tabulation32 "32-bit Tabulation with Multiply-Shift Mixer" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x335F64EA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.150269 seconds
+--- Testing crc32_hw "SSE4.2 crc32 in HW" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0C7346F0 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.129062 seconds
+--- Testing crc64_hw "SSE4.2 crc64 in HW" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE7C3FD0E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.834144 seconds
+--- Testing crc32_hw1 "Faster Adler SSE4.2 crc32 on Intel HW" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0C7346F0 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.937025 seconds
+--- Testing crc32_pclmul "-mpclmul crc32 in asm on HW" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x83276F66 ....... SKIP (self- or unseeded)
+Running sanity check 1     . 0: 0xF5 != 0xE6  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000226 seconds
+--- Testing o1hash "o(1)hash unseeded, from wyhash" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x85051E87 ....... PASS
+Running sanity check 1     . 0: 0x6C == 0x6C  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000807 seconds
+--- Testing fibonacci "wordwise Fibonacci" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFE3BD380 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.732956 seconds
+--- Testing k-hash32 "K-Hash mixer, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x99B3FFCD ....... PASS
+Running sanity check 1     . 0: 0x69 != 0x01  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000366 seconds
+--- Testing k-hash64 "K-Hash mixer, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xAB5518A1 ....... PASS
+Running sanity check 1     . 0: 0x23 == 0x23  FAIL  !!!!!
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000714 seconds
+--- Testing FNV1a "Fowler-Noll-Vo hash, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE3CBBE91 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 19.235930 seconds
+--- Testing FNV1A_Totenschiff "FNV1A_Totenschiff_v1 64-bit sanmayce" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x95D95ACF ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.450957 seconds
+--- Testing FNV1A_Pippip_Yurii "FNV1A-Pippip_Yurii 32-bit sanmayce" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE79AE3E4 ....... PASS
+Running sanity check 1     . 0: 0xA5 == 0xA5  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.003007 seconds
+--- Testing FNV1a_YT "FNV1a-YoshimitsuTRIAD 32-bit sanmayce" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD8AFFD71 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.975349 seconds
+--- Testing FNV64 "Fowler-Noll-Vo hash, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x103455FC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 19.363091 seconds
+--- Testing FNV128 "Go variant of FNV, 128-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBCAA1426 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 62.211689 seconds
+--- Testing FNV2 "wordwise FNV" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1967C625 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.662781 seconds
+--- Testing fletcher2 "fletcher2 ZFS" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x890767C0 ....... PASS
+Running sanity check 1     . 0: 0x7A == 0x7A  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000824 seconds
+--- Testing fletcher4 "fletcher4 ZFS" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x890767C0 ....... PASS
+Running sanity check 1     . 0: 0x7A == 0x7A  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000839 seconds
+--- Testing bernstein "Bernstein, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBDB4B640 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.090951 seconds
+--- Testing sdbm "sdbm as in perl5" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x582AF769 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 19.186917 seconds
+--- Testing x17 "x17" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8128E14C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 19.418884 seconds
+--- Testing libiberty "libiberty htab_hash_string" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x584FBC20 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 23.029716 seconds
+--- Testing gcc "gcc libcpp" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC6239327 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 23.033819 seconds
+--- Testing JenkinsOOAT "Bob Jenkins' OOAT as in perl 5.18" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x83E133DA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 23.802623 seconds
+--- Testing JenkinsOOAT_perl "Bob Jenkins' OOAT as in old perl5" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEE05869B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 23.769860 seconds
+--- Testing pearsonhash64 "Pearson hash, 64-bit SSSE3" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x12E4C8CD ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 30.686229 seconds
+--- Testing pearsonhash128 "Pearson hash, 128-bit SSSE3, low 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6CCBB7B3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 31.103348 seconds
+--- Testing pearsonhash256 "Pearson hash, 256-bit SSSE3, low 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7F8BEB21 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 32.305708 seconds
+--- Testing pearsonbhash64 "Pearson block hash, 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB6FF2DFC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.312133 seconds
+--- Testing pearsonbhash128 "Pearson block hash, 128-bit, low 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6BEFE6EA ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.034969 seconds
+--- Testing pearsonbhash256 "Pearson block hash, 256-bit, low 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x999B3C19 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 13.457156 seconds
+--- Testing VHASH_32 "VHASH_32 by Ted Krovetz and Wei Dai" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF0077651 ....... PASS
+Running sanity check 1     . 0: 0x08 != 0xA1  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.001483 seconds
+--- Testing VHASH_64 "VHASH_64 by Ted Krovetz and Wei Dai" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF97D84FE ....... PASS
+Running sanity check 1     . 0: 0x08 != 0xA1  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.000751 seconds
+--- Testing MicroOAAT "Small non-multiplicative OAAT (by funny-falcon)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x16F1BA97 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 19.840997 seconds
+--- Testing farsh32 "FARSH 32bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBCDE332C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.174332 seconds
+--- Testing farsh64 "FARSH 64bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDE2FDAEE ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.548744 seconds
+--- Testing farsh128 "FARSH 128bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x82B6CBEC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 30.581629 seconds
+--- Testing farsh256 "FARSH 256bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFEBEA0BC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 57.971841 seconds
+--- Testing jodyhash32 "jodyhash, 32-bit (v5)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFB47D60D ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.488068 seconds
+--- Testing jodyhash64 "jodyhash, 64-bit (v5)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9F09E57F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.108842 seconds
+--- Testing lookup3 "Bob Jenkins' lookup3" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3D83917A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.846918 seconds
+--- Testing superfast "Paul Hsieh's SuperFastHash" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0C80403A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.640371 seconds
+--- Testing MurmurOAAT "Murmur one-at-a-time" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x5363BD98 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 28.306875 seconds
+--- Testing Crap8 "Crap8" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x743E97A1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.868834 seconds
+--- Testing xxHash32 "xxHash, 32-bit for x86" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBA88B743 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.520912 seconds
+--- Testing Murmur1 "MurmurHash1" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9EA7D056 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.154349 seconds
+--- Testing Murmur2 "MurmurHash2 for x86, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x27864C1E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.198625 seconds
+--- Testing Murmur2A "MurmurHash2A for x86, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7FBD4396 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.403597 seconds
+--- Testing Murmur2B "MurmurHash64A for x64, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1F0D3804 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.089095 seconds
+--- Testing Murmur2C "MurmurHash64B for x86, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDD537C05 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.449651 seconds
+--- Testing Murmur3A "MurmurHash3 for x86, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB0F57EE3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.313381 seconds
+--- Testing PMurHash32 "Shane Day's portable-ized MurmurHash3 for x86, 32-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB0F57EE3 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 15.621177 seconds
+--- Testing Murmur3C "MurmurHash3 for x86, 128-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB3ECE62A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.891280 seconds
+--- Testing City32 "Google CityHash32WithSeed (old)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x5C28AD62 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.998371 seconds
+--- Testing metrohash64 "MetroHash64, 64-bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6FA828C9 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.488794 seconds
+--- Testing metrohash64_1 "MetroHash64_1, 64-bit (legacy)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEE88F7D2 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.792570 seconds
+--- Testing metrohash64_2 "MetroHash64_2, 64-bit (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE1FC7C6E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.057309 seconds
+--- Testing metrohash128 "MetroHash128, 128-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x4A6673E7 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.699668 seconds
+--- Testing metrohash128_1 "MetroHash128_1, 128-bit (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x20E8A1D7 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.691300 seconds
+--- Testing metrohash128_2 "MetroHash128_2, 128-bit (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x5437C684 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.676102 seconds
+--- Testing metrohash64crc_1 "MetroHash64crc_1 for x64 (legacy)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x29C68A50 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.139691 seconds
+--- Testing metrohash64crc_2 "MetroHash64crc_2 for x64 (legacy)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x2C00BD9F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.688411 seconds
+--- Testing cmetrohash64_1o "cmetrohash64_1 (shorter key optimized), 64-bit for x64" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEE88F7D2 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.746928 seconds
+--- Testing cmetrohash64_1 "cmetrohash64_1, 64-bit for x64" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEE88F7D2 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.083268 seconds
+--- Testing cmetrohash64_2 "cmetrohash64_2, 64-bit for x64" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE1FC7C6E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.486977 seconds
+--- Testing metrohash128crc_1 "MetroHash128crc_1 for x64 (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x5E75144E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.315566 seconds
+--- Testing metrohash128crc_2 "MetroHash128crc_2 for x64 (legacy)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1ACF3E77 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.332365 seconds
+--- Testing City64noSeed "Google CityHash64 without seed (default version, misses one final avalanche)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x63FC6063 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 14.510303 seconds
+--- Testing City64 "Google CityHash64WithSeed (old)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x25A20825 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 14.854332 seconds
+--- Testing aesnihash "majek's seeded aesnihash with aesenc, 64-bit for x64" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA68E0D42 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest . FAIL !!!!!
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.610284 seconds
+--- Testing aesni "aesni 128bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD82C9011 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.735596 seconds
+--- Testing aesni-low "aesni 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x84DB5954 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.712175 seconds
+--- Testing falkhash "falkhash.asm with aesenc, 64-bit for x64" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x2F99B071 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.711481 seconds
+--- Testing MeowHash32low "MeowHash (requires x64 AES-NI)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8872DE1A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.415809 seconds
+--- Testing MeowHash64low "MeowHash (requires x64 AES-NI)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB04AC842 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.969112 seconds
+--- Testing MeowHash "MeowHash (requires x64 AES-NI)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA0D29861 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.917142 seconds
+--- Testing t1ha1_64le "Fast Positive Hash (portable, aims 64-bit, little-endian)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD6836381 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.944296 seconds
+--- Testing t1ha1_64be "Fast Positive Hash (portable, aims 64-bit, big-endian)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x93F864DE ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.750310 seconds
+--- Testing t1ha0_32le "Fast Positive Hash (portable, aims 32-bit, little-endian)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7F7D7B29 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.697614 seconds
+--- Testing t1ha0_32be "Fast Positive Hash (portable, aims 32-bit, big-endian)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDA6A4061 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.871875 seconds
+--- Testing tifuhash_64 "Tiny Floatingpoint Unique Hash with continued egyptian fractions" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x644236D4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 84.026501 seconds
+--- Testing beamsplitter "A possibly universal hash made with a 10x64 s-box." GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1BDF358B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 88.364050 seconds
+--- Testing DISCoHAsH "DISCoHAsH 64" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDISCoHAsH ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 21.052775 seconds
+--- Testing fasthash32 "fast-hash 32bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE9481AFC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.654089 seconds
+--- Testing fasthash64 "fast-hash 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA16231A7 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.174191 seconds
+--- Testing floppsyhash "slow hash designed for floating point hardware" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9FF76CB9 ....... SKIP (self- or unseeded)
+Running sanity check 1     . 0: 0xEE != 0x75  FAIL  !!!!!
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 0.003148 seconds
+--- Testing chaskey "mouha.be/chaskey/ with added seed support" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBB4F6706 ....... FAIL! (Expected 0x81a90131)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 20.761741 seconds
+--- Testing SipHash "SipHash 2-4 - SSSE3 optimized" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xC58D7F9C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.768484 seconds
+--- Testing HalfSipHash "HalfSipHash 2-4, 32bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA7A05F72 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 24.525193 seconds
+--- Testing GoodOAAT "Small non-multiplicative OAAT" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x7B14EEE5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 21.127041 seconds
+--- Testing prvhash64_64m "prvhash64m 4.3 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD37C7E74 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.722934 seconds
+--- Testing prvhash64_64 "prvhash64 4.3 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD37C7E74 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.764391 seconds
+--- Testing prvhash64_128 "prvhash64 4.3 128bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB447480F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.770285 seconds
+--- Testing prvhash64s_64 "prvhash64s 4.3 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x891521D6 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 34.739938 seconds
+--- Testing prvhash64s_128 "prvhash64s 4.3 128bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0199728A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 37.368359 seconds
+--- Testing komihash "komihash 4.5" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x703624A4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.569851 seconds
+--- Testing SipHash13 "SipHash 1-3 - SSSE3 optimized" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x29C010BF ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.909298 seconds
+--- Testing TSip "Damian Gryski's Tiny SipHash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x354CBF08 ....... FAIL! (Expected 0x8e48155b)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.290422 seconds
+--- Testing seahash "seahash (64-bit, little-endian)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF0374078 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.954962 seconds
+--- Testing seahash32low "seahash - lower 32bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x712F0EE8 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.392102 seconds
+--- Testing clhash "carry-less mult. hash -DBITMIX (64-bit for x64, SSE4.2)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x2129B0F3 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.066705 seconds
+--- Testing HighwayHash64 "Google HighwayHash (portable with dylib overhead)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x98B8B976 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.556667 seconds
+--- Testing Murmur3F "MurmurHash3 for x64, 128-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6384BA69 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.009952 seconds
+--- Testing MUM "github.com/vnmakarov/mum-hash" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3EEAE2D4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.534436 seconds
+--- Testing MUMlow "github.com/vnmakarov/mum-hash" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x520263F5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.585680 seconds
+--- Testing mirhash "mirhash" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x00A393C8 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.760313 seconds
+--- Testing mirhash32low "mirhash - lower 32bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE320CE68 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.148249 seconds
+--- Testing mirhashstrict "mirhashstrict (portable, 64-bit, little-endian)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x422A66FC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.047779 seconds
+--- Testing mirhashstrict32low "mirhashstrict - lower 32bit" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD50D1F09 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.277751 seconds
+--- Testing City64low "Google CityHash64WithSeed (low 32-bits)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xCC5BC861 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.711359 seconds
+--- Testing City128 "Google CityHash128WithSeed (old)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x6531F54E ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.900694 seconds
+--- Testing CityCrc128 "Google CityHashCrc128WithSeed SSE4.2 (old)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xD4389C97 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.817649 seconds
+--- Testing FarmHash32 "Google FarmHash32WithSeed" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA2E45238 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.185739 seconds
+--- Testing FarmHash64 "Google FarmHash64WithSeed" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x35F84A93 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 13.672688 seconds
+--- Testing FarmHash128 "Google FarmHash128WithSeed" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9E636AAE ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.514813 seconds
+--- Testing farmhash32_c "farmhash32_with_seed (C99)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA2E45238 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.891476 seconds
+--- Testing farmhash64_c "farmhash64_with_seed (C99)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x35F84A93 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.949120 seconds
+--- Testing farmhash128_c "farmhash128_with_seed (C99)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9E636AAE ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.504609 seconds
+--- Testing xxHash64 "xxHash, 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x024B7CF4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.952370 seconds
+--- Testing Spooky32 "Bob Jenkins' SpookyHash, 32-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x3F798BBB ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.913682 seconds
+--- Testing Spooky64 "Bob Jenkins' SpookyHash, 64-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA7F955F1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.016929 seconds
+--- Testing Spooky128 "Bob Jenkins' SpookyHash, 128-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8D263080 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.245572 seconds
+--- Testing SpookyV2_32 "Bob Jenkins' SpookyV2, 32-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA48BE265 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.531722 seconds
+--- Testing SpookyV2_64 "Bob Jenkins' SpookyV2, 64-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x972C4BDC ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.800995 seconds
+--- Testing SpookyV2_128 "Bob Jenkins' SpookyV2, 128-bit result" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x893CFCBE ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.112458 seconds
+--- Testing pengyhash "pengyhash" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x1FC2217B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 10.947119 seconds
+--- Testing mx3 "mx3 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x4DB51E5B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.782240 seconds
+--- Testing umash32 "umash 32" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x9451AF3B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.268853 seconds
+--- Testing umash32_hi "umash 32 hi" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0CC4850F ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 6.960164 seconds
+--- Testing umash64 "umash 64" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x161495C6 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.854037 seconds
+--- Testing umash128 "umash 128" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x36D4EC95 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 9.692751 seconds
+--- Testing halftime_hash64 "NH tree hash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x55F2A08F ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 43.348715 seconds
+--- Testing halftime_hash128 "NH tree hash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x43EEC3D3 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.012458 seconds
+--- Testing halftime_hash256 "NH tree hash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x554BF6A9 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.175371 seconds
+--- Testing halftime_hash512 "NH tree hash variant" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x0EB4F87B ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 66.874018 seconds
+--- Testing t1ha2_atonce "Fast Positive Hash (portable" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8F16C948 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 7.099587 seconds
+--- Testing t1ha2_stream "Fast Positive Hash (portable)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xDED9B580 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.179597 seconds
+--- Testing t1ha2_atonce128 "Fast Positive Hash (portable)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB44C43A1 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 8.028604 seconds
+--- Testing t1ha2_stream128 "Fast Positive Hash (portable)" POOR
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE929E756 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.444377 seconds
+--- Testing t1ha0_aes_noavx "Fast Positive Hash (AES-NI)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF07C4DA5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.503833 seconds
+--- Testing t1ha0_aes_avx1 "Fast Positive Hash (AES-NI & AVX)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xF07C4DA5 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.109484 seconds
+--- Testing t1ha0_aes_avx2 "Fast Positive Hash (AES-NI & AVX2)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x8B38C599 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.843833 seconds
+--- Testing ahash64 "ahash 64bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xE15404B7 ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 2.773097 seconds
+--- Testing xxh3 "xxHash v3, 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x39CD9E4A ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.616246 seconds
+--- Testing xxh3low "xxHash v3, 64-bit, low 32-bits part" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xFAE8467B ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 12.905810 seconds
+--- Testing xxh128 "xxHash v3, 128-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xEB61B3A0 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 17.504202 seconds
+--- Testing xxh128low "xxHash v3, 128-bit, low 64-bits part" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x54D1CC70 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 16.835765 seconds
+--- Testing wyhash32low "wyhash v4.1 lower 32bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x006B76C4 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.395473 seconds
+--- Testing wyhash "wyhash v4.1 (64-bit)" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xBD5E840C ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.112340 seconds
+--- Testing nmhash32 "nmhash32" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0x12A30553 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 5.523945 seconds
+--- Testing nmhash32x "nmhash32x" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA8580227 ....... PASS
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 11.766762 seconds
+--- Testing k-hashv32 "Vectorized K-HashV, 32-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xB69DF8EB ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 4.084110 seconds
+--- Testing k-hashv64 "Vectorized K-HashV, 64-bit" GOOD
+
+[[[ Sanity Tests ]]]
+
+Verification value 0xA6B7E55B ....... SKIP (self- or unseeded)
+Running sanity check 1     .......... PASS
+Running AppendedZeroesTest .......... PASS
+
+
+Input vcode 0x00000001, Output vcode 0x00000001, Result vcode 0x00000001
+Verification value is 0x00000001 - Testing took 3.862367 seconds

@@ -1,0 +1,21 @@
+[submodule "SHA-Intrinsics"]
+	path = SHA-Intrinsics
+	url = https://github.com/noloader/SHA-Intrinsics
+[submodule "mx3"]
+	path = mx3
+	url = https://github.com/jonmaiga/mx3
+[submodule "prvhash"]
+	path = prvhash
+	url = https://github.com/avaneev/prvhash
+[submodule "hash-garage"]
+	path = hash-garage
+	url = https://github.com/gzm55/hash-garage
+[submodule "komihash"]
+	path = komihash
+	url = https://github.com/avaneev/komihash.git
+[submodule "k-hashv"]
+	path = k-hashv
+	url = https://github.com/Keith-Cancel/k-hashv
+[submodule "polymur-hash"]
+	path = polymur-hash
+	url = https://github.com/orlp/polymur-hash

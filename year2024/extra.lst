@@ -1,0 +1,15 @@
+rmd256
+sha2-224
+sha2-224_64
+sha2-256
+sha2-256_64
+sha3-256
+sha3-256_64
+blake2b-160
+blake2b-224
+blake2b-256_64
+blake2s-128
+blake2s-160
+blake2s-224
+blake2s-256_64
+blake2s-256

@@ -1,0 +1,106 @@
+language: c
+
+os:
+  - linux
+  - osx
+
+dist: trusty
+sudo: true
+
+# OS X only supports one image. Use the latest.
+osx_image: xcode8.3
+
+git:
+  depth: 2
+
+compiler:
+  - clang
+  - gcc
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-7
+
+env:
+  global:
+    - BUILD_JOBS=2
+
+  matrix:
+    - BUILD_SOURCE=sha1-x86.c
+    - BUILD_SOURCE=sha256-x86.c
+
+    # Travis cannot do native ARM
+    # - BUILD_SOURCE=sha1-arm.c
+    # - BUILD_SOURCE=sha256-arm.c
+
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+  allow_failures:
+    - os: osx
+
+# Whitelist branches to avoid testing branches
+branches:
+  only:
+    - master
+
+before_install:
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      if [[ "$CC" == gcc ]] && [[ ! -z $(command -v gcc-7) ]]; then
+        export CC=gcc-7
+      fi
+      if [[ $(uname -m) == "x86_64" ]]; then
+        export SDE_BIN=sde64
+      else
+        export SDE_BIN=sde
+      fi
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        export CC=clang
+        export SDE_BIN=sde
+    fi
+
+install:
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo sysctl kernel.yama.ptrace_scope=0
+      wget -q ${SDE_URL}
+      tar xvf ${SDE_ARCHIVE}.tar.bz2
+      export PATH=${PATH}:${TRAVIS_BUILD_DIR}/${SDE_ARCHIVE}
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      wget -q ${SDE_OSX_URL}
+      xattr -r -d "com.apple.quarantine" ${SDE_OSX_ARCHIVE}.tar.bz2
+      tar xvf ${SDE_OSX_ARCHIVE}.tar.bz2
+      for FILE in "$(find . -type f)"; do
+        # if [[ $(echo "$FILE" | grep -c '^\.git') ]]; then continue fi
+        xattr -r -d "com.apple.quarantine" "$FILE"
+      done
+      export PATH=${PATH}:${TRAVIS_BUILD_DIR}/${SDE_OSX_ARCHIVE}
+    fi
+
+script:
+  - |
+    "$CC" -Wall cpuid.c -o cpuid-sha.exe
+    "$CC" -Wall -DTEST_MAIN=1 -msse4.2 -msha $BUILD_SOURCE -o test.exe
+    echo "Bash version: $(bash --version | head -n 1)"
+    echo "SDE version: $("$SDE_BIN" -version | head -n 1)"
+    if [[ -z $(command -v "$SDE_BIN") ]]; then
+      echo "Cannot locate $SDE_BIN"
+    fi
+    if ./cpuid-sha.exe -q; then
+      ./test.exe
+    else
+      # The double-dash is required. -glm is Goldmont
+      "$SDE_BIN" -glm -- ./test.exe
+    fi
+
+# matrix:
+#  allow_failures:
+#    - os: osx
+
+#notifications:
+#  email: jdoe@example.com
