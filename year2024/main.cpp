@@ -272,6 +272,7 @@ HashInfo g_hashes[] =
   {0x811c9dc5, 0xcbf29ce4, 0x84222325, 0xcbf29ce484222325} /* TODO */},
 { FNV128_test,         128, 0xBCAA1426, "FNV128",      "Go variant of FNV, 128-bit", POOR, {} },
 { dottyhash64_test,     64, 0x103455FC, "dotty64",     "Simple Speck-based hash, 64-bit", POOR, {}},
+{ axhash_test,          64, 0x4DB51E5B, "axhash",      "ax 64bit", GOOD, {0x10} },
 #endif
 { FNV2_test,    __WORDSIZE, FNV2_VERIF, "FNV2",        "wordwise FNV", POOR, {} },
 { fletcher2_test,       64, 0x890767C0, "fletcher2",   "fletcher2 ZFS", POOR, {0UL} /* !! */ },
