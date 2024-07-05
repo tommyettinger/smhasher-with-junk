@@ -837,7 +837,7 @@ void clhash_seed_init(size_t &seed)
 static inline void
 mix (uint64_t &a, uint64_t &b, uint64_t &c)
 {
-  b = (b << 3 | b >> 29) ^ (a = (a << 24 | a >> 8) + b ^ (c += 0x2127599bf4325c37ULL)) + (a << 7 | a >> 25);
+  b = (b << 11 | b >> 53) ^ (a = (a << 56 | a >> 8) + b ^ (c += 0x2127599bf4325c37ULL)) + (a << 29 | a >> 35);
 }
 
 uint64_t
@@ -846,15 +846,15 @@ dottyhash64 (const void *buf, size_t len, uint64_t seed)
   const uint64_t *pos = (const uint64_t *)buf;
   const uint64_t *end = pos + (len / 8);
   const unsigned char *pos2;
-  uint64_t a = seed * (seed ^ 0x341dadfa6e524396ULL),
-           b = len * (len ^ 0x86268b0ae8494ce2ULL),
+  uint64_t a = len * (seed ^ 0x341dadfa6e524396ULL),
+           b = seed + (len ^ 0x86268b0ae8494ce2ULL),
            c = (seed ^ len) + 0x880355f21e6d1965ULL;
 
   while (pos + 1 < end)
     {
       a += *pos++;
       b += *pos++;
-      mix (a, b, c);
+      b = (b << 11 | b >> 53) ^ (a = (a << 56 | a >> 8) + b ^ (c += 0x2127599bf4325c37ULL)) + (a << 29 | a >> 35);
     }
 
   pos2 = (const unsigned char *)pos;
@@ -875,12 +875,13 @@ dottyhash64 (const void *buf, size_t len, uint64_t seed)
       b ^= (uint64_t)pos2[1] << 8;
     case 1:
       b ^= (uint64_t)pos2[0];
-      mix (b, a, c);
+      b = (b << 11 | b >> 53) ^ (a = (a << 56 | a >> 8) + b ^ (c += 0x2127599bf4325c37ULL)) + (a << 29 | a >> 35);
     }
-  mix (a, b, c);
-  mix (b, a, c);
-  return a;
+  b = (b << 11 | b >> 53) ^ (a = (a << 56 | a >> 8) + b ^ (c += 0x2127599bf4325c37ULL)) + (a << 29 | a >> 35);
+  b = (b << 11 | b >> 53) ^ (a = (a << 56 | a >> 8) + b ^ (c + 0x2127599bf4325c37ULL)) + (a << 29 | a >> 35);
+  return b;
 }
+
 
 #endif
 
