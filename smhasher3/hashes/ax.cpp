@@ -59,10 +59,13 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
 template <bool bswap>
 static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     const uint8_t* const tail = buf + (len & ~7);
+    //    $.verification_LE = 0xF6FC34B5,
+    //    $.verification_BE = 0x9E78CD56,
+//    uint64_t h = mix(seed + mix(len + C));
 
-    //uint64_t h = mix_stream(seed, len + 1);
-    uint64_t h = mix(seed + mix(len + C));
-
+    //    $.verification_LE = 0x288113E9,
+    //    $.verification_BE = 0x78278B75,
+    uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 59)));
 
     while (len >= 64) {
         len -= 64;
@@ -115,10 +118,11 @@ REGISTER_HASH(ax,
     0,
     $.impl_flags =
     FLAG_IMPL_MULTIPLY_64_64 |
+    FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0xF6FC34B5,
-    $.verification_BE = 0x9E78CD56,
+    $.verification_LE = 0x288113E9,
+    $.verification_BE = 0x78278B75,
     $.hashfn_native = ax<false>,
     $.hashfn_bswap = ax<true>
 );
