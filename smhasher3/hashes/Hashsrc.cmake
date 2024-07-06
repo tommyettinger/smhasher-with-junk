@@ -50,7 +50,6 @@ set(HASH_SRC_FILES
   hashes/rainbow.cpp
   hashes/wyhash.cpp
   hashes/aquahash.cpp
-  hashes/aesnihash-peterrk.cpp
   hashes/md5.cpp
   hashes/murmurhash3.cpp
   hashes/mx3.cpp
@@ -81,4 +80,5 @@ set(HASH_SRC_FILES
   hashes/o1hash.cpp
   hashes/murmur_oaat.cpp
   hashes/x17.cpp
+  hashes/ax.cpp
 )
