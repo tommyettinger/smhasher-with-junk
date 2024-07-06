@@ -184,12 +184,12 @@ axmix (uint64_t x)
 inline uint64_t
 axmix_stream (uint64_t h, uint64_t x)
 {
-  x += AXC;
-  x ^= (x >> 57) ^ (x >> 33);
+#define ROTL(d, lrot) ((d << (lrot)) | (d >> (8 * sizeof (d) - (lrot))))
   x *= AXC;
-  h += x;
+  h += ~x ^ ROTL (x, 7) ^ ROTL (x, 31);
   h *= AXC;
   return h;
+#undef ROTL
 }
 inline uint64_t
 ax_hash (const uint8_t *buf, size_t len, uint64_t seed)
@@ -198,7 +198,7 @@ ax_hash (const uint8_t *buf, size_t len, uint64_t seed)
   const uint8_t *const tail
       = reinterpret_cast<const uint8_t *> (buf64 + len / 8);
 
-  uint64_t h = seed ^ len;
+  uint64_t h = seed + len;
   while (len >= 32)
     {
       len -= 32;
