@@ -1,5 +1,6 @@
 /*
- * whitewaterhash - Very fast, high quality, platform independant hashing algorithm.
+ * whitewaterhash - Very fast, high quality, platform independent hashing algorithm.
+ * Based on 'rapidhash', which is:
  * Copyright (C) 2024 Nicolas De Carli
  *
  * Based on 'wyhash', by Wang Yi <godspeed_china@yeah.net>
@@ -57,45 +58,37 @@ static inline uint64_t ww_readSmall(const uint8_t* p, size_t k) {
 }
 
 /*
- *  64*64 -> 128bit multiply function.
+ *  Part of a mixing function that pseudorandomly moves bits between the given 64-bit A and B.
  *
- *  @param A  Address of 64-bit number.
- *  @param B  Address of 64-bit number.
+ *  @param A  Address of a 64-bit number.
+ *  @param B  Address of a 64-bit number.
  *
- *  Calculates 128-bit C = A * B.
+ *  Stores A's and B's initial values into a and b.
  *
- *  When isProtected is false:
- *  Overwritres A contents with C's low 64 bits.
- *  Overwritres B contents with C's high 64 bits.
- *
- *  When isProtected is true:
- *  Xors and overwrites A contents with C's low 64 bits.
- *  Xors and overwrites B contents with C's high 64 bits.
+ *  Overwrites A's contents with A ^ a * ROTL64(b, 31) + 0xD1B54A32D192ED03.
+ *  Overwrites B's contents with B ^ b * ROTL64(a, 33) + 0x9E3779B97F4A7C16.
+ * 
+ * The bits of A and of B will not be uniformly distributed after this; in particular,
+ * the LSB of A will be '1' 75% of the time given uniformly distributed A and B inputs,
+ * and the LSB of B will be '0' 75% of the time given the same distribution.
  */
 template <bool isProtected>
 static inline void ww_mum(uint64_t* A, uint64_t* B) {
     uint64_t a = *A, b = *B;
-    *A ^= a * ROTL64(b, 11) + UINT64_C(0xD1B54A32D192ED03);
-    *B ^= b * ROTL64(a, 11) + UINT64_C(0x9E3779B97F4A7C16);
-    //uint64_t a = *A, b = *B;
-    //*A = (b ^ ROTL64(b, 11) ^ ROTL64(b, 47)) * UINT64_C(0xC13FA9A902A6328F) + a;
-    //*B = (a ^ ROTL64(a, 13) ^ ROTL64(a, 43)) * UINT64_C(0x91E10DA5C79E7B1D) + b;
-    //uint64_t a = *A, b = *B;
-    //*A ^= ROTL64(a, 11) * UINT64_C(0xD1342543DE82EF95) + b;
-    //*B ^= ROTL64(b, 11) * UINT64_C(0xD1342543DE82EF95) + a;
-//    *A = ROTL64(*A, 3) ^ (*B = ROTL64(*B, 56) + *A ^ UINT64_C(0xC13FA9A902A6328F));
+    *A ^= a * ROTL64(b, 31) + UINT64_C(0xD1B54A32D192ED03);
+    *B ^= b * ROTL64(a, 33) + UINT64_C(0x9E3779B97F4A7C16);
 }
 
 /*
- *  Multiply A and B and xorshift the product.
+ *  Mixes the given A and B thoroughly and evenly, given uniformly distributed inputs.
+ *  The distribution this produces should still be somewhat random even given very non-random input.
+ *  Runs ww_mum on A and B, add A and B, xor-rotate(21)-xor-rotate(44) and return.
  */
 template <bool isProtected>
 static inline uint64_t ww_mix(uint64_t A, uint64_t B) {
-    //ww_mum<isProtected>(&A, &B);
-    uint64_t r = (A - ROTL64(B, 11)) * (B + ROTL64(A, 11));
-    //uint64_t r = (A + B) * UINT64_C(0xF1357AEA2E62A9C5);
-    //uint64_t r = (A + B);
-    return r ^ ROTL64(r, 21) ^ ROTL64(r, 49);
+    ww_mum<isProtected>(&A, &B);
+    uint64_t r = A + B;
+    return r ^ ROTL64(r, 21) ^ ROTL64(r, 44);
 }
 
 /*
@@ -216,13 +209,13 @@ static bool whitewaterhash64_selftest(void) {
         const uint64_t  hash;
         const char* key;
     } selftests[] = {
-        { UINT64_C(0x046ee965c2f79e14), "" }                          ,
-        { UINT64_C(0x7118d499ea99231e), "a" }                         ,
-        { UINT64_C(0x365770186c84f25a), "abc" }                       ,
-        { UINT64_C(0x213ba03096ac5ab0), "message digest" }            ,
-        { UINT64_C(0x245476502a17106b), "abcdefghijklmnopqrstuvwxyz" },
-        { UINT64_C(0x184c170d76f088aa), "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" },
-        { UINT64_C(0x6566813e27c90e9e), "123456789012345678901234567890123456789012345678901234567890" \
+        { UINT64_C(0x284d09d9ef1c94bc), "" }                          ,
+        { UINT64_C(0x42399999519d6835), "a" }                         ,
+        { UINT64_C(0x35c7ea5c98c01178), "abc" }                       ,
+        { UINT64_C(0x1a9a8d1a345080ca), "message digest" }            ,
+        { UINT64_C(0x88061ffc28dc0df7), "abcdefghijklmnopqrstuvwxyz" },
+        { UINT64_C(0xa9e8c52037d05631), "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" },
+        { UINT64_C(0xac52b63fad1e2413), "123456789012345678901234567890123456789012345678901234567890" \
                                         "12345678901234567890" },
     };
 
@@ -239,7 +232,7 @@ static bool whitewaterhash64_selftest(void) {
         if (h != selftests[i].hash) {
             printf("Hash %016" PRIx64 " != expected %016" PRIx64 " for string \"%s\"\n",
                 h, selftests[i].hash, selftests[i].key);
-            //return false;
+            return false;
         }
     }
 
@@ -257,26 +250,11 @@ REGISTER_HASH(whitewaterhash,
     $.hash_flags =
     0,
     $.impl_flags =
-    FLAG_IMPL_MULTIPLY_64_128 |
     FLAG_IMPL_LICENSE_BSD,
     $.bits = 64,
-    $.verification_LE = 0,
+    $.verification_LE = 0x2615B7D8,
     $.verification_BE = 0,
     $.hashfn_native = WhiteWaterHash64<false, false, true>,
     $.hashfn_bswap = WhiteWaterHash64<true, false, true>,
     $.initfn = whitewaterhash64_selftest
-);
-
-REGISTER_HASH(whitewaterhash__protected,
-    $.desc = "whitewaterhash, 64-bit protected version",
-    $.hash_flags =
-    0,
-    $.impl_flags =
-    FLAG_IMPL_MULTIPLY_64_128 |
-    FLAG_IMPL_LICENSE_BSD,
-    $.bits = 64,
-    $.verification_LE = 0,
-    $.verification_BE = 0,
-    $.hashfn_native = WhiteWaterHash64<false, true, false>,
-    $.hashfn_bswap = WhiteWaterHash64<true, true, false>
 );
