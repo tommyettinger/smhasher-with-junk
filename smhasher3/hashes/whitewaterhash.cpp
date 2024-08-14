@@ -74,12 +74,12 @@ static inline uint64_t ww_readSmall(const uint8_t* p, size_t k) {
  */
 template <bool isProtected>
 static inline void ww_mum(uint64_t* A, uint64_t* B) {
+    uint64_t a = *A, b = *B;
+    *A ^= a * ROTL64(b, 11) + UINT64_C(0xD1B54A32D192ED03);
+    *B ^= b * ROTL64(a, 11) + UINT64_C(0x9E3779B97F4A7C16);
     //uint64_t a = *A, b = *B;
-    //*A += a * ROTL64(b, 11) + UINT64_C(0xD1B54A32D192ED03);
-    //*B -= b * ROTL64(a, 11) + UINT64_C(0x9E3779B97F4A7C16);
-    uint64_t a = *A * UINT64_C(0xC13FA9A902A6328F), b = *B * UINT64_C(0x91E10DA5C79E7B1D);
-    *A += (b ^ ROTL64(b, 11) ^ ROTL64(b, 47));
-    *B += (a ^ ROTL64(a, 11) ^ ROTL64(a, 47));
+    //*A = (b ^ ROTL64(b, 11) ^ ROTL64(b, 47)) * UINT64_C(0xC13FA9A902A6328F) + a;
+    //*B = (a ^ ROTL64(a, 13) ^ ROTL64(a, 43)) * UINT64_C(0x91E10DA5C79E7B1D) + b;
     //uint64_t a = *A, b = *B;
     //*A ^= ROTL64(a, 11) * UINT64_C(0xD1342543DE82EF95) + b;
     //*B ^= ROTL64(b, 11) * UINT64_C(0xD1342543DE82EF95) + a;
@@ -91,8 +91,8 @@ static inline void ww_mum(uint64_t* A, uint64_t* B) {
  */
 template <bool isProtected>
 static inline uint64_t ww_mix(uint64_t A, uint64_t B) {
-    ww_mum<isProtected>(&A, &B);
-    uint64_t r = A ^ B;
+    //ww_mum<isProtected>(&A, &B);
+    uint64_t r = (A - ROTL64(B, 11)) * (B + ROTL64(A, 11));
     //uint64_t r = (A + B) * UINT64_C(0xF1357AEA2E62A9C5);
     //uint64_t r = (A + B);
     return r ^ ROTL64(r, 21) ^ ROTL64(r, 49);
