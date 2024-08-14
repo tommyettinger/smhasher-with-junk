@@ -86,7 +86,7 @@ template <bool isProtected>
 static inline uint64_t ww_mix(uint64_t A, uint64_t B) {
     ww_mum<isProtected>(&A, &B);
     uint64_t r = A + B;
-    return r ^ ROTL64(r, 13) ^ ROTL64(r, 49);
+    return r ^ ROTL64(r, 21) ^ ROTL64(r, 49);
 }
 
 /*
