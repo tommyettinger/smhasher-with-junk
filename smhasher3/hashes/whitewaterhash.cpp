@@ -39,8 +39,6 @@
 #include "Platform.h"
 #include "Hashlib.h"
 
-#include "Mathmult.h"
-
   /*
    *  Read functions.
    */
@@ -76,9 +74,9 @@ static inline uint64_t ww_readSmall(const uint8_t* p, size_t k) {
  */
 template <bool isProtected>
 static inline void ww_mum(uint64_t* A, uint64_t* B) {
-    //uint64_t rlo = *A + UINT64_C(0xD1B54A32D192ED03), rhi = *B + UINT64_C(0x8CB92BA72F3D8DD7);
-    uint64_t rlo = *A, rhi = *B;
-    *A = rlo * ROTL64(rhi, 32); *B = rhi * ROTL64(rlo, 32);
+    //uint64_t a = *A + UINT64_C(0xD1B54A32D192ED03), b = *B + UINT64_C(0x8CB92BA72F3D8DD7);
+    uint64_t a = *A, b = *B;
+    *A = a * ROTL64(b, 11) + UINT64_C(0xD1B54A32D192ED03); *B = b * ROTL64(a, 11) + UINT64_C(0x9E3779B97F4A7C16);
 }
 
 /*
@@ -87,8 +85,8 @@ static inline void ww_mum(uint64_t* A, uint64_t* B) {
 template <bool isProtected>
 static inline uint64_t ww_mix(uint64_t A, uint64_t B) {
     ww_mum<isProtected>(&A, &B);
-    uint64_t r = A ^ ~B;
-    return r ^ ROTL64(r, 45) ^ ROTL64(r, 49);
+    uint64_t r = A + B;
+    return r ^ ROTL64(r, 13) ^ ROTL64(r, 49);
 }
 
 /*
