@@ -81,4 +81,5 @@ set(HASH_SRC_FILES
   hashes/murmur_oaat.cpp
   hashes/x17.cpp
   hashes/ax.cpp
+  hashes/whitewaterhash.cpp
 )
