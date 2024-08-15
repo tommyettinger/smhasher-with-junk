@@ -84,26 +84,31 @@ static inline uint64_t ww_readSmall(const uint8_t* p, size_t k) {
  *
  *  Stores A's and B's initial values into a and b.
  *
- *  Overwrites A's contents with A ^ a * ROTL64(b, 31) + 0xD1B54A32D192ED03.
- *  Overwrites B's contents with B ^ b * ROTL64(a, 33) + 0x9E3779B97F4A7C16.
+ *  Overwrites A's contents with b * ROTL64(a, 33) + a.
+ *  Overwrites B's contents with a * ROTL64(b, 31) + b.
  * 
- * The bits of A and of B will not be uniformly distributed after this; in particular,
- * the LSB of A will be '1' 75% of the time given uniformly distributed A and B inputs,
- * and the LSB of B will be '0' 75% of the time given the same distribution.
+ *  This is meant to be able to take advantage of integer FMA optimizations when available.
+ *  
+ *  Unlike the mum function in wyhash or rapidhash, this does not use any 128-bit multiplication.
  */
 template <bool isProtected>
 static inline void ww_mum(uint64_t* A, uint64_t* B) {
     uint64_t a = *A, b = *B;
     *B = a * ROTL64(b, 31) + b;
     *A = b * ROTL64(a, 33) + a;
-    //*A ^= a * ROTL64(b, 31) + UINT64_C(0xD1B54A32D192ED03);
-    //*B ^= b * ROTL64(a, 33) + UINT64_C(0x9E3779B97F4A7C16);
 }
 
 /*
  *  Mixes the given A and B thoroughly and evenly, given uniformly distributed inputs.
+ *
+ *  @param A  A 64-bit number.
+ *  @param B  A 64-bit number.
+ * 
+ *  Runs ww_mum on A and B, XORs A and B, then uses xor-rotate(21)-xor-rotate(44) and returns that.
+ * 
  *  The distribution this produces should still be somewhat random even given very non-random input.
- *  Runs ww_mum on A and B, add A and B, xor-rotate(21)-xor-rotate(44) and return.
+ *  This is not adequately prepared to only receive very sparse or very dense inputs; adding or XORing
+ *  a large value with the inputs at least some of the time will help.
  */
 template <bool isProtected>
 static inline uint64_t ww_mix(uint64_t A, uint64_t B) {
