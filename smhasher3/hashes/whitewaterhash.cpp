@@ -34,6 +34,25 @@
  *   - rapidhash source repository: https://github.com/Nicoshev/rapidhash
  */
 
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4458  1224   602   315   133    76    37    24     7     5     1     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: whitewaterhash
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 427.493952 seconds
+*/
  /*
   *  Includes.
   */
@@ -75,8 +94,10 @@ static inline uint64_t ww_readSmall(const uint8_t* p, size_t k) {
 template <bool isProtected>
 static inline void ww_mum(uint64_t* A, uint64_t* B) {
     uint64_t a = *A, b = *B;
-    *A ^= a * ROTL64(b, 31) + UINT64_C(0xD1B54A32D192ED03);
-    *B ^= b * ROTL64(a, 33) + UINT64_C(0x9E3779B97F4A7C16);
+    *B = a * ROTL64(b, 31) + b;
+    *A = b * ROTL64(a, 33) + a;
+    //*A ^= a * ROTL64(b, 31) + UINT64_C(0xD1B54A32D192ED03);
+    //*B ^= b * ROTL64(a, 33) + UINT64_C(0x9E3779B97F4A7C16);
 }
 
 /*
@@ -87,7 +108,7 @@ static inline void ww_mum(uint64_t* A, uint64_t* B) {
 template <bool isProtected>
 static inline uint64_t ww_mix(uint64_t A, uint64_t B) {
     ww_mum<isProtected>(&A, &B);
-    uint64_t r = A + B;
+    uint64_t r = A ^ B;
     return r ^ ROTL64(r, 21) ^ ROTL64(r, 44);
 }
 
@@ -106,7 +127,7 @@ static inline uint64_t whitewaterhash(const void* key, size_t len, uint64_t seed
     const uint8_t* p = (const uint8_t*)key;
     uint64_t        a, b;
 
-    seed ^= ww_mix<isProtected>(seed ^ secrets[0], secrets[1]) ^ len;
+    seed ^= ww_mix<isProtected>(seed + secrets[2], UINT64_C(0xD1B54A32D192ED03) ^ secrets[0]) ^ len;
 
     if (likely(len <= 16)) {
         if (likely(len >= 4)) {
@@ -177,7 +198,7 @@ static inline uint64_t whitewaterhash(const void* key, size_t len, uint64_t seed
         a = ww_read64<bswap>(p + i - 16);
         b = ww_read64<bswap>(p + i - 8);
     }
-    a ^= secrets[1];
+    a ^= secrets[2];
     b ^= seed;
     ww_mum<isProtected>(&a, &b);
     return ww_mix<isProtected>(a ^ secrets[0] ^ len, b ^ secrets[1]);
@@ -209,13 +230,13 @@ static bool whitewaterhash64_selftest(void) {
         const uint64_t  hash;
         const char* key;
     } selftests[] = {
-        { UINT64_C(0x284d09d9ef1c94bc), "" }                          ,
-        { UINT64_C(0x42399999519d6835), "a" }                         ,
-        { UINT64_C(0x35c7ea5c98c01178), "abc" }                       ,
-        { UINT64_C(0x1a9a8d1a345080ca), "message digest" }            ,
-        { UINT64_C(0x88061ffc28dc0df7), "abcdefghijklmnopqrstuvwxyz" },
-        { UINT64_C(0xa9e8c52037d05631), "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" },
-        { UINT64_C(0xac52b63fad1e2413), "123456789012345678901234567890123456789012345678901234567890" \
+        { UINT64_C(0xd7ba21ce5b60c875), "" }                          ,
+        { UINT64_C(0x173490eee96c67d3), "a" }                         ,
+        { UINT64_C(0xefeb3a9ca431f32f), "abc" }                       ,
+        { UINT64_C(0x43e58e89c0ab73c9), "message digest" }            ,
+        { UINT64_C(0xd168b4692b7a72bf), "abcdefghijklmnopqrstuvwxyz" },
+        { UINT64_C(0xd6afc4e006eddac6), "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" },
+        { UINT64_C(0x9a5d091b74c3df3b), "123456789012345678901234567890123456789012345678901234567890" \
                                         "12345678901234567890" },
     };
 
@@ -252,7 +273,7 @@ REGISTER_HASH(whitewaterhash,
     $.impl_flags =
     FLAG_IMPL_LICENSE_BSD,
     $.bits = 64,
-    $.verification_LE = 0x2615B7D8,
+    $.verification_LE = 0x316F5300,
     $.verification_BE = 0,
     $.hashfn_native = WhiteWaterHash64<false, false, true>,
     $.hashfn_bswap = WhiteWaterHash64<true, false, true>,
