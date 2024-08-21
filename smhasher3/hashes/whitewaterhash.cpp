@@ -53,6 +53,25 @@ Overall result: pass            ( 188 / 188 passed)
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 427.493952 seconds
 */
+// with changes to use A and B sequentially:
+/*
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4426  1233   608   308   149    72    38    23     9    10     2     2     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            3     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: whitewaterhash
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 967.841504 seconds
+*/
  /*
   *  Includes.
   */
@@ -94,8 +113,9 @@ static inline uint64_t ww_readSmall(const uint8_t* p, size_t k) {
 template <bool isProtected>
 static inline void ww_mum(uint64_t* A, uint64_t* B) {
     uint64_t a = *A, b = *B;
-    *B = a * ROTL64(b, 31) + b;
-    *A = b * ROTL64(a, 33) + a;
+    *A += (*B += a * ROTL64(b, 31)) * ROTL64(a, 33);
+    //*B = a * ROTL64(b, 31) + b;
+    //*A = b * ROTL64(a, 33) + a;
 }
 
 /*
@@ -114,6 +134,7 @@ template <bool isProtected>
 static inline uint64_t ww_mix(uint64_t A, uint64_t B) {
     ww_mum<isProtected>(&A, &B);
     uint64_t r = A ^ B;
+    //return r ^ r >> 29;
     return r ^ ROTL64(r, 21) ^ ROTL64(r, 44);
 }
 
@@ -235,13 +256,13 @@ static bool whitewaterhash64_selftest(void) {
         const uint64_t  hash;
         const char* key;
     } selftests[] = {
-        { UINT64_C(0xd7ba21ce5b60c875), "" }                          ,
-        { UINT64_C(0x173490eee96c67d3), "a" }                         ,
-        { UINT64_C(0xefeb3a9ca431f32f), "abc" }                       ,
-        { UINT64_C(0x43e58e89c0ab73c9), "message digest" }            ,
-        { UINT64_C(0xd168b4692b7a72bf), "abcdefghijklmnopqrstuvwxyz" },
-        { UINT64_C(0xd6afc4e006eddac6), "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" },
-        { UINT64_C(0x9a5d091b74c3df3b), "123456789012345678901234567890123456789012345678901234567890" \
+        { UINT64_C(0xc38a12b8d85c7281), "" }                          ,
+        { UINT64_C(0xa6b6c6a586cc5a4b), "a" }                         ,
+        { UINT64_C(0x0ac72174241fff3c), "abc" }                       ,
+        { UINT64_C(0x40de3414dd5090cd), "message digest" }            ,
+        { UINT64_C(0xce59533cfc9693f9), "abcdefghijklmnopqrstuvwxyz" },
+        { UINT64_C(0x5007bf157f4fdbcf), "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" },
+        { UINT64_C(0x71783af24f4be330), "123456789012345678901234567890123456789012345678901234567890" \
                                         "12345678901234567890" },
     };
 
@@ -278,7 +299,7 @@ REGISTER_HASH(whitewaterhash,
     $.impl_flags =
     FLAG_IMPL_LICENSE_BSD,
     $.bits = 64,
-    $.verification_LE = 0x316F5300,
+    $.verification_LE = 0x81E29F07,// 0x316F5300,
     $.verification_BE = 0,
     $.hashfn_native = WhiteWaterHash64<false, false, true>,
     $.hashfn_bswap = WhiteWaterHash64<true, false, true>,
