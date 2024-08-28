@@ -11,31 +11,41 @@
  //------------------------------------------------------------
 static const uint64_t C = UINT64_C(0xbea225f9eb34556d);
 static const uint64_t P = UINT64_C(0xAEF17502108EF2D9);
+static const uint64_t Q = UINT64_C(13166748625691186689);
+static const uint64_t R = UINT64_C(1573836600196043749);
+static const uint64_t S = UINT64_C(1478582680485693857);
+static const uint64_t T = UINT64_C(1584163446043636637);
+
 
 static inline uint64_t mix(uint64_t x) {
-    x = (x ^ x >> ((x >> 59u) + 5u)) * P;
+    x = (x ^ x >> ((x >> 59u) + 5u)) * P + C;
     return x ^ x >> 43u;
 }
 
 static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
     x = (x ^ x >> ((x >> 59u) + 5u)) * P + h;
     x ^= x >> 43u;
-    x = (x ^ x >> ((x >> 59u) + 5u)) * P;
+    x = (x ^ x >> ((x >> 59u) + 5u)) * P + C;
     return x ^ x >> 43u;
 
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    a = a * C + h;
-    b = b * C + h;
-    c = c * C + h;
-    d = d * C + h;
+    a = a * Q + h;
+    b = b * R + h;
+    c = c * S + h;
+    d = d * T + h;
     a ^= a >> 37;
     b ^= b >> 41;
     c ^= c >> 35;
     d ^= d >> 43;
-    h = ((a + b - c - d) ^ h) * P;
-    h ^= h >> 39;
+    h = h * R + a;
+    h = h * S + b;
+    h = h * T + c;
+    h = h * Q + d;
+    h = h * C + P;
+    //h = ((a + b - c - d) ^ h) * C + P;
+    //h ^= h >> 39;
     return h;
 }
 
