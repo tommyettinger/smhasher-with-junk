@@ -82,4 +82,5 @@ set(HASH_SRC_FILES
   hashes/x17.cpp
   hashes/ax.cpp
   hashes/whitewaterhash.cpp
+  hashes/tritium.cpp
 )
