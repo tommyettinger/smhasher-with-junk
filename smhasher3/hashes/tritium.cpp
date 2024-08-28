@@ -8,6 +8,25 @@
 #include "Platform.h"
 #include "Hashlib.h"
 
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4378  1292   590   304   166    77    35    22     8     4     4     2     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: tritium
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+*/
+
  //------------------------------------------------------------
 static const uint64_t C = UINT64_C(0xbea225f9eb34556d);
 static const uint64_t P = UINT64_C(0xAEF17502108EF2D9);
@@ -44,8 +63,6 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
     h = h * T + c;
     h = h * Q + d;
     h = h * C + P;
-    //h = ((a + b - c - d) ^ h) * C + P;
-    //h ^= h >> 39;
     return h;
 }
 
@@ -105,11 +122,11 @@ REGISTER_HASH(tritium,
     0,
     $.impl_flags =
     FLAG_IMPL_MULTIPLY_64_64 |
-    FLAG_IMPL_ROTATE |
+    FLAG_IMPL_SHIFT_VARIABLE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0,
-    $.verification_BE = 0,
+    $.verification_LE = 0x36C11DC9,
+    $.verification_BE = 0x7092AFFA,
     $.hashfn_native = tritium<false>,
     $.hashfn_bswap = tritium<true>
 );
