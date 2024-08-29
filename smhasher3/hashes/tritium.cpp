@@ -3,6 +3,7 @@
  *
  * author: Tommy Ettinger, 2024-07-05, github.com/tommyettinger
  * based partly on mx3 by Jon Maiga, jonkagstrom.com, @jonkagstrom
+ * uses moremur by Pelle Evensen, https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
  * license: CC0 license
  */
 #include "Platform.h"
@@ -14,7 +15,7 @@
 
           0     1     2     3     4     5     6     7     8     9    10    11    12
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4378  1292   590   304   166    77    35    22     8     4     4     2     1
+         4427  1253   599   302   157    71    35    16    11     2     4     3     3
 
          13    14    15    16    17    18    19    20    21    22    23    24    25+
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
@@ -25,17 +26,13 @@ Summary for: tritium
 Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 535.139065 seconds
 */
 
  //------------------------------------------------------------
 static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
 static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
 static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
-//static const uint64_t P = UINT64_C(0xAEF17502108EF2D9);
-static const uint64_t Q = UINT64_C(13166748625691186689);
-static const uint64_t R = UINT64_C(1573836600196043749);
-static const uint64_t S = UINT64_C(1478582680485693857);
-static const uint64_t T = UINT64_C(1584163446043636637);
 
 
 // Moremur unary hash, by Pelle Evensen
@@ -52,21 +49,6 @@ static inline uint64_t mix(uint64_t x) {
     return x;
 }
 
-//static inline uint64_t mix(uint64_t x) {
-//    constexpr uint32_t R0 = 32;
-//    constexpr uint32_t R1 = 29;
-//    constexpr uint32_t R2 = 32;
-//    constexpr uint32_t R3 = 29;
-//    x ^= x >> R0;
-//    x *= C;
-//    x ^= x >> R1;
-//    x *= C;
-//    x ^= x >> R2;
-//    x *= C;
-//    x ^= x >> R3;
-//    return x;
-//}
-
 static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
     constexpr uint32_t R1 = 39;
 
@@ -78,49 +60,6 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    //a *= C;
-    //b *= C;
-    //c *= C;
-    //d *= C;
-    //a ^= a >> 39;
-    //b ^= b >> 39;
-    //c ^= c >> 39;
-    //d ^= d >> 39;
-    //h += a * R;
-    //h += b * S;
-    //h += c * T;
-    //h += d * Q;
-    //h = h * C + A;
-    //return h;
-    
-    //a *= C;
-    //b *= C;
-    //c *= C;
-    //d *= C;
-    //a ^= a >> 39;
-    //b ^= b >> 39;
-    //c ^= c >> 39;
-    //d ^= d >> 39;
-    //h += a * C;
-    //h *= C;
-    //h += b * C;
-    //h *= C;
-    //h += c * C;
-    //h *= C;
-    //h += d * C;
-    //h *= C;
-    //return h;
-
-    //h += a * ROTL64(b, 31) + d;
-    //h *= R;
-    //h += b * ROTL64(a, 33) + c;
-    //h *= S;
-    //h += c * ROTL64(d, 30) + b;
-    //h *= T;
-    //h += d * ROTL64(c, 34) + a;
-    //h *= Q;
-    //return h;
-    
     a ^= ROTL64(a, 39) ^ ROTL64(a, 14);
     b ^= ROTL64(b, 39) ^ ROTL64(b, 14);
     c ^= ROTL64(c, 39) ^ ROTL64(c, 14);
@@ -139,9 +78,7 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
 template <bool bswap>
 static inline uint64_t tritiumhash(const uint8_t* buf, size_t len, uint64_t seed) {
     const uint8_t* const tail = buf + (len & ~7);
-    //uint64_t h = mix_stream(seed, len + 1ULL);
     uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) ^ (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
-    //uint64_t h = ROTL64(seed, 3) ^ ROTL64(len, 56) + seed ^ C;
     
     while (len >= 64) {
         len -= 64;
@@ -194,7 +131,7 @@ REGISTER_HASH(tritium,
     0,
     $.impl_flags =
     FLAG_IMPL_MULTIPLY_64_64 |
-    FLAG_IMPL_SHIFT_VARIABLE |
+    FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
     $.verification_LE = 0x962071E7,// 0x36C11DC9,
