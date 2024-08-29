@@ -37,32 +37,35 @@ static const uint64_t R = UINT64_C(1573836600196043749);
 static const uint64_t S = UINT64_C(1478582680485693857);
 static const uint64_t T = UINT64_C(1584163446043636637);
 
-//static inline uint64_t mix(uint64_t x) {
-//    constexpr uint32_t R0 = 27;
-//    constexpr uint32_t R1 = 33;
-//    constexpr uint32_t R2 = 27;
-//    x ^= x >> R0;
-//    x *= A;
-//    x ^= x >> R1;
-//    x *= B;
-//    x ^= x >> R2;
-//    return x;
-//}
 
+// Moremur unary hash, by Pelle Evensen
+// https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
 static inline uint64_t mix(uint64_t x) {
-    constexpr uint32_t R0 = 32;
-    constexpr uint32_t R1 = 29;
-    constexpr uint32_t R2 = 32;
-    constexpr uint32_t R3 = 29;
+    constexpr uint32_t R0 = 27;
+    constexpr uint32_t R1 = 33;
+    constexpr uint32_t R2 = 27;
     x ^= x >> R0;
-    x *= C;
+    x *= A;
     x ^= x >> R1;
-    x *= C;
+    x *= B;
     x ^= x >> R2;
-    x *= C;
-    x ^= x >> R3;
     return x;
 }
+
+//static inline uint64_t mix(uint64_t x) {
+//    constexpr uint32_t R0 = 32;
+//    constexpr uint32_t R1 = 29;
+//    constexpr uint32_t R2 = 32;
+//    constexpr uint32_t R3 = 29;
+//    x ^= x >> R0;
+//    x *= C;
+//    x ^= x >> R1;
+//    x *= C;
+//    x ^= x >> R2;
+//    x *= C;
+//    x ^= x >> R3;
+//    return x;
+//}
 
 static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
     constexpr uint32_t R1 = 39;
@@ -133,43 +136,13 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
     return h;
 }
 
-
-
-//static inline uint64_t mix(uint64_t x) {
-//    x = (x ^ x >> ((x >> 59u) + 5u)) * P + C;
-//    return x ^ x >> 43u;
-//}
-//
-//static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
-//    x = (x ^ x >> ((x >> 59u) + 5u)) * P + h;
-//    x ^= x >> 43u;
-//    x = (x ^ x >> ((x >> 59u) + 5u)) * P + C;
-//    return x ^ x >> 43u;
-//
-//}
-//
-//static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-//    a = a * Q + h;
-//    b = b * R + h;
-//    c = c * S + h;
-//    d = d * T + h;
-//    a ^= a >> 37;
-//    b ^= b >> 41;
-//    c ^= c >> 35;
-//    d ^= d >> 43;
-//    h = h * R + a;
-//    h = h * S + b;
-//    h = h * T + c;
-//    h = h * Q + d;
-//    h = h * C + A;
-//    return h;
-//}
-
 template <bool bswap>
 static inline uint64_t tritiumhash(const uint8_t* buf, size_t len, uint64_t seed) {
     const uint8_t* const tail = buf + (len & ~7);
-    uint64_t h = mix_stream(seed, len + 1ULL);
-
+    //uint64_t h = mix_stream(seed, len + 1ULL);
+    uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) ^ (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
+    //uint64_t h = ROTL64(seed, 3) ^ ROTL64(len, 56) + seed ^ C;
+    
     while (len >= 64) {
         len -= 64;
         h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
@@ -224,8 +197,8 @@ REGISTER_HASH(tritium,
     FLAG_IMPL_SHIFT_VARIABLE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0,// 0x36C11DC9,
-    $.verification_BE = 0,// 0x7092AFFA,
+    $.verification_LE = 0x962071E7,// 0x36C11DC9,
+    $.verification_BE = 0x483C6323,// 0x7092AFFA,
     $.hashfn_native = tritium<false>,
     $.hashfn_bswap = tritium<true>
 );
