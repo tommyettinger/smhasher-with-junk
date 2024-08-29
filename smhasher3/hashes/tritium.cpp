@@ -28,48 +28,147 @@ Overall result: pass            ( 188 / 188 passed)
 */
 
  //------------------------------------------------------------
-static const uint64_t C = UINT64_C(0xbea225f9eb34556d);
-static const uint64_t P = UINT64_C(0xAEF17502108EF2D9);
+static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
+static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
+static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
+//static const uint64_t P = UINT64_C(0xAEF17502108EF2D9);
 static const uint64_t Q = UINT64_C(13166748625691186689);
 static const uint64_t R = UINT64_C(1573836600196043749);
 static const uint64_t S = UINT64_C(1478582680485693857);
 static const uint64_t T = UINT64_C(1584163446043636637);
 
+//static inline uint64_t mix(uint64_t x) {
+//    constexpr uint32_t R0 = 27;
+//    constexpr uint32_t R1 = 33;
+//    constexpr uint32_t R2 = 27;
+//    x ^= x >> R0;
+//    x *= A;
+//    x ^= x >> R1;
+//    x *= B;
+//    x ^= x >> R2;
+//    return x;
+//}
 
 static inline uint64_t mix(uint64_t x) {
-    x = (x ^ x >> ((x >> 59u) + 5u)) * P + C;
-    return x ^ x >> 43u;
+    constexpr uint32_t R0 = 32;
+    constexpr uint32_t R1 = 29;
+    constexpr uint32_t R2 = 32;
+    constexpr uint32_t R3 = 29;
+    x ^= x >> R0;
+    x *= C;
+    x ^= x >> R1;
+    x *= C;
+    x ^= x >> R2;
+    x *= C;
+    x ^= x >> R3;
+    return x;
 }
 
 static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
-    x = (x ^ x >> ((x >> 59u) + 5u)) * P + h;
-    x ^= x >> 43u;
-    x = (x ^ x >> ((x >> 59u) + 5u)) * P + C;
-    return x ^ x >> 43u;
+    constexpr uint32_t R1 = 39;
 
+    x *= C;
+    x ^= (x >> R1);
+    h += x * C;
+    h *= C;
+    return h;
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    a = a * Q + h;
-    b = b * R + h;
-    c = c * S + h;
-    d = d * T + h;
-    a ^= a >> 37;
-    b ^= b >> 41;
-    c ^= c >> 35;
-    d ^= d >> 43;
-    h = h * R + a;
-    h = h * S + b;
-    h = h * T + c;
-    h = h * Q + d;
-    h = h * C + P;
+    //a *= C;
+    //b *= C;
+    //c *= C;
+    //d *= C;
+    //a ^= a >> 39;
+    //b ^= b >> 39;
+    //c ^= c >> 39;
+    //d ^= d >> 39;
+    //h += a * R;
+    //h += b * S;
+    //h += c * T;
+    //h += d * Q;
+    //h = h * C + A;
+    //return h;
+    
+    //a *= C;
+    //b *= C;
+    //c *= C;
+    //d *= C;
+    //a ^= a >> 39;
+    //b ^= b >> 39;
+    //c ^= c >> 39;
+    //d ^= d >> 39;
+    //h += a * C;
+    //h *= C;
+    //h += b * C;
+    //h *= C;
+    //h += c * C;
+    //h *= C;
+    //h += d * C;
+    //h *= C;
+    //return h;
+
+    //h += a * ROTL64(b, 31) + d;
+    //h *= R;
+    //h += b * ROTL64(a, 33) + c;
+    //h *= S;
+    //h += c * ROTL64(d, 30) + b;
+    //h *= T;
+    //h += d * ROTL64(c, 34) + a;
+    //h *= Q;
+    //return h;
+    
+    a ^= ROTL64(a, 39) ^ ROTL64(a, 14);
+    b ^= ROTL64(b, 39) ^ ROTL64(b, 14);
+    c ^= ROTL64(c, 39) ^ ROTL64(c, 14);
+    d ^= ROTL64(d, 39) ^ ROTL64(d, 14);
+    h += a * C;
+    h *= C;
+    h += b * C;
+    h *= C;
+    h += c * C;
+    h *= C;
+    h += d * C;
+    h *= C;
     return h;
 }
+
+
+
+//static inline uint64_t mix(uint64_t x) {
+//    x = (x ^ x >> ((x >> 59u) + 5u)) * P + C;
+//    return x ^ x >> 43u;
+//}
+//
+//static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
+//    x = (x ^ x >> ((x >> 59u) + 5u)) * P + h;
+//    x ^= x >> 43u;
+//    x = (x ^ x >> ((x >> 59u) + 5u)) * P + C;
+//    return x ^ x >> 43u;
+//
+//}
+//
+//static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
+//    a = a * Q + h;
+//    b = b * R + h;
+//    c = c * S + h;
+//    d = d * T + h;
+//    a ^= a >> 37;
+//    b ^= b >> 41;
+//    c ^= c >> 35;
+//    d ^= d >> 43;
+//    h = h * R + a;
+//    h = h * S + b;
+//    h = h * T + c;
+//    h = h * Q + d;
+//    h = h * C + A;
+//    return h;
+//}
 
 template <bool bswap>
 static inline uint64_t tritiumhash(const uint8_t* buf, size_t len, uint64_t seed) {
     const uint8_t* const tail = buf + (len & ~7);
-    uint64_t h = mix_stream(len * C, seed);
+    uint64_t h = mix_stream(seed, len + 1ULL);
 
     while (len >= 64) {
         len -= 64;
@@ -125,8 +224,8 @@ REGISTER_HASH(tritium,
     FLAG_IMPL_SHIFT_VARIABLE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x36C11DC9,
-    $.verification_BE = 0x7092AFFA,
+    $.verification_LE = 0,// 0x36C11DC9,
+    $.verification_BE = 0,// 0x7092AFFA,
     $.hashfn_native = tritium<false>,
     $.hashfn_bswap = tritium<true>
 );
