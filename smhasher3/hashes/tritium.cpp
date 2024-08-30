@@ -47,20 +47,39 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 427.255564 seconds
+
+
+August 30, 2024, slightly faster than before (10.94 bytes/cycle - 35.65 GiB/sec @ 3.5 ghz):
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4453  1236   599   301   152    71    36    15    12     1     3     3     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: tritium
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 425.293392 seconds
 */
 
  //------------------------------------------------------------
+// Moremur multipliers
 static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
 static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
+// MX3 multiplier
 static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
+// Random 64-bit probable primes, as given by Java's BigInteger class.
 static const uint64_t Q = UINT64_C(0xD1B92B09B92266DD);
 static const uint64_t R = UINT64_C(0x9995988B72E0D285);
 static const uint64_t S = UINT64_C(0x8FADF5E286E31587);
 static const uint64_t T = UINT64_C(0xFCF8B405D3D0783B);
-//static const uint64_t Q = UINT64_C(13166748625691186689);
-//static const uint64_t R = UINT64_C(1573836600196043749);
-//static const uint64_t S = UINT64_C(1478582680485693857);
-//static const uint64_t T = UINT64_C(1584163446043636637);
 
 // Moremur unary hash, by Pelle Evensen
 // https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
@@ -76,6 +95,7 @@ static inline uint64_t mix(uint64_t x) {
     return x;
 }
 
+// From the MX3 hash
 static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
     constexpr uint32_t R1 = 39;
 
@@ -90,35 +110,19 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
     constexpr int R1 = 39;
     constexpr int R2 = 29;
 
-    //a ^= ROTL64(a, R1) ^ ROTL64(a, R2);
-    //b ^= ROTL64(b, R1) ^ ROTL64(b, R2);
-    //c ^= ROTL64(c, R1) ^ ROTL64(c, R2);
-    //d ^= ROTL64(d, R1) ^ ROTL64(d, R2);
-
-    //h ^= (c ^ ROTL64(a, R1)) * Q;
-    //h ^= (d ^ ROTL64(b, R1)) * R;
-    //h ^= (b ^ ROTL64(c, R1)) * S;
-    //h ^= (a ^ ROTL64(d, R1)) * T;
-    h = ROTL64(h, R1) + C;
+    h = ROTL64(h, R1);
     h += (ROTL64(a, R2) - c) * Q; h = h * Q;
     h += (ROTL64(b, R2) - d) * R; h = h * R;
     h += (ROTL64(c, R2) - b) * S; h = h * S;
     h += (ROTL64(d, R2) - a) * T; h = h * T;
 
-    //h += a * C;
-    //h *= C;
-    //h += b * C;
-    //h *= C;
-    //h += c * C;
-    //h *= C;
-    //h += d * C;
-    //h *= C;
     return h;
 }
 
 template <bool bswap>
 static inline uint64_t tritiumhash(const uint8_t* buf, size_t len, uint64_t seed) {
     const uint8_t* const tail = buf + (len & ~7);
+    // This strengthens the hash against tests that mainly use the seed.
     uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) ^ (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
     
     while (len >= 64) {
@@ -175,8 +179,8 @@ REGISTER_HASH(tritium,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0xA799A2F9,// 0x962071E7,// 0x36C11DC9,
-    $.verification_BE = 0xB6B826CA,// 0x483C6323,// 0x7092AFFA,
+    $.verification_LE = 0x6AB67D7D,
+    $.verification_BE = 0x5EEC9D91,
     $.hashfn_native = tritium<false>,
     $.hashfn_bswap = tritium<true>
 );
