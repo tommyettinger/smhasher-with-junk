@@ -67,6 +67,26 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 425.293392 seconds
+
+CURRENT:
+August 30, 2024 (again), even faster (12.14 bytes/cycle - 39.57 GiB/sec @ 3.5 ghz):
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4432  1232   612   312   153    71    37    16    10     1     3     3     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: tritium
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 422.100092 seconds
 */
 
  //------------------------------------------------------------
@@ -107,10 +127,8 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    constexpr int R1 = 39;
     constexpr int R2 = 29;
 
-    h = ROTL64(h, R1);
     h += (ROTL64(a, R2) - c) * Q; h = h * Q;
     h += (ROTL64(b, R2) - d) * R; h = h * R;
     h += (ROTL64(c, R2) - b) * S; h = h * S;
@@ -121,11 +139,14 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
 
 template <bool bswap>
 static inline uint64_t tritiumhash(const uint8_t* buf, size_t len, uint64_t seed) {
+    constexpr int R1 = 37;
+
     const uint8_t* const tail = buf + (len & ~7);
     // This strengthens the hash against tests that mainly use the seed.
     uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) ^ (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
     
     while (len >= 64) {
+        h = ROTL64(h, R1);
         len -= 64;
         h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
             GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
@@ -179,8 +200,8 @@ REGISTER_HASH(tritium,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x6AB67D7D,
-    $.verification_BE = 0x5EEC9D91,
+    $.verification_LE = 0xA1801A0F,
+    $.verification_BE = 0x648BB3D6,
     $.hashfn_native = tritium<false>,
     $.hashfn_bswap = tritium<true>
 );
