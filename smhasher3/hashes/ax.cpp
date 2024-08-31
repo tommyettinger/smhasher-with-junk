@@ -8,6 +8,45 @@
 #include "Platform.h"
 #include "Hashlib.h"
 
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4463  1240   583   294   161    76    33    20    10     2     1     0     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: ax
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 516.643470 seconds
+
+REVISED! August 31, 2024.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4433  1269   591   297   151    75    29    22    13     1     1     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: ax
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 419.459933 seconds
+*/
+
  //------------------------------------------------------------
 // Moremur multipliers
 static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
@@ -60,10 +99,7 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    constexpr int R1 = 37;
     constexpr int R2 = 29;
-
-    h = ROTL64(h, R1) * C;
     h += (ROTL64(a, R2) - c) * Q;
     h += (ROTL64(b, R2) - d) * R;
     h += (ROTL64(c, R2) - b) * S;
@@ -73,6 +109,8 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
 
 template <bool bswap>
 static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
+    constexpr int R1 = 37;
+
     const uint8_t* const tail = buf + (len & ~7);
     //    $.verification_LE = 0xF6FC34B5,
     //    $.verification_BE = 0x9E78CD56,
@@ -83,9 +121,11 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
 
     while (len >= 64) {
+        h *= C;
         len -= 64;
         h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
             GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        h = ROTL64(h, R1);
         h = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
             GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
         buf += 64;
@@ -136,8 +176,8 @@ REGISTER_HASH(ax,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0xB482B1A1,// 0x288113E9,
-    $.verification_BE = 0xEC3B3404,// 0x78278B75,
+    $.verification_LE = 0x19498DD8,// 0xB482B1A1,// 0x288113E9,
+    $.verification_BE = 0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
     $.hashfn_native = ax<false>,
     $.hashfn_bswap = ax<true>
 );
