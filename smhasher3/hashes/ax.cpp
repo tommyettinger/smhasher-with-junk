@@ -115,28 +115,30 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     constexpr int R0 = 14;
     constexpr int R1 = 37;
 
-    uint64_t e = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47));
-    uint64_t h = (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
+    //uint64_t e = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47));
+    //uint64_t h = (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
 
-//    uint64_t h = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
+    uint64_t h = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
 
     while (len >= 64) {
         len -= 64;
-        uint64_t t = mix_stream_bulk(e, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
-            GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
-        uint64_t s = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
-            GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
-        e = ROTL64(s, R1);
-        h = t * C;
-        //h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+        //uint64_t t = mix_stream_bulk(e, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
         //    GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
-        //h = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+        //uint64_t s = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
         //    GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
-        //h = ROTL64(h, R1) * C;
+        //e = ROTL64(s, R1);
+        //h = t * C;
+        h = mix_stream_bulk(h * C, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+            GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        //h = ROTL64(h, R1);
+       
+        h = mix_stream_bulk(ROTL64(h, R1), GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+            GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
+        //h *= C;
         buf += 64;
     }
 
-    h = h * Q - e * R;
+    //h = h * Q - e * R;
 
     //while (len >= 32) {
     //    len -= 32;
