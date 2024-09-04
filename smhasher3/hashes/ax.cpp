@@ -99,37 +99,80 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    constexpr int R2 = 29;
-    h += (ROTL64(a, R2) - c) * Q;
+    constexpr int Q2 = 17;
+    constexpr int R2 = 19;
+    constexpr int S2 = 23;
+    constexpr int T2 = 29;
+    h += (ROTL64(a, Q2) - c) * Q;
     h += (ROTL64(b, R2) - d) * R;
-    h += (ROTL64(c, R2) - b) * S;
-    h += (ROTL64(d, R2) - a) * T;
+    h += (ROTL64(c, S2) - b) * S;
+    h += (ROTL64(d, T2) - a) * T;
     return h;
 }
 
 template <bool bswap>
 static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
+    constexpr int R0 = 14;
     constexpr int R1 = 37;
 
-    const uint8_t* const tail = buf + (len & ~7);
-    //    $.verification_LE = 0xF6FC34B5,
-    //    $.verification_BE = 0x9E78CD56,
-//    uint64_t h = mix(seed + mix(len + C));
+    uint64_t e = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47));
+    uint64_t h = (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
 
-    //    $.verification_LE = 0x288113E9,
-    //    $.verification_BE = 0x78278B75,
-    uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
+//    uint64_t h = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
 
     while (len >= 64) {
-        h *= C;
         len -= 64;
-        h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+        uint64_t t = mix_stream_bulk(e, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
             GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
-        h = ROTL64(h, R1);
-        h = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+        uint64_t s = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
             GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
+        e = ROTL64(s, R1);
+        h = t * C;
+        //h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+        //    GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        //h = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+        //    GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
+        //h = ROTL64(h, R1) * C;
         buf += 64;
     }
+
+    h = h * Q - e * R;
+
+    //while (len >= 32) {
+    //    len -= 32;
+    //    h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+    //        GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24)) * C;
+    //    buf += 32;
+    //}
+
+    //while (len >= 128) {
+    //    len -= 128;
+    //    h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+    //        GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+    //    h = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+    //        GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
+    //    h *= C;
+    //    h = mix_stream_bulk(h, GET_U64<bswap>(buf, 64), GET_U64<bswap>(buf, 72),
+    //        GET_U64<bswap>(buf, 80), GET_U64<bswap>(buf, 88));
+    //    h = mix_stream_bulk(h, GET_U64<bswap>(buf, 96), GET_U64<bswap>(buf, 104),
+    //        GET_U64<bswap>(buf, 112), GET_U64<bswap>(buf, 120));
+    //    h = ROTL64(h, R1);
+    //    buf += 128;
+    //}
+
+    //while (len >= 96) {
+    //    len -= 96;
+    //    h = mix_stream_bulk(h, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+    //        GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+    //    h *= C;
+    //    h = mix_stream_bulk(h, GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+    //        GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
+    //    h = ROTL64(h, R1);
+    //    h = mix_stream_bulk(h, GET_U64<bswap>(buf, 64), GET_U64<bswap>(buf, 72),
+    //        GET_U64<bswap>(buf, 80), GET_U64<bswap>(buf, 88));
+    //    h += A;
+    //    buf += 96;
+    //}
 
     while (len >= 8) {
         len -= 8;
