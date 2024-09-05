@@ -99,17 +99,20 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    constexpr int R2 = 29;
-    return
-          ((ROTL64(a, R2) - c) * Q 
-         ^ (ROTL64(b, R2) - d) * R
-         ^ (ROTL64(c, R2) - b) * S
-         ^ (ROTL64(d, R2) - a) * T) - h;
+    constexpr int Q2 = 17;
+    constexpr int R2 = 19;
+    constexpr int S2 = 23;
+    constexpr int T2 = 29;
+    h += (ROTL64(a, Q2) - c) * Q;
+    h += (ROTL64(b, R2) - d) * R;
+    h += (ROTL64(c, S2) - b) * S;
+    h += (ROTL64(d, T2) - a) * T;
+    return h;
 }
 
 template <bool bswap>
 static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
-    constexpr int R0 = 11;
+    constexpr int R0 = 14;
     constexpr int R1 = 37;
 
     //uint64_t e = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47));
@@ -125,11 +128,12 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
         //    GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
         //e = ROTL64(s, R1);
         //h = t * C;
-        h = mix_stream_bulk(ROTL64(h, R1), GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+        h = mix_stream_bulk(h * C, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
             GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
-        h = mix_stream_bulk(ROTL64(h, R0), GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+        //h = ROTL64(h, R1);
+       
+        h = mix_stream_bulk(ROTL64(h, R1), GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
             GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
-        //h ^= h ^ ROTL64(h, R0) ^ ROTL64(h, R1);
         //h *= C;
         buf += 64;
     }
