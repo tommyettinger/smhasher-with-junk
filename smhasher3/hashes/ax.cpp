@@ -114,13 +114,13 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     const uint8_t* const tail8 = buf;
     switch (len) {
     case 0: return mix(h);
-    case 1: return mix(mix_stream(h, tail8[0]));
-    case 2: return mix(mix_stream(h, GET_U16<bswap>(tail8, 0)));
-    case 3: return mix(mix_stream(h, GET_U16<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16));
-    case 4: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0)));
-    case 5: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32));
-    case 6: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32));
-    case 7: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48));
+    case 1: return mix(mix_stream(h, static_cast<uint64_t>(static_cast<int8_t>(tail8[0]))));
+    case 2: return mix(mix_stream(h, static_cast<uint64_t>(static_cast<int16_t>(GET_U16<bswap>(tail8, 0)))));
+    case 3: return mix(mix_stream(h, static_cast<uint64_t>(static_cast<int16_t>(GET_U16<bswap>(tail8, 0))) ^ static_cast<uint64_t>(static_cast<int8_t>(tail8[2])) << 16));
+    case 4: return mix(mix_stream(h, static_cast<uint64_t>(static_cast<int32_t>(GET_U32<bswap>(tail8, 0)))));
+    case 5: return mix(mix_stream(h, static_cast<uint64_t>(static_cast<int32_t>(GET_U32<bswap>(tail8, 0))) ^ static_cast<uint64_t>(static_cast<int8_t>(tail8[4])) << 32));
+    case 6: return mix(mix_stream(h, static_cast<uint64_t>(static_cast<int32_t>(GET_U32<bswap>(tail8, 0))) ^ static_cast<uint64_t>(static_cast<int16_t>(GET_U16<bswap>(tail8, 4))) << 32));
+    case 7: return mix(mix_stream(h, static_cast<uint64_t>(static_cast<int32_t>(GET_U32<bswap>(tail8, 0))) ^ static_cast<uint64_t>(static_cast<int16_t>(GET_U16<bswap>(tail8, 4))) << 32 ^ static_cast<uint64_t>(static_cast<int8_t>(tail8[6])) << 48));
     default:;
     }
 
