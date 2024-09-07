@@ -41,21 +41,6 @@ static const uint64_t R = UINT64_C(0x9995988B72E0D285);
 static const uint64_t S = UINT64_C(0x8FADF5E286E31587);
 static const uint64_t T = UINT64_C(0xFCF8B405D3D0783B);
 
-//static inline uint64_t mix(uint64_t x) {
-//    constexpr uint32_t R0 = 32;
-//    constexpr uint32_t R1 = 29;
-//    constexpr uint32_t R2 = 32;
-//    constexpr uint32_t R3 = 29;
-//    x ^= x >> R0;
-//    x *= C;
-//    x ^= x >> R1;
-//    x *= C;
-//    x ^= x >> R2;
-//    x *= C;
-//    x ^= x >> R3;
-//    return x;
-//}
-
 // Moremur unary hash, by Pelle Evensen
 // https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
 static inline uint64_t mix(uint64_t x) {
@@ -94,7 +79,8 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     constexpr int R1 = 37;
 
     const uint8_t* const tail = buf + (len & ~7);
-    uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
+    uint64_t h = len ^ seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56);
+    //uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
 
     while (len >= 64) {
         len -= 64;
@@ -150,8 +136,8 @@ REGISTER_HASH(ax,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x19498DD8,// 0xB482B1A1,// 0x288113E9,
-    $.verification_BE = 0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
+    $.verification_LE = 0,//0x19498DD8,// 0xB482B1A1,// 0x288113E9,
+    $.verification_BE = 0,//0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
     $.hashfn_native = ax<false>,
     $.hashfn_bswap = ax<true>
 );
