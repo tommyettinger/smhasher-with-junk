@@ -73,7 +73,7 @@ static inline uint64_t woothash(const void* key, uint64_t len, uint64_t seed) {
 	case	31:	seed = _wootmum(__wootr64(p) + seed, __wootr64(p + 8) + _wootp2) + _wootmum(__wootr64(p + 16) ^ seed, ((_wootr32(p + 24) << 24) | (_wootr16(p + 24 + 4) << 8) | _wootr08(p + 24 + 6)) ^ _wootp4);	break;
 	}
     seed = (seed ^ len) * (_wootp0 ^ seed << 16);
-    return seed ^ __rolq(seed, 31) ^ __rolq(seed, 19);
+    return seed ^ ROTL64(seed, 31) ^ ROTL64(seed, 19);
 }
 
 
