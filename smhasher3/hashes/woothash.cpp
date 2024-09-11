@@ -31,6 +31,29 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 502.333620 seconds
+
+With seed issues eliminated, but others remaining or worse:
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+		  0     1     2     3     4     5     6     7     8     9    10    11    12
+		----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+		 4467  1231   575   245   155    61    49    18    13     5     1     0     2
+
+		 13    14    15    16    17    18    19    20    21    22    23    24    25+
+		----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+			0     4     0     2     1     2     1     0     0     0     0     0    51
+
+----------------------------------------------------------------------------------------------
+Summary for: woot
+Overall result: FAIL            ( 180 / 188 passed)
+Failures:
+	Sparse              : [3/48]
+	Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE]]
+	TwoBytes            : [20]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 480.338468 seconds
 */
 
 const uint64_t _wootp0 = 0xa0761d6478bd642full, _wootp1 = 0xe7037ed1a0b428dbull, _wootp2 = 0x8ebc6af09c88c6e3ull;
@@ -72,57 +95,57 @@ static inline uint64_t woothash(const void* key, uint64_t len, uint64_t seed) {
 	const uint8_t* p = (const uint8_t*)key;
 	//seed += _wootp1;
 	//seed ^= seed >> 23 ^ seed >> 48 ^ seed << 7 ^ seed << 53;
-	seed ^= ROTL64(seed, 29) ^ ROTL64(seed, 47) ^ len;
+	seed = (seed ^ ROTL64(seed, 29) ^ ROTL64(seed, 47)) - len;
 	//	uint64_t i, a = seed ^ _wootp4, b = ROTL64(seed, 17) ^ _wootp3, c = ROTL64(seed, 31) ^ _wootp2, d = ROTL64(seed, 47) ^ _wootp1;
 	uint64_t i, a = seed + _wootp4, b = a ^ _wootp3, c = b - _wootp2, d = c ^ _wootp1;
 	//uint64_t i, a = seed + _wootp4, b = seed + _wootp3, c = seed + _wootp2, d = seed + _wootp1;
 	for (i = 0; i + 32 <= len; i += 32, p += 32)
 	{
-		a += (_wootr64<bswap>(p     )) * _wootp1; a = ROTL64(a, 29); a *= _wootp3;
-		b += (_wootr64<bswap>(p +  8)) * _wootp2; b = ROTL64(b, 29); b *= _wootp4;
-		c += (_wootr64<bswap>(p + 16)) * _wootp3; c = ROTL64(c, 29); c *= _wootp5;
-		d += (_wootr64<bswap>(p + 24)) * _wootp4; d = ROTL64(d, 29); d *= _wootp1;
+		a ^= (_wootr64<bswap>(p     )) * _wootp1; a = ROTL64(a, 29); a *= _wootp3;
+		b ^= (_wootr64<bswap>(p +  8)) * _wootp2; b = ROTL64(b, 29); b *= _wootp4;
+		c ^= (_wootr64<bswap>(p + 16)) * _wootp3; c = ROTL64(c, 29); c *= _wootp5;
+		d ^= (_wootr64<bswap>(p + 24)) * _wootp4; d = ROTL64(d, 29); d *= _wootp1;
 		seed += a + b + c + d;
 	}
 	//seed += _wootp5;
 	switch (len & 31) {
-	case	0:	seed = _wootmum(_wootp1 - seed, _wootp4 + seed); break;
-	case	1:	seed = _wootmum(seed, _wootr08<bswap>(p) ^ _wootp1);	break;
-	case	2:	seed = _wootmum(seed, _wootr16<bswap>(p) ^ _wootp1);	break;
-	case	3:	seed = _wootmum(seed, ((_wootr16<bswap>(p) << 8) | _wootr08<bswap>(p + 2)) ^ _wootp1);	break;
-	case	4:	seed = _wootmum(seed, _wootr32<bswap>(p) ^ _wootp1);	break;
-	case	5:	seed = _wootmum(seed, ((_wootr32<bswap>(p) << 8) | _wootr08<bswap>(p + 4)) ^ _wootp1);	break;
-	case	6:	seed = _wootmum(seed, ((_wootr32<bswap>(p) << 16) | _wootr16<bswap>(p + 4)) ^ _wootp1);	break;
-	case	7:	seed = _wootmum(seed, ((_wootr32<bswap>(p) << 24) | (_wootr16<bswap>(p + 4) << 8) | _wootr08<bswap>(p + 6)) ^ _wootp1);	break;
-	case	8:	seed = _wootmum(seed, __wootr64<bswap>(p) ^ _wootp1);	break;
-	case	9:	seed = _wootmum(__wootr64<bswap>(p) + seed, _wootr08<bswap>(p + 8) ^ _wootp2);	break;
-	case	10:	seed = _wootmum(__wootr64<bswap>(p) + seed, _wootr16<bswap>(p + 8) ^ _wootp2);	break;
-	case	11:	seed = _wootmum(__wootr64<bswap>(p) + seed, ((_wootr16<bswap>(p + 8) << 8) | _wootr08<bswap>(p + 8 + 2)) ^ _wootp2);	break;
-	case	12:	seed = _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) ^ _wootp2);	break;
-	case	13:	seed = _wootmum(__wootr64<bswap>(p) + seed, ((_wootr32<bswap>(p + 8) << 8) | _wootr08<bswap>(p + 8 + 4)) ^ _wootp2);	break;
-	case	14:	seed = _wootmum(__wootr64<bswap>(p) + seed, ((_wootr32<bswap>(p + 8) << 16) | _wootr16<bswap>(p + 8 + 4)) ^ _wootp2);	break;
-	case	15:	seed = _wootmum(__wootr64<bswap>(p) + seed, ((_wootr32<bswap>(p + 8) << 24) | (_wootr16<bswap>(p + 8 + 4) << 8) | _wootr08<bswap>(p + 8 + 6)) ^ _wootp2);	break;
-	case	16:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2);	break;
-	case	17:	seed = _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) + _wootp2) + _wootmum(_wootr32<bswap>(p + 12) ^ seed, _wootr08<bswap>(p + 16) ^ _wootp3);	break;
-	case	18:	seed = _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) + _wootp2) + _wootmum(_wootr32<bswap>(p + 12) ^ seed, _wootr16<bswap>(p + 16) ^ _wootp3);	break;
-	case	19:	seed = _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) + _wootp2) + _wootmum(_wootr32<bswap>(p + 12) ^ seed, ((_wootr16<bswap>(p + 16) << 8) | _wootr08<bswap>(p + 16 + 2)) ^ _wootp3);	break;
-	case	20:	seed = _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) + _wootp2) + _wootmum(_wootr32<bswap>(p + 12) ^ seed, _wootr32<bswap>(p + 16) ^ _wootp3);	break;
-	case	21:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(_wootr16<bswap>(p + 16) ^ seed, ((_wootr16<bswap>(p + 18) << 8) | _wootr08<bswap>(p + 16 + 4)) ^ _wootp3);	break;
-	case	22:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(_wootr16<bswap>(p + 16) ^ seed, (_wootr32<bswap>(p + 18) << 16) ^ _wootp3);	break;
-	case	23:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(_wootp4 + seed, ((_wootr32<bswap>(p + 16) << 24) | (_wootr16<bswap>(p + 16 + 4) << 8) | _wootr08<bswap>(p + 16 + 6)) ^ _wootp3);	break;
-	case	24:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) + seed, seed ^ _wootp3);	break;
-	case	25:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, _wootr08<bswap>(p + 24) ^ _wootp4);	break;
-	case	26:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, _wootr16<bswap>(p + 24) ^ _wootp4);	break;
-	case	27:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, ((_wootr16<bswap>(p + 24) << 8) | _wootr08<bswap>(p + 24 + 2)) ^ _wootp4);	break;
-	case	28:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, _wootr32<bswap>(p + 24) ^ _wootp4);	break;
-	case	29:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, ((_wootr32<bswap>(p + 24) << 8) | _wootr08<bswap>(p + 24 + 4)) ^ _wootp4);	break;
-	case	30:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, ((_wootr32<bswap>(p + 24) << 16) | _wootr16<bswap>(p + 24 + 4)) ^ _wootp4);	break;
-	case	31:	seed = _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, ((_wootr32<bswap>(p + 24) << 24) | (_wootr16<bswap>(p + 24 + 4) << 8) | _wootr08<bswap>(p + 24 + 6)) ^ _wootp4);	break;
+	case	0:	seed ^= _wootmum(_wootp1 - seed, _wootp4 + seed); break;
+	case	1:	seed ^= _wootmum(seed, _wootr08<bswap>(p) ^ _wootp1);	break;
+	case	2:	seed ^= _wootmum(seed, _wootr16<bswap>(p) ^ _wootp1);	break;
+	case	3:	seed ^= _wootmum(seed, ((_wootr16<bswap>(p) << 8) | _wootr08<bswap>(p + 2)) ^ _wootp1);	break;
+	case	4:	seed ^= _wootmum(seed, _wootr32<bswap>(p) ^ _wootp1);	break;
+	case	5:	seed ^= _wootmum(seed, ((_wootr32<bswap>(p) << 8) | _wootr08<bswap>(p + 4)) ^ _wootp1);	break;
+	case	6:	seed ^= _wootmum(seed, ((_wootr32<bswap>(p) << 16) | _wootr16<bswap>(p + 4)) ^ _wootp1);	break;
+	case	7:	seed ^= _wootmum(seed, ((_wootr32<bswap>(p) << 24) | (_wootr16<bswap>(p + 4) << 8) | _wootr08<bswap>(p + 6)) ^ _wootp1);	break;
+	case	8:	seed ^= _wootmum(seed, __wootr64<bswap>(p) ^ _wootp1);	break;
+	case	9:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, _wootr08<bswap>(p + 8) ^ _wootp2);	break;
+	case	10:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, _wootr16<bswap>(p + 8) ^ _wootp2);	break;
+	case	11:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, ((_wootr16<bswap>(p + 8) << 8) | _wootr08<bswap>(p + 8 + 2)) ^ _wootp2);	break;
+	case	12:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) ^ _wootp2);	break;
+	case	13:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, ((_wootr32<bswap>(p + 8) << 8) | _wootr08<bswap>(p + 8 + 4)) ^ _wootp2);	break;
+	case	14:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, ((_wootr32<bswap>(p + 8) << 16) | _wootr16<bswap>(p + 8 + 4)) ^ _wootp2);	break;
+	case	15:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, ((_wootr32<bswap>(p + 8) << 24) | (_wootr16<bswap>(p + 8 + 4) << 8) | _wootr08<bswap>(p + 8 + 6)) ^ _wootp2);	break;
+	case	16:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2);	break;
+	case	17:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) + _wootp2) + _wootmum(_wootr32<bswap>(p + 12) ^ seed, _wootr08<bswap>(p + 16) ^ _wootp3);	break;
+	case	18:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) + _wootp2) + _wootmum(_wootr32<bswap>(p + 12) ^ seed, _wootr16<bswap>(p + 16) ^ _wootp3);	break;
+	case	19:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) + _wootp2) + _wootmum(_wootr32<bswap>(p + 12) ^ seed, ((_wootr16<bswap>(p + 16) << 8) | _wootr08<bswap>(p + 16 + 2)) ^ _wootp3);	break;
+	case	20:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, _wootr32<bswap>(p + 8) + _wootp2) + _wootmum(_wootr32<bswap>(p + 12) ^ seed, _wootr32<bswap>(p + 16) ^ _wootp3);	break;
+	case	21:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(_wootr16<bswap>(p + 16) ^ seed, ((_wootr16<bswap>(p + 18) << 8) | _wootr08<bswap>(p + 16 + 4)) ^ _wootp3);	break;
+	case	22:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(_wootr16<bswap>(p + 16) ^ seed, (_wootr32<bswap>(p + 18) << 16) ^ _wootp3);	break;
+	case	23:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(_wootp4 + seed, ((_wootr32<bswap>(p + 16) << 24) | (_wootr16<bswap>(p + 16 + 4) << 8) | _wootr08<bswap>(p + 16 + 6)) ^ _wootp3);	break;
+	case	24:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) + seed, seed ^ _wootp3);	break;
+	case	25:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, _wootr08<bswap>(p + 24) ^ _wootp4);	break;
+	case	26:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, _wootr16<bswap>(p + 24) ^ _wootp4);	break;
+	case	27:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, ((_wootr16<bswap>(p + 24) << 8) | _wootr08<bswap>(p + 24 + 2)) ^ _wootp4);	break;
+	case	28:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, _wootr32<bswap>(p + 24) ^ _wootp4);	break;
+	case	29:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, ((_wootr32<bswap>(p + 24) << 8) | _wootr08<bswap>(p + 24 + 4)) ^ _wootp4);	break;
+	case	30:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, ((_wootr32<bswap>(p + 24) << 16) | _wootr16<bswap>(p + 24 + 4)) ^ _wootp4);	break;
+	case	31:	seed ^= _wootmum(__wootr64<bswap>(p) + seed, __wootr64<bswap>(p + 8) + _wootp2) + _wootmum(__wootr64<bswap>(p + 16) ^ seed, ((_wootr32<bswap>(p + 24) << 24) | (_wootr16<bswap>(p + 24 + 4) << 8) | _wootr08<bswap>(p + 24 + 6)) ^ _wootp4);	break;
 	}
 //	seed = (seed ^ len) * (_wootp0 ^ seed << 16);
 //	return seed ^ ROTL64(seed, 31) ^ ROTL64(seed, 19);
-	seed ^= ROTL64(seed, 23) ^ ROTL64(seed, 43) ^ len;
-	seed *= _wootp0;
+	//seed ^= ROTL64(seed, 23) ^ ROTL64(seed, 43) ^ len;
+	seed = seed * _wootp0 + len;
 	return seed ^ ROTL64(seed, 11) ^ ROTL64(seed, 50);
 	//seed = (seed ^ seed << 16) * (len ^ _wootp0 ^ seed >> 32);
 	//return seed - (seed >> 31) + (seed << 33);
