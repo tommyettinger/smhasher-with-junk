@@ -75,18 +75,50 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 589.268897 seconds
+
+Now it fails just one test, Sparse with 48 bytes and 3 bits set.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+		  0     1     2     3     4     5     6     7     8     9    10    11    12
+		----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+		 4387  1233   650   287   165    86    41    13     8     7     3     2     0
+
+		 13    14    15    16    17    18    19    20    21    22    23    24    25+
+		----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+			0     0     0     0     0     0     0     0     0     0     0     0     1
+
+----------------------------------------------------------------------------------------------
+Summary for: woot
+Overall result: FAIL            ( 187 / 188 passed)
+Failures:
+	Sparse              : [3/48]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 569.113429 seconds
 */
 
 const uint64_t _wootp0 = 0xa0761d6478bd642full, _wootp1 = 0xe7037ed1a0b428dbull, _wootp2 = 0x8ebc6af09c88c6e3ull;
 const uint64_t _wootp3 = 0x589965cc75374cc3ull, _wootp4 = 0x1d8e4e27c47d124full, _wootp5 = 0xeb44accab455d165ull;
 
 static inline uint64_t _wootmum(const uint64_t A, const uint64_t B) {
-	//uint64_t r = (A ^ ROTL64(B, 39)) * (B ^ ROTL64(A, 41));
+	uint64_t r = (A ^ ROTL64(B, 39)) * (B ^ ROTL64(A, 41));
 	//return r ^ (r >> 32);
+	return r ^ (r >> 31) ^ (r >> 17);
+
 	// don't use this... it fails everything.
-	uint64_t a = (A ^ A >> 31) * _wootp1;
-	uint64_t b = (B ^ B >> 31) * _wootp3;
-	return (a ^ ROTL64(a, 23) ^ ROTL64(a, 40)) - (b ^ ROTL64(b, 22) ^ ROTL64(b, 43));
+	//uint64_t a = A * _wootp1 + _wootp4;
+	//uint64_t b = B * _wootp3 + _wootp2;
+	//return (a ^ ROTL64(a, 23) ^ ROTL64(a, 40)) * _wootp1 - (b ^ ROTL64(b, 22) ^ ROTL64(b, 43)) * _wootp3 + _wootp5;
+	// still fails...
+	//uint64_t r = A * _wootp1 + B * _wootp3;
+	//r ^= (r * r | 1ULL);
+	//return (r ^ ROTL64(r, 22) ^ ROTL64(r, 43));
+	// fails...
+	//uint64_t a = A + _wootp4;
+	//uint64_t b = _wootp2 - B;
+	//a ^= (a * a | 1) ^ b ^ (b * b | 1);
+	//return (a ^ ROTL64(a, 23) ^ ROTL64(a, 40));
 }
 
 template <bool bswap>
