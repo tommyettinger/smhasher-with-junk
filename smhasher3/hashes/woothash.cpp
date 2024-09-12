@@ -117,6 +117,25 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 462.914872 seconds
+
+One extra multiplication fixes the permutation issues, which were only on differentials:
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+		  0     1     2     3     4     5     6     7     8     9    10    11    12
+		----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+		 4376  1284   612   301   152    86    35    13    10    10     2     1     1
+
+		 13    14    15    16    17    18    19    20    21    22    23    24    25+
+		----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+			0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: woot
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 467.791254 seconds
 */
 
 const uint64_t _wootp0 = 0xa0761d6478bd642full, _wootp1 = 0xe7037ed1a0b428dbull, _wootp2 = 0x8ebc6af09c88c6e3ull;
@@ -262,12 +281,13 @@ static inline uint64_t woothash(const void* key, uint64_t len, uint64_t seed) {
 	d *= _wootp4; d = ROTL64(d, 31); d *= _wootp1;
 
 	
-	seed ^= a ^ b ^ c ^ d;
+	seed ^= a ^ b ^ c ^ d ^ len;
 
 //	seed = (seed ^ len) * (_wootp0 ^ seed << 16);
 //	return seed ^ ROTL64(seed, 31) ^ ROTL64(seed, 19);
+	seed *= _wootp0;
 	seed ^= ROTL64(seed, 23) ^ ROTL64(seed, 43);
-	seed = seed * _wootp5 + len;
+	seed *= _wootp0;
 	seed ^= ROTL64(seed, 11) ^ ROTL64(seed, 50);
 	return seed;
 	//seed = (seed ^ seed << 16) * (len ^ _wootp0 ^ seed >> 32);
@@ -298,8 +318,8 @@ REGISTER_HASH(woot,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0,
-    $.verification_BE = 0,
+    $.verification_LE = 0x19B7101C,
+    $.verification_BE = 0x3C90130F,
     $.hashfn_native = woot<false>,
     $.hashfn_bswap = woot<true>
 );
