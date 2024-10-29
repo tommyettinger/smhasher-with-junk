@@ -76,7 +76,7 @@ static inline uint64_t woothash(const void* key, uint64_t len, uint64_t seed) {
 	case	4:	a += _wootr32<bswap>(p);	break;
 	case	5:	a += ((_wootr32<bswap>(p) << 8) | _wootr08<bswap>(p + 4));	break;
 	case	6:	a += ((_wootr32<bswap>(p) << 16) | _wootr16<bswap>(p + 4));	break;
-	case	7:	a += ((_wootr32<bswap>(p) << 24) | (_wootr16<bswap>(p + 4) << 8) | _wootr08<bswap>(p + 6));	break;
+	case	7:	a += ((_wootr32<bswap>(p) << 24) | (_wootr16<bswap>(p + 4) << 8) | _wootr08<bswap>(p + 4 + 2));	break;
 	case	8:	a += __wootr64<bswap>(p);	break;
 	case	9:	a += __wootr64<bswap>(p); b += _wootr08<bswap>(p + 8);	break;
 	case	10:	a += __wootr64<bswap>(p); b += _wootr16<bswap>(p + 8);	break;
