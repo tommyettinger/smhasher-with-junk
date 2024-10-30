@@ -127,16 +127,33 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
         buf += 8;
     }
     
+    // This format is behaviorally equivalent to the uncommented one below it.
+    // I don't know if having multiple return statements might have a negative performance impact.
+    // The code for this commented block is probably slightly larger.
+    //const uint8_t* const tail8 = buf;
+    //switch (len) {
+    //case 0: return mix(h);
+    //case 1: return mix(mix_stream(h, tail8[0]));
+    //case 2: return mix(mix_stream(h, GET_U16<bswap>(tail8, 0)));
+    //case 3: return mix(mix_stream(h, GET_U16<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16));
+    //case 4: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0)));
+    //case 5: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32));
+    //case 6: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32));
+    //case 7: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48));
+    //default:;
+    //}
+
+    //return mix(h);
+
     const uint8_t* const tail8 = buf;
     switch (len) {
-    case 0: return mix(h);
-    case 1: return mix(mix_stream(h, tail8[0]));
-    case 2: return mix(mix_stream(h, GET_U16<bswap>(tail8, 0)));
-    case 3: return mix(mix_stream(h, GET_U16<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16));
-    case 4: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0)));
-    case 5: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32));
-    case 6: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32));
-    case 7: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48));
+    case 1: h = (mix_stream(h, tail8[0]));                                                                                                                 break;
+    case 2: h = (mix_stream(h, GET_U16<bswap>(tail8, 0)));                                                                                                 break;
+    case 3: h = (mix_stream(h, GET_U16<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16));                                                         break;
+    case 4: h = (mix_stream(h, GET_U32<bswap>(tail8, 0)));                                                                                                 break;
+    case 5: h = (mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32));                                                         break;
+    case 6: h = (mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32));                                         break;
+    case 7: h = (mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48)); break;
     default:;
     }
 
