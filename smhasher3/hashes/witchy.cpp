@@ -65,6 +65,25 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 569.601139 seconds
+
+// Just adding up 4 products with h!
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4372  1324   609   280   149    82    26    19     5     6     3     2     2
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            2     0     0     2     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: witchy
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 670.944335 seconds
 */
 
 // Moremur multipliers
@@ -105,11 +124,14 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
     //h += (ROTL64(b, R2) - d) * R;
     //h += (ROTL64(c, R2) - b) * S;
     //h += (ROTL64(d, R2) - a) * T;
-    h += (a * Q + c);
-    h += (b * R + d);
-    h += (c * S + b);
-    h += (d * T + a);
-    return h;
+    //return h;
+
+    // the above runs at the same speed as the following, due to instruction pipelining.
+    return h + a * Q + b * R + c * S + d * T;
+    //h += (a * Q);// + c
+    //h += (b * R);// + d
+    //h += (c * S);// + b
+    //h += (d * T);// + a
 }
 
 template <bool bswap>

@@ -84,4 +84,6 @@ set(HASH_SRC_FILES
   hashes/whitewaterhash.cpp
   hashes/tritium.cpp
   hashes/woothash.cpp
+  hashes/witchy.cpp
+  hashes/jvmstring.cpp
 )
