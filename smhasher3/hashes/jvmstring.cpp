@@ -67,20 +67,96 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 432.538959 seconds
+
+// Using ROTL32(h, 25):
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+          843   193    99    57    23    11    16     4     4     5     2     3     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     1     0     0     0     0     1     2     0     0     2     1  1507
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring
+Overall result: FAIL            ( 64 / 186 passed)
+Failures:
+    Avalanche           : [3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 64, 128]
+    BIC                 : [3, 8, 11, 15]
+    Sparse              : [6/2, 4/3, 4/4, 4/5, 3/6, 3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 10/2, 20/3, 9/4, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [dictionary]
+    TextNum             : [without commas, with commas]
+    Text                : [FXXXXB, FBXXXX, XXXXFB, FooXXXXBar, FooBarXXXX, XXXXFooBar, FooooXXXXBaaar, FooooBaaarXXXX, XXXXFooooBaaar, FooooooXXXXBaaaaar, FooooooBaaaaarXXXX, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, FooooooooooBaaaaaaaaarXXXX, Words alnum 1-4, Words alnum 5-8, Words alnum 1-16, Words alnum 1-32, Long alnum last 1968-2128, Long alnum last 4016-4176, Long alnum last 8112-8272]
+    TwoBytes            : [8, 1024, 2048, 4096]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 4, 8]
+    SeedZeroes          : [1280, 8448]
+    SeedSparse          : [2, 3, 6, 15, 18]
+    SeedBlockLen        : [8, 12, 16, 20, 24, 28]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+    Seed                : [2, 3, 6, 15, 18]
+    SeedAvalanche       : [4, 8]
+    SeedBIC             : [3, 8, 11, 15]
+    SeedBitflip         : [3, 4, 8]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 589.491525 seconds
+
+// Using 0x9E3779B9u * ROTL(h, 7) and running through TheIronBorn's mixer:
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         1645   343   194    93    48    44    32    14    15     8    11     8    12
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            6     0     5     2     9     2     2     3     4     3     4     3   265
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring
+Overall result: FAIL            ( 153 / 186 passed)
+Failures:
+    BIC                 : [3, 8, 11, 15]
+    Sparse              : [10/2, 20/3, 9/4, 5/9, 4/14, 4/16, 3/96]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    TextNum             : [with commas]
+    TwoBytes            : [8]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 4, 8]
+    SeedBIC             : [3]
+    SeedBitflip         : [3]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 566.933656 seconds
+
 */
 
 //------------------------------------------------------------
 static uint32_t jvmstring_impl( const uint8_t * data, size_t len, uint32_t h ) {
     for (size_t i = 0; i < len; ++i) {
-        h = 31 * h + data[i];
+        h = 0x9E3779B9u * ROTL32(h, 7) + data[i];
     }
+    //return h ^ h >> 21 ^ h >> 11;
+    
+    //[16 21f0aaad 15 735a2d97 15]
+    h ^= h >> 16;
+    h *= 0x21F0AAADu;
+    h ^= h >> 15;
+    h *= 0x735A2D97u;
+    h ^= h >> 15;
     return h;
 }
 
 //------------------------------------------------------------
 template <bool bswap>
 static void jvmstring( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint32_t h = jvmstring_impl((const uint8_t *)in, len, (uint32_t)seed);
+    uint32_t h = jvmstring_impl((const uint8_t *)in, len, (uint32_t)(seed + len));
 
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
