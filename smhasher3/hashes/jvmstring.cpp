@@ -187,20 +187,75 @@ Verification value is 0x00000001 - Testing took 566.933656 seconds
 //
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 1221.716216 seconds
+//static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
+//    uint32_t mul = h | 1u;
+//    for (size_t i = 0; i < len; ++i) {
+//        h = (ROTL32(h, 25) + data[i]) * (mul += 0x9E3779BAu);
+//    }
+//    h ^= ROTL32(h, 23) ^ ROTL32(h, 11);
+//    h ^= ROTL32(h, 21) ^ ROTL32(h, 9);
+//    return h;
+//}
+
+//********* FAIL*********
+//
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1021   190   109    55    41    21    25     8    10     5     7     3     4
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//3     3     3     2     5     2     1     2     7     1     0     1  1218
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: jvmstring
+//Overall result : FAIL(54 / 187 passed)
+//Failures :
+//    Avalanche : [4, 5, 6, 7, 8, 9, 12, 16, 20, 64, 128]
+//    BIC : [3, 8, 11, 15]
+//    Cyclic : [4 cycles of 4 bytes, 4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 5 bytes, 8 cycles of 8 bytes, 12 cycles of 4 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 5 bytes, 16 cycles of 8 bytes]
+//    Sparse : [3 / 8, 3 / 9, 3 / 10, 3 / 12, 3 / 14, 9 / 4, 5 / 9, 4 / 14, 4 / 16, 3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128, 2 / 256, 2 / 512, 2 / 1024, 2 / 1280]
+//    Permutation : [4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high bits; BE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [FXXXXB, FooooooooXXXXBaaaaaaar, XXXXFooooooooBaaaaaaar, Long alnum first 1968 - 2128, Long alnum last 1968 - 2128, Long alnum first 4016 - 4176, Long alnum last 4016 - 4176, Long alnum first 8112 - 8272, Long alnum last 8112 - 8272]
+//    TwoBytes : [20, 32, 1024, 2048, 4096]
+//    PerlinNoise : [2]
+//    Bitflip : [3, 4, 8]
+//    SeedZeroes : [1280, 8448]
+//    SeedSparse : [2, 15, 18, 31, 80]
+//    SeedBlockLen : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+//    SeedBlockOffset : [0, 1, 2, 3, 4, 5]
+//    Seed : [2, 3, 6, 15, 18, 31, 52, 80, 200, 1025]
+//    SeedAvalanche : [4, 16, 24, 32, 64, 128]
+//    SeedBIC : [3, 8, 11, 15]
+//    SeedBitflip : [3, 4, 8]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 302.630791 seconds
+template <bool bswap>
 static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
-    uint32_t mul = h | 1u;
-    for (size_t i = 0; i < len; ++i) {
-        h = (ROTL32(h, 25) + data[i]) * (mul += 0x9E3779BAu);
+    size_t i = 3;
+    for (; i < len; i += 4, data += 4) {
+        h = (h + GET_U32<bswap>(data, 0)) * 0x9E3779B9u;
     }
-    h ^= ROTL32(h, 23) ^ ROTL32(h, 11);
-    h ^= ROTL32(h, 21) ^ ROTL32(h, 9);
+    i -= 3;
+    for (; i < len; i++, data++) {
+        h = (h + data[0]) * 0x9E3779B9u;// (mul += 0x9E3779BAu);
+    }
+    h ^= h >> 16;
+    h *= 0x21F0AAADu;
+    h ^= h >> 15;
+    h *= 0x735A2D97u;
+    h ^= h >> 15;
     return h;
 }
 
 //------------------------------------------------------------
 template <bool bswap>
 static void jvmstring( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint32_t h = jvmstring_impl((const uint8_t *)in, len, (uint32_t)(seed + len));
+    uint32_t h = jvmstring_impl<bswap>((const uint8_t *)in, len, (uint32_t)(seed + len));
 
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
