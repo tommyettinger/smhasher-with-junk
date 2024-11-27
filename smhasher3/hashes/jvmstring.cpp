@@ -138,18 +138,62 @@ Verification value is 0x00000001 - Testing took 566.933656 seconds
 */
 
 //------------------------------------------------------------
-static uint32_t jvmstring_impl( const uint8_t * data, size_t len, uint32_t h ) {
+//static uint32_t jvmstring_impl( const uint8_t * data, size_t len, uint32_t h ) {
+//    for (size_t i = 0; i < len; ++i) {
+//        h = 0x9E3779B9u * ROTL32(h, 7) + data[i];
+//    }
+//
+//    //[16 21f0aaad 15 735a2d97 15]
+//    h ^= h >> 16;
+//    h *= 0x21F0AAADu;
+//    h ^= h >> 15;
+//    h *= 0x735A2D97u;
+//    h ^= h >> 15;
+//    return h;
+//}
+
+
+
+//********* FAIL*********
+//
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1301   281   146    75    33    15    10    11     7     3     2     0     4
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1     1     1     2     1     3     3     2     0     0     0     1   844
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: jvmstring
+//Overall result : FAIL(105 / 187 passed)
+//Failures :
+//    Avalanche : [3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 64, 128]
+//    BIC : [3, 8, 11, 15]
+//    Sparse : [6 / 2, 4 / 3, 4 / 4, 4 / 5, 3 / 6, 3 / 7, 3 / 8, 3 / 9, 3 / 10, 3 / 12, 3 / 14, 10 / 2, 20 / 3, 9 / 4, 5 / 9, 4 / 14, 4 / 16, 3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128, 2 / 256, 2 / 512, 2 / 1024, 2 / 1280]
+//    Permutation : [4 - bytes[3 low bits; LE], 4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high bits; BE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    TextNum : [without commas, with commas]
+//    Text : [FBXXXX, XXXXFB, FooBarXXXX, FooooBaaarXXXX, FooooooBaaaaarXXXX, FooooooooBaaaaaaarXXXX, FooooooooooBaaaaaaaaarXXXX, Long alnum last 1968 - 2128, Long alnum last 4016 - 4176, Long alnum last 8112 - 8272]
+//    TwoBytes : [20, 32]
+//    PerlinNoise : [2]
+//    Bitflip : [3, 4, 8]
+//    SeedZeroes : [1280]
+//    SeedSparse : [2, 3]
+//    Seed : [2, 3]
+//    SeedBitflip : [3, 4]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 1221.716216 seconds
+static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
+    uint32_t mul = h | 1u;
     for (size_t i = 0; i < len; ++i) {
-        h = 0x9E3779B9u * ROTL32(h, 7) + data[i];
+        h = (ROTL32(h, 25) + data[i]) * (mul += 0x9E3779BAu);
     }
-    //return h ^ h >> 21 ^ h >> 11;
-    
-    //[16 21f0aaad 15 735a2d97 15]
-    h ^= h >> 16;
-    h *= 0x21F0AAADu;
-    h ^= h >> 15;
-    h *= 0x735A2D97u;
-    h ^= h >> 15;
+    h ^= ROTL32(h, 23) ^ ROTL32(h, 11);
+    h ^= ROTL32(h, 21) ^ ROTL32(h, 9);
     return h;
 }
 
@@ -174,7 +218,7 @@ REGISTER_HASH(jvmstring,
    $.impl_flags =
          FLAG_IMPL_MULTIPLY     |
          FLAG_IMPL_LICENSE_MIT  |
-         FLAG_IMPL_VERY_SLOW,
+         FLAG_IMPL_SLOW,
    $.bits = 32,
    $.verification_LE = 0,
    $.verification_BE = 0,
