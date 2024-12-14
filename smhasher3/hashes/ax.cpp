@@ -87,7 +87,6 @@ static inline uint64_t mix(uint64_t x) {
 
 static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
     constexpr uint32_t R1 = 39;
-
     x *= C;
     x ^= (x >> R1);
     h += x * C;
@@ -106,10 +105,12 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
 
 template <bool bswap>
 static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
+    constexpr int Q1 = 29;
+    constexpr int Q2 = 47;
     constexpr int R1 = 37;
 
     const uint8_t* const tail = buf + (len & ~7);
-    uint64_t h = len ^ seed ^ ROTL64(seed, 29) ^ ROTL64(seed, 47);
+    uint64_t h = len ^ seed ^ ROTL64(seed, Q1) ^ ROTL64(seed, Q2);
     //uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
 
     while (len >= 64) {

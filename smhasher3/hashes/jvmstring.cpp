@@ -285,15 +285,72 @@ Verification value is 0x00000001 - Testing took 566.933656 seconds
 //
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 398.427469 seconds
+//template <bool bswap>
+//static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
+//    size_t i = 3;
+//    for (; i < len; i += 4, data += 4) {
+//        h = (h ^ h >> 16 ^ GET_U32<bswap>(data, 0)) * 0x9E3779B9u;
+//    }
+//    i -= 3;
+//    for (; i < len; i++, data++) {
+//        h = (h ^ h >> 16 ^ data[0]) * 0x9E3779B9u;// (mul += 0x9E3779BAu);
+//    }
+//    h ^= h >> 15;
+//    h *= 0xD168AAADu;
+//    h ^= h >> 15;
+//    h *= 0xAF723597u;
+//    h ^= h >> 15;
+//    return h;
+//}
+
+
+//********* FAIL*********
+//
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1227   213   133    54    36    23    14    10     5     5     5     2     5
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//3     2     1     2     3     1     1     1     0     0     1     2   998
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: jvmstring
+//Overall result : FAIL(58 / 187 passed)
+//Failures :
+//    Avalanche : [4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 64, 128]
+//    BIC : [3, 8, 11, 15]
+//    Zeroes : []
+//    Cyclic : [4 cycles of 4 bytes, 4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 5 bytes, 8 cycles of 8 bytes, 12 cycles of 4 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 5 bytes, 16 cycles of 8 bytes]
+//    Sparse : [4 / 5, 3 / 8, 3 / 9, 3 / 10, 3 / 12, 3 / 14, 9 / 4, 5 / 9, 4 / 14, 4 / 16, 3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128, 2 / 256, 2 / 512, 2 / 1024, 2 / 1280]
+//    Permutation : [4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [XXXXFooooooooBaaaaaaar, Long alnum first 1968 - 2128, Long alnum last 1968 - 2128, Long alnum first 4016 - 4176, Long alnum last 4016 - 4176, Long alnum first 8112 - 8272, Long alnum last 8112 - 8272]
+//    TwoBytes : [20, 32, 1024, 2048, 4096]
+//    Bitflip : [3, 4, 8]
+//    SeedZeroes : [1280, 8448]
+//    SeedBlockLen : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+//    SeedBlockOffset : [0, 1, 2, 3, 4, 5]
+//    Seed : [2, 3, 6, 15, 18, 31, 52, 80, 200, 1025]
+//    SeedAvalanche : [4, 8, 16, 24, 32, 64, 128]
+//    SeedBIC : [3, 8, 11, 15]
+//    SeedBitflip : [3, 4, 8]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 278.199765 second
+
 template <bool bswap>
 static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
     size_t i = 3;
+    uint32_t mul = ((len ^ h) * 0x86E31586u + 0xD3D0783Bu);
     for (; i < len; i += 4, data += 4) {
-        h = (h ^ h >> 16 ^ GET_U32<bswap>(data, 0)) * 0x9E3779B9u;
+        h = (h + GET_U32<bswap>(data, 0)) * (mul += 0x9E3779BAu);;
     }
     i -= 3;
     for (; i < len; i++, data++) {
-        h = (h ^ h >> 16 ^ data[0]) * 0x9E3779B9u;// (mul += 0x9E3779BAu);
+        h = (h + data[0]) * (mul += 0x9E3779BAu);
     }
     h ^= h >> 15;
     h *= 0xD168AAADu;
@@ -302,6 +359,7 @@ static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
     h ^= h >> 15;
     return h;
 }
+
 
 //------------------------------------------------------------
 template <bool bswap>
