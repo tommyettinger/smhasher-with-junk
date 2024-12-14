@@ -568,33 +568,74 @@ Verification value is 0x00000001 - Testing took 566.933656 seconds
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 198.491466 second
 
+//template <bool bswap>
+//static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
+//    size_t i = 15;
+//    h ^= ROTL32(h, 10) ^ ROTL32(h, 23);
+//    uint32_t mul = ((len + h) * 0x86E31586u + 0xD3D0783Bu);
+//    for (; i < len; i += 16, data += 16) {
+//        h +=
+//            GET_U32<bswap>(data, 0) * (mul + 0xD1B92B0Au) +
+//            GET_U32<bswap>(data, 4) * (mul + 0xFCF8B406u) +
+//            GET_U32<bswap>(data, 8) * (mul + 0x8FADF5E2u) +
+//            GET_U32<bswap>(data, 12) * (mul += 0x9E3779BAu);
+//        h ^= h >> 15;
+//    }
+//    i -= 15;
+//    for (; i < len; i++, data++) {
+//        h += data[0] * (mul += 0x9E3779BAu);
+//    }
+//    h ^= h >> 15;
+//    h *= 0xD168AAADu;
+//    h ^= h >> 15;
+//    h *= 0xAF723597u;
+//    h ^= h >> 15;
+//    return h;
+//}
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1789   392   202    75    50    28     9     9    11     5     0     2     1
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//3     0     1     0     0     0     2     2     3     0     1     1   161
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: jvmstring
+//Overall result : FAIL(156 / 187 passed)
+//Failures :
+//    BIC : [3, 8, 11, 15]
+//    Sparse : [20 / 3, 9 / 4, 5 / 9, 3 / 48]
+//    Permutation : [4 - bytes[3 low bits; LE], 4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high bits; BE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [XXXXFooooBaaar, FooooooXXXXBaaaaar, XXXXFooooooooBaaaaaaar, FooooooooooXXXXBaaaaaaaaar]
+//    TwoBytes : [20, 32]
+//    Bitflip : [3, 4, 8]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 1068.895088 seconds
+
 template <bool bswap>
-static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
-    size_t i = 15;
-    h ^= ROTL32(h, 10) ^ ROTL32(h, 23);
+static uint32_t jvmstring_impl( const uint8_t * data, size_t len, uint32_t h ) {
+    h ^= ROTL32(h, 11) ^ ROTL32(h, 20);
     uint32_t mul = ((len + h) * 0x86E31586u + 0xD3D0783Bu);
-    for (; i < len; i += 16, data += 16) {
-        h +=
-            GET_U32<bswap>(data, 0) * (mul + 0xD1B92B0Au) +
-            GET_U32<bswap>(data, 4) * (mul + 0xFCF8B406u) +
-            GET_U32<bswap>(data, 8) * (mul + 0x8FADF5E2u) +
-            GET_U32<bswap>(data, 12) * (mul += 0x9E3779BAu);
-        h ^= h >> 15;
+
+    for (size_t i = 0; i < len; ++i) {
+        h = (h ^ ROTL32(h, 10) ^ ROTL32(h, 23) ^ data[i]) * (mul += 0x9E3779BAu);
     }
-    i -= 15;
-    for (; i < len; i++, data++) {
-        h += data[0] * (mul += 0x9E3779BAu);
-    }
+
+    //[16 21f0aaad 15 735a2d97 15]
+    h ^= h >> 16;
+    h *= 0x21F0AAADu;
     h ^= h >> 15;
-    h *= 0xD168AAADu;
-    h ^= h >> 15;
-    h *= 0xAF723597u;
+    h *= 0x735A2D97u;
     h ^= h >> 15;
     return h;
 }
 
-
-//------------------------------------------------------------
 template <bool bswap>
 static void jvmstring( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint32_t h = jvmstring_impl<bswap>((const uint8_t *)in, len, (uint32_t)(seed + len));
