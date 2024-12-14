@@ -510,6 +510,64 @@ Verification value is 0x00000001 - Testing took 566.933656 seconds
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 191.481190 seconds
 
+//template <bool bswap>
+//static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
+//    size_t i = 15;
+//    h ^= ROTL32(h, 10) ^ ROTL32(h, 23);
+//    uint32_t mul = ((len + h) * 0x86E31586u + 0xD3D0783Bu);
+//    for (; i < len; i += 16, data += 16) {
+//        h +=
+//            GET_U32<bswap>(data, 0) * (mul + 0xD1B92B0Au) +
+//            GET_U32<bswap>(data, 4) * (mul + 0xFCF8B406u) +
+//            GET_U32<bswap>(data, 8) * (mul + 0x8FADF5E2u) +
+//            GET_U32<bswap>(data, 12) * (mul += 0x9E3779BAu);
+//        h ^= ROTL32(h, 10) ^ ROTL32(h, 23);
+//    }
+//    i -= 15;
+//    for (; i < len; i++, data++) {
+//        h ^= data[0] * (mul += 0x9E3779BAu);
+//    }
+//    h ^= h >> 15;
+//    h *= 0xD168AAADu;
+//    h ^= h >> 15;
+//    h *= 0xAF723597u;
+//    h ^= h >> 15;
+//    return h;
+//}
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//756   196    70    40    24    19     6     5     0     0     4     0     0
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//0     0     0     0     0     0     0     0     1     0     0     0  1626
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: jvmstring
+//Overall result : FAIL(72 / 187 passed)
+//Failures :
+//    Avalanche : [16, 20, 64, 128]
+//    BIC : [3, 8, 11, 15]
+//    Zeroes : []
+//    Cyclic : [4 cycles of 3 bytes, 8 cycles of 4 bytes, 12 cycles of 4 bytes, 16 cycles of 4 bytes]
+//    Sparse : [4 / 3, 4 / 4, 4 / 5, 3 / 6, 3 / 7, 3 / 8, 3 / 9, 3 / 10, 3 / 12, 3 / 14, 20 / 3, 9 / 4, 5 / 9, 4 / 14, 4 / 16, 3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128, 2 / 256, 2 / 512, 2 / 1024, 2 / 1280]
+//    Permutation : [4 - bytes[3 low bits; LE], 4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high bits; BE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [dictionary]
+//    TextNum : [without commas, with commas]
+//    Text : [FXXXXB, FBXXXX, XXXXFB, FooXXXXBar, FooBarXXXX, XXXXFooBar, FooooXXXXBaaar, FooooBaaarXXXX, XXXXFooooBaaar, FooooooooBaaaaaaarXXXX, FooooooooooBaaaaaaaaarXXXX, Words alnum 1 - 4, Words alnum 5 - 8, Words alnum 1 - 16, Words alnum 1 - 32, Long alnum first 1968 - 2128, Long alnum last 1968 - 2128, Long alnum first 4016 - 4176, Long alnum last 4016 - 4176, Long alnum first 8112 - 8272, Long alnum last 8112 - 8272]
+//    TwoBytes : [20, 32, 1024, 2048, 4096]
+//    Bitflip : [3, 4, 8]
+//    SeedZeroes : [1280, 8448]
+//    SeedBlockLen : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+//    SeedBlockOffset : [0, 1, 2, 3, 4, 5]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 198.491466 second
+
 template <bool bswap>
 static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
     size_t i = 15;
@@ -521,11 +579,11 @@ static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
             GET_U32<bswap>(data, 4) * (mul + 0xFCF8B406u) +
             GET_U32<bswap>(data, 8) * (mul + 0x8FADF5E2u) +
             GET_U32<bswap>(data, 12) * (mul += 0x9E3779BAu);
-        h ^= ROTL32(h, 10) ^ ROTL32(h, 23);
+        h ^= h >> 15;
     }
     i -= 15;
     for (; i < len; i++, data++) {
-        h ^= data[0] * (mul += 0x9E3779BAu);
+        h += data[0] * (mul += 0x9E3779BAu);
     }
     h ^= h >> 15;
     h *= 0xD168AAADu;
