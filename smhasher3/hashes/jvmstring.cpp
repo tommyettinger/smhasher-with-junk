@@ -711,17 +711,72 @@ Verification value is 0x00000001 - Testing took 566.933656 seconds
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 285.070837 seconds
 
+//template <bool bswap>
+//static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
+//    size_t i = 3;
+//    h ^= ROTL32(h, 10) ^ ROTL32(h, 23);
+//    uint32_t mul = ((len + h) * 0x86E31586u + 0xD3D0783Bu);
+//    for (; i < len; i += 4, data += 4) {
+//        h = (ROTL32(h, 7) + GET_U32<bswap>(data, 0)) * (mul += 0x9E3779BAu);
+//    }
+//    i -= 3;
+//    for (; i < len; i++, data++) {
+//        h = (ROTL32(h, 7) + data[0]) * (mul += 0x9E3779BAu);
+//    }
+//    h ^= h >> 17;
+//    h *= 0xed5ad4bbu;
+//    h ^= h >> 11;
+//    h *= 0xac4c1b51u;
+//    h ^= h >> 15;
+//    h *= 0x31848babu;
+//    h ^= h >> 14;
+//    return h;
+//}
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1685   359   196    83    52    39    29    12    14     7     3     3     3
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//3     0     3     0     1     2     3     1     0     3     0     0   246
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: jvmstring
+//Overall result : FAIL(154 / 187 passed)
+//Failures :
+//    Sparse : [20 / 3, 5 / 9]
+//    Permutation : [4 - bytes[3 low bits; LE], 4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high bits; BE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [FXXXXB, FooooXXXXBaaar, FooooooBaaaaarXXXX, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX]
+//    TwoBytes : [20, 32]
+//    Bitflip : [3, 8]
+//    SeedZeroes : [1280, 8448]
+//    SeedBlockOffset : [0, 1, 2, 3, 4, 5]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 482.930569 seconds
+
 template <bool bswap>
 static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
     size_t i = 3;
-    h ^= ROTL32(h, 10) ^ ROTL32(h, 23);
-    uint32_t mul = ((len + h) * 0x86E31586u + 0xD3D0783Bu);
+    h ^= h >> 17;
+    h *= 0xed5ad4bbu;
+    h ^= h >> 11;
+    h *= 0xac4c1b51u;
+    h ^= h >> 15;
+    h *= 0x31848babu;
+    h ^= h >> 14;
     for (; i < len; i += 4, data += 4) {
-        h = (ROTL32(h, 7) + GET_U32<bswap>(data, 0)) * (mul += 0x9E3779BAu);
+        h = ((h ^ ROTL32(h, 19) ^ ROTL32(h, 13)) + GET_U32<bswap>(data, 0)) * 0xD168AAADu;
+        h ^= ROTL32(h, 21) ^ ROTL32(h, 11);
     }
     i -= 3;
     for (; i < len; i++, data++) {
-        h = (ROTL32(h, 7) + data[0]) * (mul += 0x9E3779BAu);
+        h = ((h ^ ROTL32(h, 19) ^ ROTL32(h, 13)) + data[0]) * 0xD168AAADu;
+        h ^= ROTL32(h, 21) ^ ROTL32(h, 11);
     }
     h ^= h >> 17;
     h *= 0xed5ad4bbu;
@@ -732,6 +787,7 @@ static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
     h ^= h >> 14;
     return h;
 }
+
 
 template <bool bswap>
 static void jvmstring( const void * in, const size_t len, const seed_t seed, void * out ) {
