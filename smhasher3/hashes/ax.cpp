@@ -265,11 +265,39 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 281.252644 seconds
 
+// Maybe a bit different. Stronger mix_stream32().
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1714   385   194    97    59    36    25    22    18     8     8     5     9
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//4     7     7     6     3     5     3     5     4     5     4     2   118
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(159 / 188 passed)
+//Failures :
+//    Cyclic : [4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 8 bytes]
+//    Sparse : [3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128]
+//    Permutation : [4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    TwoBytes : [32, 48]
+//    PerlinNoise : [2]
+//    Bitflip : [8]
+//    SeedBitflip : [3, 4]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 283.386293 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 static const uint32_t Q32 = UINT32_C(0x89A4EF89);
 static const uint32_t R32 = UINT32_C(0x9196714F);
-static const uint32_t S32 = UINT32_C(0x91021A1D);
+static const uint32_t S32 = UINT32_C(0xD72D0CC9);
 static const uint32_t T32 = UINT32_C(0x9B05C645);
 
 static inline uint32_t mix32(uint32_t h) {
@@ -290,12 +318,12 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
     x ^= ROTL32(x, R1) ^ ROTL32(x, R2);
     h += x * C32;
     h *= C32;
-    h ^= h >> 15;
+    h ^= ROTL32(h, R1) ^ ROTL32(h, R2);
     return h;
 }
 
 static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
-    constexpr int R2 = 14;
+    constexpr int R2 = 15;
     h += (ROTL32(a, R2) - c) * Q32;
     h += (ROTL32(b, R2) - d) * R32;
     h += (ROTL32(c, R2) - b) * S32;
@@ -307,7 +335,7 @@ template <bool bswap>
 static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
     constexpr int Q1 = 14;
     constexpr int Q2 = 23;
-    constexpr int R1 = 18;
+    constexpr int R1 = 17;
 
     const uint8_t* const tail = buf + (len & ~3);
     uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
