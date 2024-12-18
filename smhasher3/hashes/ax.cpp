@@ -348,6 +348,40 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 322.173221 seconds
 
+// Trying just using mix_stream_bulk32(), no mix_stream32(). Faster for small keys, but fails more tests.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1324   287   181   109    60    38    33    27    28    23    26    12    14
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//5    11    18    10     8     8     4     9    13    10     9     1   485
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(105 / 188 passed)
+//Failures :
+//    Cyclic : [4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 8 bytes]
+//    Sparse : [5 / 9, 4 / 14, 3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128]
+//    Permutation : [4 - bytes[3 low bits; LE], 4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high bits; BE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    TextNum : [with commas]
+//    Text : [FXXXXB, XXXXFooBar, FooooXXXXBaaar, FooooooXXXXBaaaaar, FooooooooXXXXBaaaaaaar, FooooooooooXXXXBaaaaaaaaar, XXXXFooooooooooBaaaaaaaaar]
+//    TwoBytes : [20, 32, 48]
+//    Bitflip : [4, 8]
+//    SeedZeroes : [1280, 8448]
+//    SeedSparse : [15, 18, 31, 52, 80, 200]
+//    SeedBlockLen : [9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+//    SeedBlockOffset : [0, 1, 2, 3, 4, 5]
+//    Seed : [6, 31, 52, 80, 200]
+//    SeedBitflip : [3, 4]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 306.982172 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 static const uint32_t Q32 = UINT32_C(0x89A4EF89);
@@ -408,15 +442,15 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
 
     while (len >= 4) {
         len -= 4;
-        h = mix_stream32(h, GET_U32<bswap>(buf, 0));
+        h = mix_stream_bulk32(h, GET_U32<bswap>(buf, 0), h, h, h);
         buf += 4;
     }
 
     const uint8_t* const tail8 = buf;
     switch (len) {
-    case 1: h = (mix_stream32(h, tail8[0]));                                                                                                                 break;
-    case 2: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0)));                                                                                                 break;
-    case 3: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0) | static_cast<uint32_t>(tail8[2]) << 16));                                                         break;
+    case 1: h = (mix_stream_bulk32(h, tail8[0], h, h, h));                                                                                                                 break;
+    case 2: h = (mix_stream_bulk32(h, tail8[0], tail8[1], h, h));                                                                                                 break;
+    case 3: h = (mix_stream_bulk32(h, tail8[0], tail8[1], tail8[2], h));                                                         break;
     default:;
     }
 
