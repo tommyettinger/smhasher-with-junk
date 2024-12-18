@@ -49,9 +49,6 @@ Verification value is 0x00000001 - Testing took 418.447033 seconds
 */
 
  //------------------------------------------------------------
-// Moremur multipliers
-static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
-static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
 // MX3 multiplier
 static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
 // Random 64-bit probable primes, as given by Java's BigInteger class.
@@ -60,6 +57,9 @@ static const uint64_t R = UINT64_C(0x9995988B72E0D285);
 static const uint64_t S = UINT64_C(0x8FADF5E286E31587);
 static const uint64_t T = UINT64_C(0xFCF8B405D3D0783B);
 
+//// Moremur multipliers
+//static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
+//static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
 //// Moremur unary hash, by Pelle Evensen
 //// https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
 //static inline uint64_t mix(uint64_t x) {
@@ -169,6 +169,121 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
     PUT_U64<bswap>(h, (uint8_t*)out, 0);
 }
 
+
+
+//*********FAIL*********
+//
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1532   285   174    86    41    23    17     9     7     9     6     7     4
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//4     7     6     7     1     4     2     3     5     4     4     2   504
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(131 / 188 passed)
+//Failures :
+//    Avalanche : [64, 128]
+//    BIC : [15]
+//    Cyclic : [4 cycles of 4 bytes, 4 cycles of 8 bytes, 8 cycles of 3 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 8 bytes]
+//    Sparse : [4 / 5, 9 / 4, 5 / 9, 3 / 32, 3 / 64, 3 / 96]
+//    Permutation : [4 - bytes[3 low bits; LE], 4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high bits; BE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [FXXXXB, FooooXXXXBaaar, FooooooooXXXXBaaaaaaar]
+//    TwoBytes : [20, 32, 48]
+//    PerlinNoise : [2]
+//    Bitflip : [4, 8]
+//    SeedBlockLen : [22, 24, 26, 28, 30]
+//    SeedBlockOffset : [4, 5]
+//    Seed : [2, 3, 6, 15, 18, 31, 80]
+//    SeedBitflip : [3, 4, 8]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 308.392236 seconds
+
+static const uint32_t C32 = UINT32_C(0xC9575725);
+
+static const uint32_t Q32 = UINT32_C(0x89A4EF89);
+static const uint32_t R32 = UINT32_C(0x9196714F);
+static const uint32_t S32 = UINT32_C(0x91021A1D);
+static const uint32_t T32 = UINT32_C(0x9B05C645);
+
+static inline uint32_t mix32(uint32_t x) {
+    constexpr int R0 = 11;
+    constexpr int R1 = 21;
+    constexpr int R2 = 6;
+    constexpr int R3 = 25;
+    x = (x ^ ROTL32(x, R0) ^ ROTL32(x, R1));
+    x *= C32;
+    x = (x ^ ROTL32(x, R2) ^ ROTL32(x, R3));
+    return x;
+}
+
+static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+    constexpr uint32_t R1 = 19;
+    x *= C32;
+    x ^= (x >> R1);
+    h += x * C32;
+    h *= C32;
+    return h;
+}
+
+static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+    constexpr int R2 = 14;
+    h += (ROTL32(a, R2) - c) * Q32;
+    h += (ROTL32(b, R2) - d) * R32;
+    h += (ROTL32(c, R2) - b) * S32;
+    h += (ROTL32(d, R2) - a) * T32;
+    return h;
+}
+
+template <bool bswap>
+static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
+    constexpr int Q1 = 14;
+    constexpr int Q2 = 23;
+    constexpr int R1 = 18;
+
+    const uint8_t* const tail = buf + (len & ~3);
+    uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
+
+    while (len >= 32) {
+        len -= 32;
+        h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
+            GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
+        h = mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
+            GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
+        buf += 32;
+    }
+
+    while (len >= 4) {
+        len -= 4;
+        h = mix_stream32(h, GET_U32<bswap>(buf, 0));
+        buf += 4;
+    }
+
+    const uint8_t* const tail8 = buf;
+    switch (len) {
+    case 1: h = (mix_stream32(h, tail8[0]));                                                                                                                 break;
+    case 2: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0)));                                                                                                 break;
+    case 3: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0) | static_cast<uint32_t>(tail8[2]) << 16));                                                         break;
+    default:;
+    }
+
+    return mix32(h);
+}
+
+//------------------------------------------------------------
+template <bool bswap>
+static void ax32(const void* in, const size_t len, const seed_t seed, void* out) {
+    uint32_t h = axhash32<bswap>((const uint8_t*)in, len, (uint32_t)seed);
+
+    PUT_U32<bswap>(h, (uint8_t*)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(axhash,
     $.src_url = "https://github.com/tommyettinger/",
@@ -188,4 +303,19 @@ REGISTER_HASH(ax,
     $.verification_BE = 0x8D5ADC80,//0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
     $.hashfn_native = ax<false>,
     $.hashfn_bswap = ax<true>
+);
+
+REGISTER_HASH(ax32,
+    $.desc = "ax32",
+    $.hash_flags =
+    FLAG_HASH_SMALL_SEED,
+    $.impl_flags =
+    FLAG_IMPL_MULTIPLY |
+    FLAG_IMPL_ROTATE |
+    FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
+    $.bits = 32,
+    $.verification_LE = 0,
+    $.verification_BE = 0,
+    $.hashfn_native = ax32<false>,
+    $.hashfn_bswap = ax32<true>
 );
