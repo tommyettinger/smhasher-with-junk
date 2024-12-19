@@ -549,6 +549,31 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 297.215667 seconds
 
+// Here, mix_stream_bulk32() uses a rotation of 19 for everything.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1795   453   213    91    47    34    18    13     4     5     5     2     6
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//2     0     1     0     0     1     1     1     3     0     0     0    58
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(168 / 188 passed)
+//Failures :
+//    Cyclic : [4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 8 bytes]
+//    Sparse : [3 / 32, 3 / 64, 3 / 96]
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    TwoBytes : [32, 48]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 295.889347 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 static const uint32_t Q32 = UINT32_C(0x89A4EF89);
@@ -579,11 +604,11 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
 }
 
 static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
-    //constexpr int R2 = 19;
-    h += (ROTL32(a, 21) - c) * Q32;
-    h += (ROTL32(b, 28) - d) * R32;
-    h += (ROTL32(c, 18) - b) * S32;
-    h += (ROTL32(d, 25) - a) * T32;
+    constexpr int R2 = 19;
+    h += (ROTL32(a, R2) - c) * Q32;
+    h += (ROTL32(b, R2) - d) * R32;
+    h += (ROTL32(c, R2) - b) * S32;
+    h += (ROTL32(d, R2) - a) * T32;
     return h;
 }
 
