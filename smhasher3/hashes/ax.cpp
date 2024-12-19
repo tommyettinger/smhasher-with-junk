@@ -495,6 +495,34 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 488.574588 second
 
+// Slower than the one two up because of an extra multiplication, but more failures.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1766   434   183    97    55    20    15    12     1     7     1     1     0
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//2     2     0     0     1     2     0     0     0     0     1     1   152
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(149 / 188 passed)
+//Failures :
+//    Cyclic : [8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 8 bytes]
+//    Sparse : [3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128, 2 / 256]
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [Long alnum first 1968 - 2128, Long alnum last 1968 - 2128, Long alnum first 4016 - 4176, Long alnum last 4016 - 4176, Long alnum first 8112 - 8272, Long alnum last 8112 - 8272]
+//    TwoBytes : [32, 48, 1024, 2048, 4096]
+//    SeedZeroes : [1280, 8448]
+//    SeedBlockOffset : [0, 1, 2, 3, 4, 5]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 344.478652 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 static const uint32_t Q32 = UINT32_C(0x89A4EF89);
@@ -526,11 +554,12 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
 
 static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     //constexpr int R2 = 19;
-    h = (ROTL32(h, 21) - a) * Q32; // - c
-    h = (ROTL32(h, 28) - b) * R32; // - d
-    h = (ROTL32(h, 18) - c) * S32; // - b
-    h = (ROTL32(h, 25) - d) * T32; // - a
-    return h;
+    return h * C32
+    + (ROTL32(a, 21) - c) * Q32
+    + (ROTL32(b, 28) - d) * R32
+    + (ROTL32(c, 18) - b) * S32
+    + (ROTL32(d, 25) - a) * T32
+        ;
 }
 
 template <bool bswap>
@@ -546,8 +575,8 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
     while (len >= 32) {
         len -= 32;
         h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
-            GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12))
-            + mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
+            GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
+        h = mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
                 GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
         buf += 32;
     }
