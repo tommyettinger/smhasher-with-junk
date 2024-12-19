@@ -440,6 +440,31 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 318.657668 seconds
 
+// Much better! Back to mix_stream32(), now based on mix32(), so slower on small hashes.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1793   452   202    91    46    35    17    10     3     4     3     2     4
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//2     0     1     0     0     1     3     1     0     1     1     0    81
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(165 / 188 passed)
+//Failures :
+//    Cyclic : [4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 8 bytes]
+//    Sparse : [3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128]
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    TwoBytes : [32, 48]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 341.999265 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 static const uint32_t Q32 = UINT32_C(0x89A4EF89);
@@ -448,35 +473,33 @@ static const uint32_t S32 = UINT32_C(0xD72D0CC9);
 static const uint32_t T32 = UINT32_C(0x9B05C645);
 
 static inline uint32_t mix32(uint32_t h) {
-    h ^= h >> 17;
-    h *= 0xED5AD4BBu;
-    h ^= h >> 11;
-    h *= 0xAC4C1B51u;
-    h ^= h >> 15;
-    h *= 0x31848BABu;
-    h ^= h >> 14;
+    h = h ^ h >> 17;
+    h = h * 0xED5AD4BBu;
+    h = h ^ h >> 11;
+    h = h * 0xAC4C1B51u;
+    h = h ^ h >> 15;
+    h = h * 0x31848BABu;
+    h = h ^ h >> 14;
     return h;
 }
 
 static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-    constexpr uint32_t R1 = 19;
-    constexpr uint32_t R2 = 12;
-    x ^= ROTL32(x, R1) ^ ROTL32(x, R2);
-    x *= C32;
-    x ^= ROTL32(x, R1) ^ ROTL32(x, R2);
-    h += x * C32;
-    h ^= ROTL32(h, R1) ^ ROTL32(h, R2);
-    h *= Q32;
-    h ^= ROTL32(h, R1) ^ ROTL32(h, R2);
+    h = h ^ h >> 17 ^ x;
+    h = h * 0xED5AD4BBu;
+    h = h ^ h >> 11;
+    h = h * 0xAC4C1B51u;
+    h = h ^ h >> 15;
+    h = h * 0x31848BABu;
+    h = h ^ h >> 14 ^ x;
     return h;
 }
 
 static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     constexpr int R2 = 15;
-    h = (h + ROTL32(a, R2) - c) * Q32;
-    h = (h + ROTL32(b, R2) - d) * R32;
-    h = (h + ROTL32(c, R2) - b) * S32;
-    h = (h + ROTL32(d, R2) - a) * T32;
+    h += (ROTL32(a, R2) - c) * Q32;
+    h += (ROTL32(b, R2) - d) * R32;
+    h += (ROTL32(c, R2) - b) * S32;
+    h += (ROTL32(d, R2) - a) * T32;
     return h;
 }
 
@@ -500,15 +523,15 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
 
     while (len >= 4) {
         len -= 4;
-        h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), S32, Q32, T32);
+        h = mix_stream32(h, GET_U32<bswap>(buf, 0));
         buf += 4;
     }
 
     const uint8_t* const tail8 = buf;
     switch (len) {
-    case 1: h = (mix_stream_bulk32(h * T32, tail8[0], Q32, R32, S32));                        break;
-    case 2: h = (mix_stream_bulk32(h * R32, tail8[0], tail8[1], T32, Q32));                   break;
-    case 3: h = (mix_stream_bulk32(h * S32, tail8[0], tail8[1], tail8[2], R32));              break;
+    case 1: h = (mix_stream32(h, tail8[0]));                                                                                                                 break;
+    case 2: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0)));                                                                                                 break;
+    case 3: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0) | static_cast<uint32_t>(tail8[2]) << 16));                                                         break;
     default:;
     }
 
