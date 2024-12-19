@@ -574,10 +574,35 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 295.889347 seconds
 
+// Tried changing Q32 through T32, but the result is slightly worse.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1803   454   206    88    47    32    20     8     3     5     5     1     4
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//3     0     0     0     1     0     1     2     1     0     0     0    69
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(166 / 188 passed)
+//Failures :
+//    Cyclic : [4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 8 bytes]
+//    Sparse : [3 / 32, 3 / 48, 3 / 64, 3 / 96]
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    TwoBytes : [32, 48]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 298.799838 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
-static const uint32_t Q32 = UINT32_C(0x89A4EF89);
-static const uint32_t R32 = UINT32_C(0x9196714F);
+static const uint32_t Q32 = UINT32_C(0xE7DF05F7);
+static const uint32_t R32 = UINT32_C(0xAB6A578B);
 static const uint32_t S32 = UINT32_C(0xD72D0CC9);
 static const uint32_t T32 = UINT32_C(0x9B05C645);
 
