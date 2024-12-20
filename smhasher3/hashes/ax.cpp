@@ -109,7 +109,6 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     constexpr int Q2 = 47;
     constexpr int R1 = 37;
 
-    const uint8_t* const tail = buf + (len & ~7);
     uint64_t h = len ^ seed ^ ROTL64(seed, Q1) ^ ROTL64(seed, Q2);
     //uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
 
@@ -599,10 +598,35 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 298.799838 seconds
 
+// Rotation by 11 instead of 19 in bulk...
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1777   462   210    88    42    33    17     8     3     5     3     1     4
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//3     0     0     0     1     0     3     4     4     1     0     0    84
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(163 / 188 passed)
+//Failures :
+//    Cyclic : [4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 8 bytes]
+//    Sparse : [3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128]
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    TwoBytes : [32, 48, 1024, 2048, 4096]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 403.065465 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
-static const uint32_t Q32 = UINT32_C(0xE7DF05F7);
-static const uint32_t R32 = UINT32_C(0xAB6A578B);
+static const uint32_t Q32 = UINT32_C(0x89A4EF89);
+static const uint32_t R32 = UINT32_C(0x9196714F); 
 static const uint32_t S32 = UINT32_C(0xD72D0CC9);
 static const uint32_t T32 = UINT32_C(0x9B05C645);
 
@@ -629,7 +653,12 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
 }
 
 static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
-    constexpr int R2 = 19;
+    constexpr int R2 = 11;
+    //return (ROTL32(a, R2) - c ^ h) * Q32;
+    //     + (ROTL32(b, R2) - d ^ h) * R32;
+    //     + (ROTL32(c, R2) - b ^ h) * S32;
+    //     + (ROTL32(d, R2) - a ^ h) * T32;
+
     h += (ROTL32(a, R2) - c) * Q32;
     h += (ROTL32(b, R2) - d) * R32;
     h += (ROTL32(c, R2) - b) * S32;
@@ -643,7 +672,6 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
     constexpr int Q2 = 23;
     constexpr int R1 = 17;
 
-    const uint8_t* const tail = buf + (len & ~3);
     uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
 
     while (len >= 32) {
