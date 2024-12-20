@@ -675,7 +675,35 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 297.611117 seconds
 
+// Using no bulk method at all, this still doesn't pass, failing some permutation tests.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1857   451   222    89    47    33    21     8     3     4     3     2     4
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//2     0     0     0     0     0     1     1     0     0     0     0    27
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(176 / 186 passed)
+//Failures :
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 641.135729 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
+
+// truncated 64-bit, low 32 bits
+//static const uint32_t Q32 = UINT32_C(0xB92266DD);
+//static const uint32_t R32 = UINT32_C(0x72E0D285);
+//static const uint32_t S32 = UINT32_C(0x86E31587);
+//static const uint32_t T32 = UINT32_C(0xD3D0783B);
 
 static const uint32_t Q32 = UINT32_C(0x89A4EF89);
 static const uint32_t R32 = UINT32_C(0x9196714F); 
@@ -705,7 +733,7 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
 }
 
 static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
-    constexpr int R2 = 16;
+    constexpr int R2 = 19;
     //return (ROTL32(a, R2) - c ^ h) * Q32;
     //     + (ROTL32(b, R2) - d ^ h) * R32;
     //     + (ROTL32(c, R2) - b ^ h) * S32;
@@ -726,14 +754,14 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
 
     uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
 
-    while (len >= 32) {
-        len -= 32;
-        h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
-            GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
-        h = mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
-            GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
-        buf += 32;
-    }
+    //while (len >= 32) {
+    //    len -= 32;
+    //    h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
+    //        GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
+    //    h = mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
+    //        GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
+    //    buf += 32;
+    //}
 
     while (len >= 4) {
         len -= 4;
@@ -786,6 +814,7 @@ REGISTER_HASH(ax32,
     $.hash_flags =
     FLAG_HASH_SMALL_SEED,
     $.impl_flags =
+    FLAG_IMPL_VERY_SLOW |
     FLAG_IMPL_MULTIPLY |
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
