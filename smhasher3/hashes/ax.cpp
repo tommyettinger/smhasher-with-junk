@@ -697,6 +697,28 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 641.135729 seconds
 
+// Another uint32_t at a time version, very slow, still fails Permutation...
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1865   426   198   107    63    28    27     9     9     4     1     4     4
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//2     0     0     0     0     1     0     0     0     0     0     0    27
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(176 / 186 passed)
+//Failures :
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 696.412430 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -722,13 +744,13 @@ static inline uint32_t mix32(uint32_t h) {
 }
 
 static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-    h = h ^ h >> 17 ^ x;
-    h = h * 0xED5AD4BBu;
+    h = h ^ h >> 17;
+    h = h * 0xED5AD4BBu + x;
     h = h ^ h >> 11;
-    h = h * 0xAC4C1B51u;
+    h = h * 0xAC4C1B51u + x;
     h = h ^ h >> 15;
-    h = h * 0x31848BABu;
-    h = h ^ h >> 14 ^ x;
+    h = h * 0x31848BABu + x;
+    h = h ^ h >> 14;
     return h;
 }
 
