@@ -827,6 +827,30 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 171.496551 seconds
 
+// About as good as it has ever been with a "real" bulk method, OK! And it's also fast.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1873   412   198   116    68    30    20     6     3     3     2     1     0
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//0     0     2     0     0     1     0     0     2     2     0     0    36
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(172 / 186 passed)
+//Failures :
+//    Sparse : [3 / 32, 3 / 64, 3 / 96]
+//    Permutation : [4 - bytes[3 high bits; LE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 164.156993 seconds
+
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -852,22 +876,23 @@ static inline uint32_t mix32(uint32_t h) {
 }
 
 static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-    h = h ^ h >> 17 ^ x;
-    h = h * 0xED5AD4BBu;
+    h = h ^ h >> 17;
+    h = h * 0xED5AD4BBu + x;
     h = h ^ h >> 11;
     h = h * 0xAC4C1B51u;
-    h = h ^ h >> 15 ^ x;
-    h = h * 0x31848BABu;
+    h = h ^ h >> 15;
+    h = h * 0x31848BABu - x;
     h = h ^ h >> 14;
     return h;
 }
 //, uint32_t* q, uint32_t* r, uint32_t* s, uint32_t* t
 static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     constexpr int R2 = 19;
-    return (ROTL32(a, R2) - c + h) * Q32
-         + (ROTL32(b, R2) - d + h) * R32
-         + (ROTL32(c, R2) - b + h) * S32
-         + (ROTL32(d, R2) - a + h) * T32;
+    return (ROTL32(a, R2) - c) * Q32
+         + (ROTL32(b, R2) - d) * R32
+         + (ROTL32(c, R2) - b) * S32
+         + (ROTL32(d, R2) - a) * T32
+         + h;
 
     //h += *q += (ROTL32(a, R2) - c) * Q32;
     //h += *r += (ROTL32(b, R2) - d) * R32;
