@@ -741,6 +741,34 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 718.388838 seconds
 
+// This first try with 4 extra state variables did not go very well.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1695   427   207    99    55    28    17     3    14    12     3     1     2
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//0     0     2     0     0     0     0     1     1     0     0     0   208
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(154 / 186 passed)
+//Failures :
+//    Sanity : [Basic 2]
+//    Avalanche : [64, 128]
+//    Cyclic : [16 cycles of 8 bytes]
+//    Sparse : [3 / 32, 3 / 48, 3 / 64, 3 / 96, 2 / 128, 2 / 256, 2 / 512, 2 / 1024, 2 / 1280]
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [Long alnum first 1968 - 2128, Long alnum last 1968 - 2128, Long alnum first 4016 - 4176, Long alnum last 4016 - 4176, Long alnum first 8112 - 8272, Long alnum last 8112 - 8272]
+//    TwoBytes : [1024, 2048, 4096]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 177.348465 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -765,28 +793,28 @@ static inline uint32_t mix32(uint32_t h) {
     return h;
 }
 
-static inline uint32_t mix_stream32(uint32_t h, uint32_t x, int ln) {
-    h = h ^ h >> 17 ^ ln;
+static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+    h = h ^ h >> 17 ^ x;
     h = h * 0xED5AD4BBu;
-    h = h ^ h >> 11 ^ x;
+    h = h ^ h >> 11;
     h = h * 0xAC4C1B51u;
-    h = h ^ h >> 15 ^ ln;
+    h = h ^ h >> 15 ^ x;
     h = h * 0x31848BABu;
-    h = h ^ h >> 14 ^ x;
+    h = h ^ h >> 14;
     return h;
 }
 
-static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t* q, uint32_t* r, uint32_t* s, uint32_t* t) {
     constexpr int R2 = 19;
     //return (ROTL32(a, R2) - c ^ h) * Q32;
     //     + (ROTL32(b, R2) - d ^ h) * R32;
     //     + (ROTL32(c, R2) - b ^ h) * S32;
     //     + (ROTL32(d, R2) - a ^ h) * T32;
 
-    h += (ROTL32(a, R2) - c) * Q32;
-    h += (ROTL32(b, R2) - d) * R32;
-    h += (ROTL32(c, R2) - b) * S32;
-    h += (ROTL32(d, R2) - a) * T32;
+    h += *q -= (ROTL32(a, R2)) * Q32;
+    h += *r -= (ROTL32(b, R2)) * R32;
+    h += *s -= (ROTL32(c, R2)) * S32;
+    h += *t -= (ROTL32(d, R2)) * T32;
     return h;
 }
 
@@ -797,27 +825,29 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
     constexpr int R1 = 17;
 
     uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
+    uint32_t q = ROTL32(h, 7), r = ROTL32(h, 13), s = ROTL32(h, 20), t = ROTL32(h, 26);
 
-    //while (len >= 32) {
-    //    len -= 32;
-    //    h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
-    //        GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
-    //    h = mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
-    //        GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
-    //    buf += 32;
-    //}
+    while (len >= 32) {
+        len -= 32;
+        h = mix_stream_bulk32(h, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
+            GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12), &q, &r, &s, &t);
+        h = mix_stream_bulk32(h, GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
+            GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28), &q, &r, &s, &t);
+        buf += 32;
+    }
+    h ^= q ^ r ^ s ^ t;
 
     while (len >= 4) {
-        h = mix_stream32(h, GET_U32<bswap>(buf, 0), len);
         len -= 4;
+        h = mix_stream32(h, GET_U32<bswap>(buf, 0));
         buf += 4;
     }
 
     const uint8_t* const tail8 = buf;
     switch (len) {
-    case 1: h = (mix_stream32(h, tail8[0], 1));                                                                                                                 break;
-    case 2: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0), 2));                                                                                                 break;
-    case 3: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0) | static_cast<uint32_t>(tail8[2]) << 16, 3));                                                         break;
+    case 1: h = (mix_stream32(h, tail8[0]));                                                                                                                 break;
+    case 2: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0)));                                                                                                 break;
+    case 3: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0) | static_cast<uint32_t>(tail8[2]) << 16));                                                         break;
     default:;
     }
 
