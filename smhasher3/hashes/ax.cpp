@@ -719,6 +719,28 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 696.412430 seconds
 
+// Incorporating length into mix_stream32() doesn't help at all...
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1854   428   221    93    72    23    22    18     5     4     1     2     1
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1     2     0     0     0     0     0     0     0     0     0     1    27
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(176 / 186 passed)
+//Failures :
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 718.388838 seconds
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -743,14 +765,14 @@ static inline uint32_t mix32(uint32_t h) {
     return h;
 }
 
-static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-    h = h ^ h >> 17;
-    h = h * 0xED5AD4BBu + x;
-    h = h ^ h >> 11;
-    h = h * 0xAC4C1B51u + x;
-    h = h ^ h >> 15;
-    h = h * 0x31848BABu + x;
-    h = h ^ h >> 14;
+static inline uint32_t mix_stream32(uint32_t h, uint32_t x, int ln) {
+    h = h ^ h >> 17 ^ ln;
+    h = h * 0xED5AD4BBu;
+    h = h ^ h >> 11 ^ x;
+    h = h * 0xAC4C1B51u;
+    h = h ^ h >> 15 ^ ln;
+    h = h * 0x31848BABu;
+    h = h ^ h >> 14 ^ x;
     return h;
 }
 
@@ -786,16 +808,16 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
     //}
 
     while (len >= 4) {
+        h = mix_stream32(h, GET_U32<bswap>(buf, 0), len);
         len -= 4;
-        h = mix_stream32(h, GET_U32<bswap>(buf, 0));
         buf += 4;
     }
 
     const uint8_t* const tail8 = buf;
     switch (len) {
-    case 1: h = (mix_stream32(h, tail8[0]));                                                                                                                 break;
-    case 2: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0)));                                                                                                 break;
-    case 3: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0) | static_cast<uint32_t>(tail8[2]) << 16));                                                         break;
+    case 1: h = (mix_stream32(h, tail8[0], 1));                                                                                                                 break;
+    case 2: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0), 2));                                                                                                 break;
+    case 3: h = (mix_stream32(h, GET_U16<bswap>(tail8, 0) | static_cast<uint32_t>(tail8[2]) << 16, 3));                                                         break;
     default:;
     }
 
