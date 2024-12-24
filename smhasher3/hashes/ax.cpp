@@ -1009,6 +1009,38 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 392.000891 seconds
 
+// Try switching mix_stream32 to one like the 64-bit ax, but otherwise the same as the 172/188 version. Nope.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1554   320   173   108    70    34    35    19    29    24    17    14    13
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//12    11     9     2     7     7     2    10     8     7     6     6   278
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(122 / 186 passed)
+//Failures :
+//    Sparse : [3 / 8, 3 / 9, 3 / 10, 3 / 12, 3 / 14, 5 / 9, 4 / 14, 4 / 16, 3 / 32, 3 / 48, 3 / 64, 3 / 96]
+//    Permutation : [4 - bytes[3 low bits; BE], 4 - bytes[3 high bits; LE], 4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    TextNum : [with commas]
+//    Text : [Long alnum last 1968 - 2128, Long alnum last 4016 - 4176, Long alnum last 8112 - 8272]
+//    TwoBytes : [8]
+//    PerlinNoise : [2]
+//    Bitflip : [8]
+//    SeedBlockLen : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+//    SeedBlockOffset : [0, 1, 2, 3, 4, 5]
+//    SeedBitflip : [3, 4, 8]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 149.621238 seconds
+
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -1018,11 +1050,9 @@ static const uint32_t C32 = UINT32_C(0xB89A8925);
 //static const uint32_t T32 = UINT32_C(0xD3D0783B);
 
 static const uint32_t Q32 = UINT32_C(0x89A4EF89);
-static const uint32_t R32 = UINT32_C(0x9196714F); 
+static const uint32_t R32 = UINT32_C(0x9196714F);
 static const uint32_t S32 = UINT32_C(0xD72D0CC9);
 static const uint32_t T32 = UINT32_C(0x9B05C645);
-
-static const uint32_t PHI32 = UINT32_C(0x9E3779BA);
 
 static inline uint32_t mix32(uint32_t h) {
     h = h ^ h >> 17;
@@ -1036,43 +1066,40 @@ static inline uint32_t mix32(uint32_t h) {
 }
 
 static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-    h = h ^ h >> 17;
-    h = h * 0xED5AD4BBu + x;
-    h = h ^ h >> 11;
-    h = h * 0xAC4C1B51u;
-    h = h ^ h >> 15;
-    h = h * 0x31848BABu - x;
-    h = h ^ h >> 14;
+    constexpr uint32_t R1 = 7;
+    x *= C32;
+    x ^= (x >> R1);
+    h += x * C32;
+    h *= C32;
     return h;
 }
 
-static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t q, uint32_t r, uint32_t s, uint32_t t) {
-    constexpr int R2 = 19;
-    h +=  (ROTL32(a, R2) - c) * q
-        + (ROTL32(b, R2) - d) * r
-        + (ROTL32(c, R2) - b) * s
-        + (ROTL32(d, R2) - a) * t
-        ;
-    return h;
-}
-
-//static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
-//    constexpr int R2 = 19;
-//    h += (ROTL32(a, R2) - c) * Q32
-//        + (ROTL32(b, R2) - d) * R32
-//        + (ROTL32(c, R2) - b) * S32
-//        + (ROTL32(d, R2) - a) * T32
-//        ;
+//static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+//    h = h ^ h >> 17;
+//    h = h * 0xED5AD4BBu + x;
+//    h = h ^ h >> 11;
+//    h = h * 0xAC4C1B51u;
+//    h = h ^ h >> 15;
+//    h = h * 0x31848BABu - x;
+//    h = h ^ h >> 14;
 //    return h;
 //}
 
-
 //, uint32_t* q, uint32_t* r, uint32_t* s, uint32_t* t
+static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+    constexpr int R2 = 19;
+    return (ROTL32(a, R2) - c) * Q32
+        + (ROTL32(b, R2) - d) * R32
+        + (ROTL32(c, R2) - b) * S32
+        + (ROTL32(d, R2) - a) * T32
+        + h;
+
     //h += *q += (ROTL32(a, R2) - c) * Q32;
     //h += *r += (ROTL32(b, R2) - d) * R32;
     //h += *s += (ROTL32(c, R2) - b) * S32;
     //h += *t += (ROTL32(d, R2) - a) * T32;
     //return h;
+}
 
 template <bool bswap>
 static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
@@ -1081,21 +1108,17 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
     constexpr int R1 = 17;
 
     uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
-    uint32_t q = Q32, r = R32, s = S32, t = T32;
+    //    uint32_t q = ROTL32(h, 7), r = ROTL32(h, 13), s = ROTL32(h, 20), t = ROTL32(h, 26);
 
     while (len >= 32) {
         len -= 32;
         h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
-            GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12), q *= Q32, r *= R32, s *= S32, t *= T32);
+            GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
         h = mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
-            GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28), q *= Q32, r *= R32, s *= S32, t *= T32);
-        //h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
-        //    GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
-        //h = mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
-        //    GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
+            GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
         buf += 32;
     }
-//    h ^= q ^ r ^ s ^ t;
+    //    h ^= q ^ r ^ s ^ t;
 
     while (len >= 4) {
         len -= 4;
@@ -1148,7 +1171,7 @@ REGISTER_HASH(ax32,
     $.hash_flags =
     FLAG_HASH_SMALL_SEED,
     $.impl_flags =
-    //FLAG_IMPL_VERY_SLOW |
+    FLAG_IMPL_VERY_SLOW |
     FLAG_IMPL_MULTIPLY |
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
