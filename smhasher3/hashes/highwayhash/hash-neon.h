@@ -47,14 +47,14 @@ typedef struct state_struct {
     uint64x2_t mul1L, mul1H;
 } highwayhash_state_t;
 
-//void dump_state(const highwayhash_state_t * s) {
-//    return;
-//    printf("\tv0   %016lx %016lx %016lx %016lx\n", s->v0L[0], s->v0L[1], s->v0H[0], s->v0H[1]);
-//    printf("\tv1   %016lx %016lx %016lx %016lx\n", s->v1L[0], s->v1L[1], s->v1H[0], s->v1H[1]);
-//    printf("\tmul0 %016lx %016lx %016lx %016lx\n", s->mul0L[0], s->mul0L[1], s->mul0H[0], s->mul0H[1]);
-//    printf("\tmul1 %016lx %016lx %016lx %016lx\n", s->mul1L[0], s->mul1L[1], s->mul1H[0], s->mul1H[1]);
-//    printf("\n");
-//}
+void dump_state(const highwayhash_state_t * s) {
+    return;
+    printf("\tv0   %016lx %016lx %016lx %016lx\n", s->v0L[0], s->v0L[1], s->v0H[0], s->v0H[1]);
+    printf("\tv1   %016lx %016lx %016lx %016lx\n", s->v1L[0], s->v1L[1], s->v1H[0], s->v1H[1]);
+    printf("\tmul0 %016lx %016lx %016lx %016lx\n", s->mul0L[0], s->mul0L[1], s->mul0H[0], s->mul0H[1]);
+    printf("\tmul1 %016lx %016lx %016lx %016lx\n", s->mul1L[0], s->mul1L[1], s->mul1H[0], s->mul1H[1]);
+    printf("\n");
+}
 
 alignas(16) static thread_local highwayhash_state_t seeded_state;
 
@@ -251,7 +251,7 @@ static HH_INLINE void Finalize( const highwayhash_state_t * state, uint8_t * out
         }
         vst1q_u8(out, vreinterpretq_u8_u64(hash));
     } else {
-//        dump_state(state);
+        dump_state(state);
         uint64x2_t sum0L = vaddq_u64(state->v0L, state->mul0L); HH_ADD_FENCE(sum0L);
         uint64x2_t sum1L = vaddq_u64(state->v1L, state->mul1L); HH_ADD_FENCE(sum1L);
         uint64x2_t sum0H = vaddq_u64(state->v0H, state->mul0H); HH_ADD_FENCE(sum0H);

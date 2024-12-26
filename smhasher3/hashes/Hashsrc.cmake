@@ -86,4 +86,5 @@ set(HASH_SRC_FILES
   hashes/woothash.cpp
   hashes/witchy.cpp
   hashes/jvmstring.cpp
+  hashes/chibihash.cpp
 )

@@ -19,20 +19,21 @@ else ()
   set(PROCESSOR_FAMILY "Other")
 endif()
 
-if(MSVC)
-  message(STATUS "MSVC detected")
-  set(MSVC_IMPL
-    "#include <stdlib.h>\n\
+if((MSVC) OR (MSYS) OR (MINGW))
+  message(STATUS "Windows-like target detected")
+  set(WINLIKE_IMPL
+    "#define _CRT_NONSTDC_NO_DEPRECATE\n\
+     #include <stdlib.h>\n\
      #include <string.h>\n\
      #include <intrin.h>\n\
      #define strncasecmp _strnicmp\n\
      #define strcasecmp _stricmp\n\
      typedef intptr_t ssize_t'\n"
   )
-  string(REGEX REPLACE "\n +" "\n" MSVC_IMPL ${MSVC_IMPL})
-  string(REGEX REPLACE "'" ";" MSVC_IMPL ${MSVC_IMPL})
+  string(REGEX REPLACE "\n +" "\n" WINLIKE_IMPL ${WINLIKE_IMPL})
+  string(REGEX REPLACE "'" ";" WINLIKE_IMPL ${WINLIKE_IMPL})
 else()
-  set(MSVC_IMPL "")
+  set(WINLIKE_IMPL "")
 endif()
 
 if(ACTUAL_GCC)
