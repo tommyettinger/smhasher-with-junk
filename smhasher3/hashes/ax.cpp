@@ -1065,6 +1065,37 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 306.843808 seconds
 
+// Ugh, tried incorporating 4 different rotations of h in bulk, instead of just h at the end... There's also an added constant in stream.
+
+//----------------------------------------------------------------------------------------------
+//- log2(p - value) summary:
+//
+//0     1     2     3     4     5     6     7     8     9    10    11    12
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1745   396   221   121    47    33    18     8     9     3     3     2     2
+//
+//13    14    15    16    17    18    19    20    21    22    23    24    25 +
+//---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- - ---- -
+//1     0     1     1     1     0     1     0     2     0     1     1   136
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result : FAIL(147 / 188 passed)
+//Failures :
+//    Zeroes : []
+//    Cyclic : [4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 8 bytes, 16 cycles of 4 bytes, 16 cycles of 8 bytes]
+//    Sparse : [3 / 64, 3 / 96, 2 / 128, 2 / 256, 2 / 512, 2 / 1024, 2 / 1280]
+//    Permutation : [4 - bytes[3 high + low bits; LE], 4 - bytes[3 high + low bits; BE], 4 - bytes[0, low bit; LE], 4 - bytes[0, low bit; BE], 4 - bytes[0, high bit; LE], 4 - bytes[0, high bit; BE], 8 - bytes[0, low bit; LE], 8 - bytes[0, low bit; BE], 8 - bytes[0, high bit; LE], 8 - bytes[0, high bit; BE]]
+//    Text : [Long alnum first 1968 - 2128, Long alnum first 4016 - 4176, Long alnum first 8112 - 8272]
+//    TwoBytes : [32, 48, 1024, 2048, 4096]
+//    SeedZeroes : [1280, 8448]
+//    SeedSparse : [52, 80, 200, 1025]
+//    Seed : [80, 200, 1025]
+//
+//    ----------------------------------------------------------------------------------------------
+//    Verification value is 0x00000001 - Testing took 575.397853 seconds
+
+
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -1099,6 +1130,7 @@ static inline uint32_t mix32(uint32_t h) {
 //}
 
 static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+    h += C32;
     h = h ^ h >> 17;
     h = h * 0xED5AD4BBu + x;
     h = h ^ h >> 11;
@@ -1112,11 +1144,11 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
 //, uint32_t* q, uint32_t* r, uint32_t* s, uint32_t* t
 static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
     constexpr int R2 = 19;
-    return (ROTL32(a, R2) - c) * Q32
-        + (ROTL32(b, R2) - d) * R32
-        + (ROTL32(c, R2) - b) * S32
-        + (ROTL32(d, R2) - a) * T32
-        + h;
+    return (ROTL32(a, R2) - c + ROTL32(h, 7)) * Q32
+        + (ROTL32(b, R2) - d + ROTL32(h, 13)) * R32
+        + (ROTL32(c, R2) - b + ROTL32(h, 20)) * S32
+        + (ROTL32(d, R2) - a + ROTL32(h, 26)) * T32
+        ;
 
     //h += *q += (ROTL32(a, R2) - c) * Q32;
     //h += *r += (ROTL32(b, R2) - d) * R32;
