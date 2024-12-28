@@ -169,6 +169,39 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 }
 
 
+// First try, passing! Even with a 32-bit seed given to a uint64_t parameter.
+
+//----------------------------------------------------------------------------------------------
+//-log2(p-value) summary:
+//
+//          0     1     2     3     4     5     6     7     8     9    10    11    12
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//         1860   451   216    95    57    44    17     5     3     4     0     1     0
+//
+//         13    14    15    16    17    18    19    20    21    22    23    24    25+
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//            0     0     0     0     0     0     0     0     0     0     0     0     0
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax-trunc
+//Overall result: pass            ( 188 / 188 passed)
+//
+//----------------------------------------------------------------------------------------------
+//Verification value is 0x00000001 - Testing took 215.391453 seconds
+//
+//Small key speed test - [1, 31] - byte keys
+// 24.43 cycles/hash
+//Bulk speed test - 262144-byte keys
+// Average       - 12.15 bytes/cycle - 39.61 GiB/sec @ 3.5 gh
+
+template <bool bswap>
+static void ax_trunc(const void* in, const size_t len, const seed_t seed, void* out) {
+    uint32_t h = (uint32_t)axhash<bswap>((const uint8_t*)in, len, (uint32_t)seed);
+
+    PUT_U32<bswap>(h, (uint8_t*)out, 0);
+}
+
+
 
 //*********FAIL*********
 //
@@ -1245,6 +1278,21 @@ REGISTER_HASH(ax,
     $.verification_BE = 0x8D5ADC80,//0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
     $.hashfn_native = ax<false>,
     $.hashfn_bswap = ax<true>
+);
+
+REGISTER_HASH(ax_trunc,
+    $.desc = "ax truncated",
+    $.hash_flags =
+    FLAG_HASH_SMALL_SEED,
+    $.impl_flags =
+    FLAG_IMPL_MULTIPLY_64_64 |
+    FLAG_IMPL_ROTATE |
+    FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
+    $.bits = 32,
+    $.verification_LE = 0,//0x3DFB9ECD,//0x19498DD8,// 0xB482B1A1,// 0x288113E9,
+    $.verification_BE = 0,//0x8D5ADC80,//0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
+    $.hashfn_native = ax_trunc<false>,
+    $.hashfn_bswap = ax_trunc<true>
 );
 
 REGISTER_HASH(ax32,
