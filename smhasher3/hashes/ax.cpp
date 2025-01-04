@@ -96,11 +96,11 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
     constexpr int R2 = 29;
-    h += (ROTL64(a, R2) - c) * Q;
-    h += (ROTL64(b, R2) - d) * R;
-    h += (ROTL64(c, R2) - b) * S;
-    h += (ROTL64(d, R2) - a) * T;
-    return h;
+    return h
+    + (ROTL64(a, R2) - c) * Q
+    + (ROTL64(b, R2) - d) * R
+    + (ROTL64(c, R2) - b) * S
+    + (ROTL64(d, R2) - a) * T;
 }
 
 template <bool bswap>
@@ -142,9 +142,9 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     //case 7: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48));
     //default:;
     //}
-
     //return mix(h);
 
+    // This returns once at the end, and may emit smaller code...
     const uint8_t* const tail8 = buf;
     switch (len) {
     case 1: h = (mix_stream(h, tail8[0]));                                                                                                                 break;
@@ -156,8 +156,20 @@ static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     case 7: h = (mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48)); break;
     default:;
     }
-
     return mix(h);
+
+    //const uint8_t* const tail8 = buf;
+    //switch (len) {
+    //case 1: h = mix_stream_bulk(h, h, tail8[0], Q, R);                                               break;
+    //case 2: h = mix_stream_bulk(h, h, GET_U16<bswap>(tail8, 0), Q, R);                               break;
+    //case 3: h = mix_stream_bulk(h, h, GET_U16<bswap>(tail8, 0), tail8[2], Q);                        break;
+    //case 4: h = mix_stream_bulk(h, h, GET_U32<bswap>(tail8, 0), Q, R);                               break;
+    //case 5: h = mix_stream_bulk(h, h, GET_U32<bswap>(tail8, 0), tail8[4], Q);                        break;
+    //case 6: h = mix_stream_bulk(h, h, GET_U32<bswap>(tail8, 0), GET_U16<bswap>(tail8, 4), Q);        break;
+    //case 7: h = mix_stream_bulk(h, h, GET_U32<bswap>(tail8, 0), GET_U16<bswap>(tail8, 4), tail8[6]); break;
+    //default:;
+    //}
+    //return mix(h);
 }
 
 //------------------------------------------------------------
