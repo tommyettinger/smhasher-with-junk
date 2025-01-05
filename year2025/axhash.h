@@ -125,7 +125,7 @@ AX_INLINE uint64_t ax_mix(uint64_t x) AX_NOEXCEPT {
  *  @param x  unsigned 64-bit number; typically a datum that should be incorporated with mixing into @h .
  */
 AX_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 31u;//39u;
+  AX_CONSTEXPR unsigned int R1 = 39u;
   x *= AX_C;
   x ^= (x >> R1);
   h += x * AX_C;
@@ -144,10 +144,10 @@ AX_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) AX_NOEXCEPT {
  *  @param d  unsigned 64-bit number; will be mixed with a and b.
  */
 AX_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int Q2 = 26u;
+  AX_CONSTEXPR unsigned int Q2 = 28u;
   AX_CONSTEXPR unsigned int R2 = 29u;
-  AX_CONSTEXPR unsigned int S2 = 30u;
-  AX_CONSTEXPR unsigned int T2 = 31u;
+  AX_CONSTEXPR unsigned int S2 = 27u;
+  AX_CONSTEXPR unsigned int T2 = 25u;
   return h
          + (ax_rotl64(a, R2) - b) * AX_Q
          + (ax_rotl64(b, R2) - c) * AX_R
@@ -200,15 +200,15 @@ AX_INLINE uint64_t ax_read16(const uint8_t *p) AX_NOEXCEPT {
  *  Returns a 64-bit hash.
  */
 AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 31u; // 37u;
+  AX_CONSTEXPR unsigned int R1 = 31u; // 32u;
   AX_CONSTEXPR unsigned int R2 = 37u;
   const uint8_t *buf=(const uint8_t *)key; 
-  uint64_t h = len ^ seed;
+  uint64_t h = len + seed;
 
   while (len >= 64) {
     len -= 64;
-    h = ax_mix_stream_bulk (ax_rotl64 (h, R1) * AX_C, ax_read64(buf), ax_read64(buf+8), ax_read64(buf+16), ax_read64(buf+24));
-    h = ax_mix_stream_bulk (ax_rotl64 (h, R2) + AX_B, ax_read64 (buf + 32), ax_read64 (buf + 40), ax_read64(buf+48), ax_read64(buf+56));
+    h = ax_mix_stream_bulk (h * AX_C, ax_read64(buf), ax_read64(buf+8), ax_read64(buf+16), ax_read64(buf+24));
+    h = ax_mix_stream_bulk (ax_rotl64 (h, R2), ax_read64 (buf + 32), ax_read64 (buf + 40), ax_read64(buf+48), ax_read64(buf+56));
     buf += 64;
   }
 
