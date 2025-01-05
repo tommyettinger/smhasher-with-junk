@@ -63,7 +63,8 @@
     #define AX_LITTLE_ENDIAN
   #endif
 #endif
-
+ static const uint64_t AX_A = 0x3C79AC492BA7B653ull;
+ static const uint64_t AX_B = 0x1C69B3F74AC4AE35ull;
 //    MX3 multiplier.
 static const uint64_t AX_C = 0xBEA225F9EB34556Dull;
 //    Random 64-bit probable primes, as given by Java's BigInteger class.
@@ -106,15 +107,25 @@ AX_INLINE uint64_t ax_mix(uint64_t x) AX_NOEXCEPT {
   x = (x ^ ax_rotl64(x, R2) ^ ax_rotl64(x, R3));
   return x;
 }
+  //    AX_CONSTEXPR unsigned int R0 = 27u;
+  //    AX_CONSTEXPR unsigned int R1 = 33u;
+  //    AX_CONSTEXPR unsigned int R2 = 27u;
+  //    x ^= x >> R0;
+  //    x *= AX_A;
+  //    x ^= x >> R1;
+  //    x *= AX_B;
+  //    x ^= x >> R2;
+  //    return x;
+  //}
 
-/*
+  /*
  *  Simple two-argument mixing function that combines both arguments. Note that if both inputs are 0, this returns 0.
  *
  *  @param h  unsigned 64-bit number; typically a value being accumulated onto.
  *  @param x  unsigned 64-bit number; typically a datum that should be incorporated with mixing into @h .
  */
 AX_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 39u;
+  AX_CONSTEXPR unsigned int R1 = 31u;//39u;
   x *= AX_C;
   x ^= (x >> R1);
   h += x * AX_C;
@@ -133,12 +144,19 @@ AX_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) AX_NOEXCEPT {
  *  @param d  unsigned 64-bit number; will be mixed with a and b.
  */
 AX_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) AX_NOEXCEPT {
+  AX_CONSTEXPR unsigned int Q2 = 26u;
   AX_CONSTEXPR unsigned int R2 = 29u;
+  AX_CONSTEXPR unsigned int S2 = 30u;
+  AX_CONSTEXPR unsigned int T2 = 31u;
   return h
-         + (ax_rotl64(a, R2) - c) * AX_Q
-         + (ax_rotl64(b, R2) - d) * AX_R
-         + (ax_rotl64(c, R2) - b) * AX_S
+         + (ax_rotl64(a, R2) - b) * AX_Q
+         + (ax_rotl64(b, R2) - c) * AX_R
+         + (ax_rotl64(c, R2) - d) * AX_S
          + (ax_rotl64(d, R2) - a) * AX_T;
+         //+ (ax_rotl64(a, R2) - c) * AX_Q
+         //+ (ax_rotl64(b, R2) - d) * AX_R
+         //+ (ax_rotl64(c, R2) - b) * AX_S
+         //+ (ax_rotl64(d, R2) - a) * AX_T;
 }
 
 
@@ -182,9 +200,9 @@ AX_INLINE uint64_t ax_read16(const uint8_t *p) AX_NOEXCEPT {
  *  Returns a 64-bit hash.
  */
 AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 37u;
+  AX_CONSTEXPR unsigned int R1 = 33u;//37u;
   const uint8_t *buf=(const uint8_t *)key; 
-  uint64_t h = len ^ seed;
+  uint64_t h = len + seed;
 
   while (len >= 64) {
     len -= 64;
