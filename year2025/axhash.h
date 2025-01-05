@@ -200,16 +200,15 @@ AX_INLINE uint64_t ax_read16(const uint8_t *p) AX_NOEXCEPT {
  *  Returns a 64-bit hash.
  */
 AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 33u;//37u;
+  AX_CONSTEXPR unsigned int R1 = 31u; // 37u;
+  AX_CONSTEXPR unsigned int R2 = 37u;
   const uint8_t *buf=(const uint8_t *)key; 
-  uint64_t h = len + seed;
+  uint64_t h = len ^ seed;
 
   while (len >= 64) {
     len -= 64;
-    h = ax_mix_stream_bulk(h * AX_C, ax_read64(buf), ax_read64(buf+8),
-        ax_read64(buf+16), ax_read64(buf+24));
-    h = ax_mix_stream_bulk(ax_rotl64(h, R1), ax_read64(buf+32), ax_read64(buf+40),
-        ax_read64(buf+48), ax_read64(buf+56));
+    h = ax_mix_stream_bulk (ax_rotl64 (h, R1) * AX_C, ax_read64(buf), ax_read64(buf+8), ax_read64(buf+16), ax_read64(buf+24));
+    h = ax_mix_stream_bulk (ax_rotl64 (h, R2) + AX_B, ax_read64 (buf + 32), ax_read64 (buf + 40), ax_read64(buf+48), ax_read64(buf+56));
     buf += 64;
   }
 
