@@ -236,6 +236,25 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 //Bulk speed test - 262144-byte keys
 // Average       - 12.15 bytes/cycle - 39.61 GiB/sec @ 3.5 gh
 
+// From January 13, 2025:
+//----------------------------------------------------------------------------------------------
+//-log2(p-value) summary:
+//
+//          0     1     2     3     4     5     6     7     8     9    10    11    12
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//         1837   467   213    97    62    47    17     4     3     4     1     1     0
+//
+//         13    14    15    16    17    18    19    20    21    22    23    24    25+
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//            0     0     0     0     0     0     0     0     0     0     0     0     0
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax-trunc
+//Overall result: pass            ( 188 / 188 passed)
+//
+//----------------------------------------------------------------------------------------------
+//Verification value is 0x00000001 - Testing took 291.145580 seconds
+
 template <bool bswap>
 static void ax_trunc(const void* in, const size_t len, const seed_t seed, void* out) {
     uint32_t h = (uint32_t)axhash<bswap>((const uint8_t*)in, len, (uint32_t)seed);
@@ -1331,8 +1350,8 @@ REGISTER_HASH(ax_trunc,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 32,
-    $.verification_LE = 0,//0x3DFB9ECD,//0x19498DD8,// 0xB482B1A1,// 0x288113E9,
-    $.verification_BE = 0,//0x8D5ADC80,//0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
+    $.verification_LE = 0x37461AF5,
+    $.verification_BE = 0x3D7023B7,
     $.hashfn_native = ax_trunc<false>,
     $.hashfn_bswap = ax_trunc<true>
 );
