@@ -46,6 +46,26 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 418.447033 seconds
+
+Results from January 13, 2025 (this version passes SMHasher 2 as well):
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4389  1286   588   306   158    94    24    20    13     4     0     0     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     1     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: ax
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 387.866363 seconds
+
 */
 
  //------------------------------------------------------------
@@ -95,12 +115,22 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    constexpr int R2 = 29;
+    constexpr unsigned int Q2 = 28u;
+    constexpr unsigned int R2 = 29u;
+    constexpr unsigned int S2 = 27u;
+    constexpr unsigned int T2 = 25u;
     return h
-    + (ROTL64(a, R2) - c) * Q
-    + (ROTL64(b, R2) - d) * R
-    + (ROTL64(c, R2) - b) * S
-    + (ROTL64(d, R2) - a) * T;
+        + (ROTL64(a, Q2) + b) * Q
+        + (ROTL64(b, R2) + c) * R
+        + (ROTL64(c, S2) + d) * S
+        + (ROTL64(d, T2) + a) * T;
+
+    //constexpr int R2 = 29;
+    //return h
+    //+ (ROTL64(a, R2) - c) * Q
+    //+ (ROTL64(b, R2) - d) * R
+    //+ (ROTL64(c, R2) - b) * S
+    //+ (ROTL64(d, R2) - a) * T;
 }
 
 template <bool bswap>
@@ -1286,8 +1316,8 @@ REGISTER_HASH(ax,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x3DFB9ECD,//0x19498DD8,// 0xB482B1A1,// 0x288113E9,
-    $.verification_BE = 0x8D5ADC80,//0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
+    $.verification_LE = 0x16BAEA10,//0x3DFB9ECD,//0x19498DD8,// 0xB482B1A1,// 0x288113E9,
+    $.verification_BE = 0x0EF27385,//0x8D5ADC80,//0x45CC43B9,// 0xEC3B3404,// 0x78278B75,
     $.hashfn_native = ax<false>,
     $.hashfn_bswap = ax<true>
 );
