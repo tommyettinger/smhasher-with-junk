@@ -79,7 +79,7 @@ static const uint64_t AX_T = UINT64_C(0xFCF8B405D3D0783B);
  *  @param n  the unsigned 64-bit number to bitwise-rotate left.
  *  @param c  the shift count for how many steps to rotate; should be unsigned.
  */
-AX_INLINE uint32_t ax_rotl64 (uint64_t n, unsigned int c)
+AX_INLINE uint64_t ax_rotl64 (uint64_t n, unsigned int c)
 {
   const unsigned int mask = (CHAR_BIT*sizeof(n) - 1);  // assumes width is a power of 2.
   c &= mask;
