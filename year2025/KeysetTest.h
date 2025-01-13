@@ -152,7 +152,7 @@ void TestSecretRangeThread ( const HashInfo* info, const uint64_t hi,
       printf ("0x%08" PRIx64 " ", seed);
     hashes.clear();
     Hash_Seed_init (hash, seed);
-    for (int x : std::vector<int> {0,32,127,255}) {
+    for (int x : std::vector<int> {0,32,48,127,128,255}) {
       hashtype h;
       uint8_t key[64]; // for crc32_pclmul, otherwise we would need only 16 byte
       memset(&key, x, sizeof(key));

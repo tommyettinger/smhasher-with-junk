@@ -715,10 +715,7 @@ HashInfo g_hashes[] =
 { SpookyV2_128_test,   128, 0x893CFCBE, "SpookyV2_128", "Bob Jenkins' SpookyV2, 128-bit result", GOOD, {} },
 { pengyhash_test,       64, 0x1FC2217B, "pengyhash",   "pengyhash", GOOD, {} },
 { mx3hash64_test,       64, 0x4DB51E5B, "mx3",         "mx3 64bit", GOOD, {0x10} /* !! and all & 0x10 */},
-{ axhash64_test,        64, 0, "axhash",      "axhash 64bit", GOOD, {
-    0x00, 0x1, 0x2, 0x3, 0x4, 0x5, 0x10, 0x20, 0x40, 0x50, 0x60, 0x70, 0x80, // all 32 bits wide or less, all fail, it looks like
-    0x4DB51E5B, 0x14DB51E5BULL, 0x24DB51E5BULL, 0x84DB51E5BULL, 0x100000000ULL, 0x100000001ULL, 0x200000000ULL // all 33 bits wide or more, all pass
-} },
+{ axhash64_test,        64, 0x16BAEA10, "axhash",      "axhash 64bit", GOOD, {} },
 #ifdef HAVE_UMASH
 { umash32,              32, 0x9451AF3B, "umash32",     "umash 32", GOOD, {0x90e37057} /* !! */},
 { umash32_hi,           32, 0x0CC4850F, "umash32_hi",  "umash 32 hi", GOOD, {} },

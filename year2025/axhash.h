@@ -29,7 +29,7 @@
   #define AX_NOEXCEPT noexcept
   #define AX_CONSTEXPR constexpr
   #ifndef AX_INLINE
-    #define AX_INLINE inline
+    #define AX_INLINE static inline
   #endif
 #else
   #define AX_NOEXCEPT
@@ -149,14 +149,14 @@ AX_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64
   AX_CONSTEXPR unsigned int S2 = 27u;
   AX_CONSTEXPR unsigned int T2 = 25u;
   return h
-         //+ (ax_rotl64(a, R2) - b) * AX_Q
-         //+ (ax_rotl64(b, R2) - c) * AX_R
-         //+ (ax_rotl64(c, R2) - d) * AX_S
-         //+ (ax_rotl64(d, R2) - a) * AX_T;
-         + (ax_rotl64(a, R2) - c) * AX_Q
-         + (ax_rotl64(b, R2) - d) * AX_R
-         + (ax_rotl64(c, R2) - b) * AX_S
-         + (ax_rotl64(d, R2) - a) * AX_T;
+         + (ax_rotl64(a, Q2) + b) * AX_Q
+         + (ax_rotl64(b, R2) + c) * AX_R
+         + (ax_rotl64(c, S2) + d) * AX_S
+         + (ax_rotl64(d, T2) + a) * AX_T;
+         //+ (ax_rotl64(a, R2) + c) * AX_Q
+         //+ (ax_rotl64(b, R2) + d) * AX_R
+         //+ (ax_rotl64(c, R2) + b) * AX_S
+         //+ (ax_rotl64(d, R2) + a) * AX_T;
 }
 
 
@@ -164,9 +164,9 @@ AX_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64
  *  Read functions.
  */
 #ifdef AX_LITTLE_ENDIAN
-static inline uint64_t ax_read64(const uint8_t * p, const uint32_t i) AX_NOEXCEPT { uint64_t v; memcpy(&v, &p[i], 8); return v;}
-static inline uint64_t ax_read32(const uint8_t * p, const uint32_t i) AX_NOEXCEPT { uint32_t v; memcpy(&v, &p[i], 4); return v;}
-static inline uint64_t ax_read16(const uint8_t * p, const uint32_t i) AX_NOEXCEPT { uint16_t v; memcpy(&v, &p[i], 2); return v;}
+AX_INLINE uint64_t ax_read64(const uint8_t * p, const uint32_t i) AX_NOEXCEPT { uint64_t v; memcpy(&v, &p[i], 8); return v;}
+AX_INLINE uint64_t ax_read32(const uint8_t * p, const uint32_t i) AX_NOEXCEPT { uint32_t v; memcpy(&v, &p[i], 4); return v;}
+AX_INLINE uint64_t ax_read16(const uint8_t * p, const uint32_t i) AX_NOEXCEPT { uint16_t v; memcpy(&v, &p[i], 2); return v;}
 #elif defined(__GNUC__) || defined(__INTEL_COMPILER) || defined(__clang__)
 AX_INLINE uint64_t ax_read64(const uint8_t *p, const uint32_t i) AX_NOEXCEPT { uint64_t v; memcpy(&v, &p[i], sizeof(uint64_t)); return __builtin_bswap64(v);}
 AX_INLINE uint64_t ax_read32(const uint8_t *p, const uint32_t i) AX_NOEXCEPT { uint32_t v; memcpy(&v, &p[i], sizeof(uint32_t)); return __builtin_bswap32(v);}
@@ -220,13 +220,13 @@ AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) A
     
   const uint8_t* const tail8 = buf;
   switch (len) {
-  case 1: h = (ax_mix_stream(h, tail8[0]));                                                                                                       break;
-  case 2: h = (ax_mix_stream(h, ax_read16(tail8, 0)));                                                                                            break;
-  case 3: h = (ax_mix_stream(h, ax_read16(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16));                                                    break;
-  case 4: h = (ax_mix_stream(h, ax_read32(tail8, 0)));                                                                                            break;
-  case 5: h = (ax_mix_stream(h, ax_read32(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32));                                                    break;
-  case 6: h = (ax_mix_stream(h, ax_read32(tail8, 0) | static_cast<uint64_t>(ax_read16(tail8, 4)) << 32));                                         break;
-  case 7: h = (ax_mix_stream(h, ax_read32(tail8, 0) | static_cast<uint64_t>(ax_read16(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48)); break;
+  case 1: h = (ax_mix_stream(h, tail8[0]));                                                                       break;
+  case 2: h = (ax_mix_stream(h, ax_read16(tail8, 0)));                                                            break;
+  case 3: h = (ax_mix_stream(h, ax_read16(tail8, 0) | (uint64_t)(tail8[2]) << 16));                               break;
+  case 4: h = (ax_mix_stream(h, ax_read32(tail8, 0)));                                                            break;
+  case 5: h = (ax_mix_stream(h, ax_read32(tail8, 0) | (uint64_t)(tail8[4]) << 32));                               break;
+  case 6: h = (ax_mix_stream(h, ax_read32(tail8, 0) | (ax_read16(tail8, 4)) << 32));                              break;
+  case 7: h = (ax_mix_stream(h, ax_read32(tail8, 0) | (ax_read16(tail8, 4)) << 32 | (uint64_t)(tail8[6]) << 48)); break;
   default:;
   }
   return ax_mix(h);
