@@ -203,7 +203,7 @@ AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) A
   AX_CONSTEXPR unsigned int R1 = 31u; // 32u;
   AX_CONSTEXPR unsigned int R2 = 37u;
   const uint8_t *buf=(const uint8_t *)key; 
-  uint64_t h = static_cast<uint64_t>(len) ^ seed;
+  uint64_t h = len ^ seed;
 
   while (len >= 64) {
     len -= 64;
@@ -248,7 +248,7 @@ AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) A
  *  Returns a 64-bit hash.
  */
 AX_INLINE uint64_t axhash_seeded(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
-  return axhash_internal(key, len, seed ^ ax_rotl64(seed, 29u) ^ ax_rotl64(seed, 47u));
+  return axhash_internal (key, len, (seed ^ ax_rotl64 (seed, 29u) ^ ax_rotl64 (seed, 47u)));
 }
 
 /*
