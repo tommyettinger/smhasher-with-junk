@@ -1,5 +1,5 @@
 /*
- * axhash - Much fast. Very hashing. Such independence. Wow.
+ * axhash - Much fast. Very hashing. Such platform. Wow.
  * Copyright (C) 2025 Tommy Ettinger
  *
  * Based on 'mx3', by Jon Maiga, which is public domain under the Unlicense.
@@ -40,17 +40,6 @@
 #endif
 
 /*
- *  Likely and unlikely macros.
- */
-#if defined(__GNUC__) || defined(__INTEL_COMPILER) || defined(__clang__)
-  #define _likely_(x)  __builtin_expect(x,1)
-  #define _unlikely_(x)  __builtin_expect(x,0)
-#else
-  #define _likely_(x) (x)
-  #define _unlikely_(x) (x)
-#endif
-
-/*
  *  Endianness macros.
  */
 #ifndef AX_LITTLE_ENDIAN
@@ -63,8 +52,7 @@
     #define AX_LITTLE_ENDIAN
   #endif
 #endif
- static const uint64_t AX_A = UINT64_C(0x3C79AC492BA7B653);
- static const uint64_t AX_B = UINT64_C(0x1C69B3F74AC4AE35);
+
 //    MX3 multiplier.
 static const uint64_t AX_C = UINT64_C(0xBEA225F9EB34556D);
 //    Random 64-bit probable primes, as given by Java's BigInteger class.
@@ -107,16 +95,6 @@ AX_INLINE uint64_t ax_mix(uint64_t x) AX_NOEXCEPT {
   x = (x ^ ax_rotl64(x, R2) ^ ax_rotl64(x, R3));
   return x;
 }
-  //    AX_CONSTEXPR unsigned int R0 = 27u;
-  //    AX_CONSTEXPR unsigned int R1 = 33u;
-  //    AX_CONSTEXPR unsigned int R2 = 27u;
-  //    x ^= x >> R0;
-  //    x *= AX_A;
-  //    x ^= x >> R1;
-  //    x *= AX_B;
-  //    x ^= x >> R2;
-  //    return x;
-  //}
 
   /*
  *  Simple two-argument mixing function that combines both arguments. Note that if both inputs are 0, this returns 0.
@@ -138,12 +116,12 @@ AX_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) AX_NOEXCEPT {
  *  If the last four arguments are all 0, this returns @h without changes.
  *
  *  @param h  unsigned 64-bit number; typically a value being accumulated onto.
- *  @param a  unsigned 64-bit number; will be mixed with c and d.
- *  @param b  unsigned 64-bit number; will be mixed with c and d.
- *  @param c  unsigned 64-bit number; will be mixed with a and b.
- *  @param d  unsigned 64-bit number; will be mixed with a and b.
+ *  @param a  unsigned 64-bit number; will be mixed with b and d.
+ *  @param b  unsigned 64-bit number; will be mixed with c and a.
+ *  @param c  unsigned 64-bit number; will be mixed with d and b.
+ *  @param d  unsigned 64-bit number; will be mixed with a and c.
  */
-AX_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) AX_NOEXCEPT {
+AX_INLINE uint64_t ax_mix_stream_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) AX_NOEXCEPT {
   AX_CONSTEXPR unsigned int Q2 = 28u;
   AX_CONSTEXPR unsigned int R2 = 29u;
   AX_CONSTEXPR unsigned int S2 = 27u;
@@ -153,10 +131,6 @@ AX_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64
          + (ax_rotl64(b, R2) + c) * AX_R
          + (ax_rotl64(c, S2) + d) * AX_S
          + (ax_rotl64(d, T2) + a) * AX_T;
-         //+ (ax_rotl64(a, R2) + c) * AX_Q
-         //+ (ax_rotl64(b, R2) + d) * AX_R
-         //+ (ax_rotl64(c, R2) + b) * AX_S
-         //+ (ax_rotl64(d, R2) + a) * AX_T;
 }
 
 
@@ -200,15 +174,14 @@ AX_INLINE uint64_t ax_read16(const uint8_t *p) AX_NOEXCEPT {
  *  Returns a 64-bit hash.
  */
 AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 31u; // 32u;
-  AX_CONSTEXPR unsigned int R2 = 37u;
+  AX_CONSTEXPR unsigned int R1 = 37u;
   const uint8_t *buf=(const uint8_t *)key; 
   uint64_t h = len ^ seed;
 
   while (len >= 64) {
     len -= 64;
-    h = ax_mix_stream_bulk (h * AX_C, ax_read64(buf, 0), ax_read64(buf, 8), ax_read64(buf, 16), ax_read64(buf, 24));
-    h = ax_mix_stream_bulk (ax_rotl64 (h, R2), ax_read64 (buf, 32), ax_read64 (buf, 40), ax_read64(buf, 48), ax_read64(buf, 56));
+    h = ax_mix_stream_bulk (h * AX_C,          ax_read64 (buf,  0), ax_read64 (buf,  8), ax_read64(buf, 16), ax_read64(buf, 24));
+    h = ax_mix_stream_bulk (ax_rotl64 (h, R1), ax_read64 (buf, 32), ax_read64 (buf, 40), ax_read64(buf, 48), ax_read64(buf, 56));
     buf += 64;
   }
 
@@ -220,13 +193,13 @@ AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) A
     
   const uint8_t* const tail8 = buf;
   switch (len) {
-  case 1: h = (ax_mix_stream(h, tail8[0]));                                                                       break;
-  case 2: h = (ax_mix_stream(h, ax_read16(tail8, 0)));                                                            break;
-  case 3: h = (ax_mix_stream(h, ax_read16(tail8, 0) | (uint64_t)(tail8[2]) << 16));                               break;
-  case 4: h = (ax_mix_stream(h, ax_read32(tail8, 0)));                                                            break;
-  case 5: h = (ax_mix_stream(h, ax_read32(tail8, 0) | (uint64_t)(tail8[4]) << 32));                               break;
-  case 6: h = (ax_mix_stream(h, ax_read32(tail8, 0) | (ax_read16(tail8, 4)) << 32));                              break;
-  case 7: h = (ax_mix_stream(h, ax_read32(tail8, 0) | (ax_read16(tail8, 4)) << 32 | (uint64_t)(tail8[6]) << 48)); break;
+  case 1: h = (ax_mix_stream(h, tail8[0]));                                                                     break;
+  case 2: h = (ax_mix_stream(h, ax_read16(tail8, 0)));                                                          break;
+  case 3: h = (ax_mix_stream(h, ax_read16(tail8, 0) | (uint64_t)(tail8[2]) << 16));                             break;
+  case 4: h = (ax_mix_stream(h, ax_read32(tail8, 0)));                                                          break;
+  case 5: h = (ax_mix_stream(h, ax_read32(tail8, 0) | (uint64_t)(tail8[4]) << 32));                             break;
+  case 6: h = (ax_mix_stream(h, ax_read32(tail8, 0) | ax_read16(tail8, 4) << 32));                              break;
+  case 7: h = (ax_mix_stream(h, ax_read32(tail8, 0) | ax_read16(tail8, 4) << 32 | (uint64_t)(tail8[6]) << 48)); break;
   default:;
   }
   return ax_mix(h);
