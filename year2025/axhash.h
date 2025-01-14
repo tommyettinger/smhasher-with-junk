@@ -134,23 +134,29 @@ AX_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) AX_NOEXCEPT {
 }
 
 /*
- *  A fast four-argument mixing function that mixes four pairs of arguments and returns their sum.
- *  If all arguments are all 0, this returns 0.
+ *  A fast five-argument mixing function that only mixes the last four arguments, and sums them with the first.
+ *  If the last four arguments are all 0, this returns @h without changes.
  *
- *  @param a  unsigned 64-bit number; will be mixed with b and d.
- *  @param b  unsigned 64-bit number; will be mixed with c and a.
- *  @param c  unsigned 64-bit number; will be mixed with d and b.
- *  @param d  unsigned 64-bit number; will be mixed with a and c.
+ *  @param h  unsigned 64-bit number; typically a value being accumulated onto.
+ *  @param a  unsigned 64-bit number; will be mixed with c and d.
+ *  @param b  unsigned 64-bit number; will be mixed with c and d.
+ *  @param c  unsigned 64-bit number; will be mixed with a and b.
+ *  @param d  unsigned 64-bit number; will be mixed with a and b.
  */
-AX_INLINE uint64_t ax_mix_stream_bulk(uint64_t a, uint64_t b, uint64_t c, uint64_t d) AX_NOEXCEPT {
+AX_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) AX_NOEXCEPT {
   AX_CONSTEXPR unsigned int Q2 = 28u;
   AX_CONSTEXPR unsigned int R2 = 29u;
   AX_CONSTEXPR unsigned int S2 = 27u;
   AX_CONSTEXPR unsigned int T2 = 25u;
-  return   (ax_rotl64(a, Q2) + b) * AX_Q
+  return h
+         + (ax_rotl64(a, Q2) + b) * AX_Q
          + (ax_rotl64(b, R2) + c) * AX_R
          + (ax_rotl64(c, S2) + d) * AX_S
          + (ax_rotl64(d, T2) + a) * AX_T;
+         //+ (ax_rotl64(a, R2) + c) * AX_Q
+         //+ (ax_rotl64(b, R2) + d) * AX_R
+         //+ (ax_rotl64(c, R2) + b) * AX_S
+         //+ (ax_rotl64(d, R2) + a) * AX_T;
 }
 
 
@@ -194,14 +200,15 @@ AX_INLINE uint64_t ax_read16(const uint8_t *p) AX_NOEXCEPT {
  *  Returns a 64-bit hash.
  */
 AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 37u;
+  AX_CONSTEXPR unsigned int R1 = 31u; // 32u;
+  AX_CONSTEXPR unsigned int R2 = 37u;
   const uint8_t *buf=(const uint8_t *)key; 
   uint64_t h = len ^ seed;
 
   while (len >= 64) {
     len -= 64;
-    h = h * AX_C          + ax_mix_stream_bulk (ax_read64 (buf,  0), ax_read64 (buf,  8), ax_read64(buf, 16), ax_read64(buf, 24));
-    h = ax_rotl64 (h, R1) + ax_mix_stream_bulk (ax_read64 (buf, 32), ax_read64 (buf, 40), ax_read64(buf, 48), ax_read64(buf, 56));
+    h = ax_mix_stream_bulk (h * AX_C, ax_read64(buf, 0), ax_read64(buf, 8), ax_read64(buf, 16), ax_read64(buf, 24));
+    h = ax_mix_stream_bulk (ax_rotl64 (h, R2), ax_read64 (buf, 32), ax_read64 (buf, 40), ax_read64(buf, 48), ax_read64(buf, 56));
     buf += 64;
   }
 
