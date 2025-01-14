@@ -17,7 +17,7 @@
  *  Includes.
  */
 #include <stdint.h>
-#include <limits.h>   // for CHAR_BIT
+#include <limits.h>
 #include <string.h>
 
 /*
@@ -27,13 +27,11 @@
  */
 #ifdef __cplusplus
   #define AX_NOEXCEPT noexcept
-  #define AX_CONSTEXPR constexpr
   #ifndef AX_INLINE
-    #define AX_INLINE static inline
+    #define AX_INLINE inline
   #endif
 #else
   #define AX_NOEXCEPT
-  #define AX_CONSTEXPR static const
   #ifndef AX_INLINE
     #define AX_INLINE static inline
   #endif
@@ -86,10 +84,10 @@ AX_INLINE uint64_t ax_rotl64 (uint64_t n, unsigned int c)
  *  @param x  unsigned 64-bit number.
  */
 AX_INLINE uint64_t ax_mix(uint64_t x) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R0 = 23u;
-  AX_CONSTEXPR unsigned int R1 = 43u;
-  AX_CONSTEXPR unsigned int R2 = 11u;
-  AX_CONSTEXPR unsigned int R3 = 50u;
+  static const unsigned int R0 = 23u;
+  static const unsigned int R1 = 43u;
+  static const unsigned int R2 = 11u;
+  static const unsigned int R3 = 50u;
   x = (x ^ ax_rotl64(x, R0) ^ ax_rotl64(x, R1));
   x *= AX_C;
   x = (x ^ ax_rotl64(x, R2) ^ ax_rotl64(x, R3));
@@ -103,7 +101,7 @@ AX_INLINE uint64_t ax_mix(uint64_t x) AX_NOEXCEPT {
  *  @param x  unsigned 64-bit number; typically a datum that should be incorporated with mixing into @h .
  */
 AX_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 39u;
+  static const unsigned int R1 = 39u;
   x *= AX_C;
   x ^= (x >> R1);
   h += x * AX_C;
@@ -122,10 +120,10 @@ AX_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) AX_NOEXCEPT {
  *  @param d  unsigned 64-bit number; will be mixed with a and c.
  */
 AX_INLINE uint64_t ax_mix_stream_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int Q2 = 28u;
-  AX_CONSTEXPR unsigned int R2 = 29u;
-  AX_CONSTEXPR unsigned int S2 = 27u;
-  AX_CONSTEXPR unsigned int T2 = 25u;
+  static const unsigned int Q2 = 28u;
+  static const unsigned int R2 = 29u;
+  static const unsigned int S2 = 27u;
+  static const unsigned int T2 = 25u;
   return h
          + (ax_rotl64(a, Q2) + b) * AX_Q
          + (ax_rotl64(b, R2) + c) * AX_R
@@ -173,8 +171,8 @@ AX_INLINE uint64_t ax_read16(const uint8_t *p) AX_NOEXCEPT {
  *
  *  Returns a 64-bit hash.
  */
-AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
-  AX_CONSTEXPR unsigned int R1 = 37u;
+AX_INLINE uint64_t ax_hash_internal(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
+  static const unsigned int R1 = 37u;
   const uint8_t *buf=(const uint8_t *)key; 
   uint64_t h = len ^ seed;
 
@@ -212,16 +210,16 @@ AX_INLINE uint64_t axhash_internal(const void *key, size_t len, uint64_t seed) A
  *  @param len     @key length, in bytes.
  *  @param seed    64-bit seed used to alter the hash result predictably; will be mixed a little.
  *
- *  Calls axhash_internal using provided parameters, but does some mixing to seed.
- *  This is, in fact, nearly identical to axhash_internal, except that this
+ *  Calls ax_hash_internal using provided parameters, but does some mixing to seed.
+ *  This is, in fact, nearly identical to ax_hash_internal, except that this
  *  function mixes seed with a XOR-Rotate-XOR-Rotate step. If you are confident that your seed is not going
  *  to be used in conjunction with other extremely similar seeds (such as seed, seed+1, seed+2, etc.), then
- *  you can call axhash_internal directly with your unmixed seed to save a few cycles.
+ *  you can call ax_hash_internal directly with your unmixed seed to save a few cycles.
  *
  *  Returns a 64-bit hash.
  */
-AX_INLINE uint64_t axhash_seeded(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
-  return axhash_internal (key, len, (seed ^ ax_rotl64 (seed, 29u) ^ ax_rotl64 (seed, 47u)));
+AX_INLINE uint64_t ax_hash_seeded(const void *key, size_t len, uint64_t seed) AX_NOEXCEPT {
+  return ax_hash_internal (key, len, (seed ^ ax_rotl64 (seed, 29u) ^ ax_rotl64 (seed, 47u)));
 }
 
 /*
@@ -230,10 +228,10 @@ AX_INLINE uint64_t axhash_seeded(const void *key, size_t len, uint64_t seed) AX_
  *  @param key     Buffer to be hashed.
  *  @param len     @key length, in bytes.
  *
- *  Calls axhash_internal using provided parameters and the default seed, without mixing.
+ *  Calls ax_hash_internal using provided parameters and the default seed, without mixing.
  *
  *  Returns a 64-bit hash.
  */
-AX_INLINE uint64_t axhash(const void *key, size_t len) AX_NOEXCEPT {
-  return axhash_internal(key, len, AX_SEED);
+AX_INLINE uint64_t ax_hash(const void *key, size_t len) AX_NOEXCEPT {
+  return ax_hash_internal(key, len, AX_SEED);
 }

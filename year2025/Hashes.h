@@ -1444,6 +1444,6 @@ void aesnihash_peterrk(const void * in, int len0, uint32_t seed, void * out);
 
 #include "axhash.h"
 inline void axhash64_test( const void * key, int len, uint32_t seed, void * out ) {
-  *(uint64_t*)out = axhash_seeded(key, (size_t) len, (uint64_t)seed);
+  *(uint64_t*)out = ax_hash_seeded(key, (size_t) len, (uint64_t)seed);
 }
 
