@@ -124,13 +124,6 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
         + (ROTL64(b, R2) + c) * R
         + (ROTL64(c, S2) + d) * S
         + (ROTL64(d, T2) + a) * T;
-
-    //constexpr int R2 = 29;
-    //return h
-    //+ (ROTL64(a, R2) - c) * Q
-    //+ (ROTL64(b, R2) - d) * R
-    //+ (ROTL64(c, R2) - b) * S
-    //+ (ROTL64(d, R2) - a) * T;
 }
 
 template <bool bswap>
