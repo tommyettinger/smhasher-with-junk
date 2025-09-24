@@ -15,7 +15,7 @@
 
           0     1     2     3     4     5     6     7     8     9    10    11    12
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4364  1305   601   306   133    93    42    13    12     6     3     2     1
+         4393  1338   556   292   135    82    52    14    11     2     3     2     1
 
          13    14    15    16    17    18    19    20    21    22    23    24    25+
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
@@ -26,7 +26,7 @@ Summary for: xquor
 Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 387.843551 seconds
+Verification value is 0x00000001 - Testing took 596.790878 seconds
 */
 
 //------------------------------------------------------------
@@ -44,7 +44,6 @@ static const uint64_t W = UINT64_C(0xE95E1DD17D35802B);
 static const uint64_t X = UINT64_C(0xEBEDEED9D803C871);
 
 static inline uint64_t mix(uint64_t x) {
-    //
     //constexpr int R = 27;
     //x ^= x * x | O;
     //x = ROTR64(x, R);
@@ -68,6 +67,11 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
     h += x * C;
     h *= C;
     return h;
+    //constexpr int R = 27;
+    //x ^= x * x | O;
+    //h += ROTR64(x, R);
+    //h ^= h * h | O;
+    //return h ^ h >> R;
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
@@ -88,41 +92,47 @@ static inline uint64_t xquorhash(const uint8_t* buf, size_t len, uint64_t seed) 
     constexpr int R1 = 37;
     constexpr int R2 = 25;
 
-    const uint8_t* const tail = buf + (len & ~7);
     // This strengthens the hash against tests that mainly use the seed.
     uint64_t s = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) ^ (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
     
     while (len >= 64) {
         len -= 64;
-        s = s * C + 
+        s = s * C +
             mix_stream_bulk(
-            GET_U64<bswap>(buf, 0),
-            GET_U64<bswap>(buf, 8),
-            GET_U64<bswap>(buf, 16),
-            GET_U64<bswap>(buf, 24));
-        s = (s ^ s >> R1) + mix_stream_bulk(
-            GET_U64<bswap>(buf, 32),
-            GET_U64<bswap>(buf, 40),
-            GET_U64<bswap>(buf, 48),
-            GET_U64<bswap>(buf, 56));
+                GET_U64<bswap>(buf, 0),
+                GET_U64<bswap>(buf, 8),
+                GET_U64<bswap>(buf, 16),
+                GET_U64<bswap>(buf, 24));
+        s = (s ^ s >> R2) + 
+            mix_stream_bulk(
+                GET_U64<bswap>(buf, 32),
+                GET_U64<bswap>(buf, 40),
+                GET_U64<bswap>(buf, 48),
+                GET_U64<bswap>(buf, 56));
         buf += 64;
     }
 
-    while (len >= 8) {
+    while (len > 14) {
         len -= 8;
         s = mix_stream(s, GET_U64<bswap>(buf, 0));
         buf += 8;
     }
 
-    const uint8_t* const tail8 = buf;
     switch (len) {
-    case 1: s = (mix_stream(s, tail8[0])); break;
-    case 2: s = (mix_stream(s, GET_U16<bswap>(tail8, 0))); break;
-    case 3: s = (mix_stream(s, GET_U16<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16)); break;
-    case 4: s = (mix_stream(s, GET_U32<bswap>(tail8, 0))); break;
-    case 5: s = (mix_stream(s, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32)); break;
-    case 6: s = (mix_stream(s, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32)); break;
-    case 7: s = (mix_stream(s, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48)); break;
+    case 1:  s = mix_stream(s, buf[0]); break;
+    case 2:  s = mix_stream(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = mix_stream_bulk(s, buf[0], buf[1], buf[2]); break;
+    case 4:  s = mix_stream(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = mix_stream_bulk(s, GET_U32<bswap>(buf, 0), buf[4], s); break;
+    case 6:  s = mix_stream_bulk(s, GET_U32<bswap>(buf, 0), buf[4], buf[5]); break;
+    case 7:  s = mix_stream_bulk(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = mix_stream(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = mix_stream_bulk(s, GET_U64<bswap>(buf, 0), buf[8], s); break;
+    case 10: s = mix_stream_bulk(s, GET_U64<bswap>(buf, 0), buf[8], buf[9]); break;
+    case 11: s = mix_stream_bulk(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = mix_stream_bulk(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), GET_U16<bswap>(buf, 10)); break;
+    case 13: s = mix_stream_bulk(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = mix_stream_bulk(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
     }
 
     return mix(s);
@@ -151,8 +161,8 @@ REGISTER_HASH(xquor,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x73331738,
-    $.verification_BE = 0xE8FBCAD7,
+    $.verification_LE = 0xDE8808D0,
+    $.verification_BE = 0x4C1406F5,
     $.hashfn_native = xquor<false>,
     $.hashfn_bswap = xquor<true>
 );
