@@ -9,44 +9,82 @@
 #include "Platform.h"
 #include "Hashlib.h"
 
+/*
+*********FAIL*********
 
- //------------------------------------------------------------
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         3554  1056   468   240   135    71    27    18    16     6     3     4     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            2    10     1     0     2     2     3     0     2     1     1     2  1258
+
+----------------------------------------------------------------------------------------------
+Summary for: xquor
+Overall result: FAIL            ( 83 / 188 passed)
+Failures:
+    Avalanche           : [3, 4, 7, 9, 10]
+    BIC                 : [3, 11, 15]
+    Sparse              : [6/2, 4/3, 4/4, 4/5, 3/6, 3/7, 3/9, 3/10, 3/12, 3/14, 10/2, 20/3, 9/4, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE]]
+    TextNum             : [with commas]
+    Text                : [FooBarXXXX, FooooooBaaaaarXXXX, FooooooooooBaaaaaaaaarXXXX, Words alnum 1-4, Words alnum 1-16, Words alnum 1-32, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [20, 1024, 2048, 4096]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 4]
+    SeedZeroes          : [1280, 8448]
+    SeedSparse          : [2, 3, 6]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+    Seed                : [2, 3, 6]
+    SeedAvalanche       : [4]
+    SeedBIC             : [3]
+    SeedBitflip         : [3, 4]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 367.481270 second
+*/
+
+//------------------------------------------------------------
 // MX3 multiplier
 static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
-static const uint64_t Q = UINT64_C(7);
-static const uint64_t R = UINT64_C(11);
-static const uint64_t S = UINT64_C(13);
-static const uint64_t T = UINT64_C(19);
+static const uint64_t O = UINT64_C(7);
+
+static const uint64_t Q = UINT64_C(0x9E3779B97F4A7C55);
+static const uint64_t R = UINT64_C(0xC13FA9A902A63293);
+static const uint64_t S = UINT64_C(0xD1B54A32D192ED2D);
+static const uint64_t T = UINT64_C(0xDB4F0B9175AE2169);
+static const uint64_t U = UINT64_C(0xE19B01AA9D42C66D);
+static const uint64_t V = UINT64_C(0xE60E2B722B53AEF3);
+static const uint64_t W = UINT64_C(0xE95E1DD17D35802B);
+static const uint64_t X = UINT64_C(0xEBEDEED9D803C871);
 
 static inline uint64_t mix(uint64_t x) {
+    
     constexpr int R = 27;
-    x ^= x * x | Q;
+    x ^= x * x | O;
     x = ROTR64(x, R);
-    x ^= x * x | Q;
+    x ^= x * x | O;
     x ^= x >> R;
     return x;
 }
 
 static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
-    constexpr uint64_t O = 7UL;
     constexpr int R = 27;
-    x ^= x * x | Q;
+    x ^= x * x | O;
     h += ROTR64(x, R);
-    h ^= h * h | Q;
+    h ^= h * h | O;
     return h ^ h >> R;
-}
-
-static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    h += a ^ (a * a | Q);
-    h += b ^ (b * b | R);
-    h += c ^ (c * c | S);
-    h += d ^ (d * d | T);
-    return h;
 }
 
 template <bool bswap>
 static inline uint64_t xquorhash(const uint8_t* buf, size_t len, uint64_t seed) {
     constexpr int R1 = 37;
+    constexpr int R2 = 25;
 
     const uint8_t* const tail = buf + (len & ~7);
     // This strengthens the hash against tests that mainly use the seed.
@@ -55,25 +93,19 @@ static inline uint64_t xquorhash(const uint8_t* buf, size_t len, uint64_t seed) 
     
     while (len >= 64) {
         len -= 64;
-        a ^= GET_U64<bswap>(buf, 0);
-        b ^= GET_U64<bswap>(buf, 8);
-        c ^= GET_U64<bswap>(buf, 16);
-        d ^= GET_U64<bswap>(buf, 24);
-        a ^= a * a | Q;
-        b ^= b * b | R;
-        c ^= c * c | S;
-        d ^= d * d | T;
-        a ^= GET_U64<bswap>(buf, 32);
-        b ^= GET_U64<bswap>(buf, 40);
-        c ^= GET_U64<bswap>(buf, 48);
-        d ^= GET_U64<bswap>(buf, 56);
-        a ^= a >> R1;
-        b ^= b >> R1;
-        c ^= c >> R1;
-        d ^= d >> R1;
+        s += 
+            Q * GET_U64<bswap>(buf, 0) + 
+            R * GET_U64<bswap>(buf, 8) + 
+            S * GET_U64<bswap>(buf, 16) + 
+            T * GET_U64<bswap>(buf, 24) + 
+            U * GET_U64<bswap>(buf, 32) + 
+            V * GET_U64<bswap>(buf, 40) + 
+            W * GET_U64<bswap>(buf, 48) + 
+            X * GET_U64<bswap>(buf, 56);
+        s ^= s >> R2;
+        s ^= s * s | O;
         buf += 64;
     }
-    s = a * Q + b * R + c * S + d * T;
 
     while (len >= 8) {
         len -= 8;
@@ -120,8 +152,8 @@ REGISTER_HASH(xquor,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0xA6503033,
-    $.verification_BE = 0xB4347E27,
+    $.verification_LE = 0x23B3E373,
+    $.verification_BE = 0x3A8E6591,
     $.hashfn_native = xquor<false>,
     $.hashfn_bswap = xquor<true>
 );
