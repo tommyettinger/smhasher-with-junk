@@ -762,6 +762,19 @@ Verification value is 0x00000001 - Testing took 566.933656 seconds
 template <bool bswap>
 static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
     size_t i = 3;
+    for (; i < len; i += 4, data += 4) {
+        h = h * 31 + GET_U32<bswap>(data, 0);
+    }
+    i -= 3;
+    for (; i < len; i++, data++) {
+        h = h * 31 + data[0];
+    }
+    return h;
+}
+
+template <bool bswap>
+static uint32_t jvmstring2_impl(const uint8_t* data, size_t len, uint32_t h) {
+    size_t i = 3;
     h ^= h >> 17;
     h *= 0xed5ad4bbu;
     h ^= h >> 11;
@@ -788,6 +801,10 @@ static uint32_t jvmstring_impl(const uint8_t* data, size_t len, uint32_t h) {
     return h;
 }
 
+template <bool bswap>
+static uint32_t jvmstring3_impl(const uint8_t* data, size_t len, uint32_t h) {
+}
+
 
 template <bool bswap>
 static void jvmstring( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -796,10 +813,47 @@ static void jvmstring( const void * in, const size_t len, const seed_t seed, voi
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
 
+template <bool bswap>
+static void jvmstring2( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint32_t h = jvmstring2_impl<bswap>((const uint8_t *)in, len, (uint32_t)(seed + len));
+
+    PUT_U32<bswap>(h, (uint8_t *)out, 0);
+}
+
+template <bool bswap>
+static void jvmstring3( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint32_t h = (uint32_t)(seed + len);
+    const uint8_t* data = (const uint8_t*)in;
+    size_t i = 3;
+    h = (h ^ 7) * 555555555;
+    h += h * h | 25;
+    h = ROTR32(h, 12);
+    h += h * h | 25;
+    h ^= h >> 13;
+
+    for (; i < len; i += 4, data += 4) {
+        h += (GET_U32<bswap>(data, 0) ^ 7) * 555555555;
+        //h ^= h * h | 7;
+        h ^= ROTR32(h, 12) ^ ROTR32(h, 21);
+    }
+    i -= 3;
+    for (; i < len; i++, data++) {
+        h += (data[0] ^ 7) * 555555555;
+        //h ^= h * h | 7;
+        h ^= ROTR32(h, 12) ^ ROTR32(h, 21);
+    }
+    h += h * h | 7;
+    h = ROTR32(h, 14);
+    h += h * h | 7;
+    h ^= h >> 15;
+
+    PUT_U32<bswap>(h, (uint8_t *)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(jvmstring,
    $.src_url    = "https://github.com/aappleby/smhasher/blob/master/src/Hashes.cpp",
-   $.src_status = HashFamilyInfo::SRC_FROZEN
+   $.src_status = HashFamilyInfo::SRC_ACTIVE
  );
 
 REGISTER_HASH(jvmstring,
@@ -815,4 +869,34 @@ REGISTER_HASH(jvmstring,
    $.verification_BE = 0,
    $.hashfn_native   = jvmstring<false>,
    $.hashfn_bswap    = jvmstring<true>
+ );
+
+REGISTER_HASH(jvmstring2,
+   $.desc       = "jvmstring2",
+   $.hash_flags =
+         FLAG_HASH_SMALL_SEED,
+   $.impl_flags =
+         FLAG_IMPL_MULTIPLY     |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_SLOW,
+   $.bits = 32,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = jvmstring2<false>,
+   $.hashfn_bswap    = jvmstring2<true>
+ );
+
+REGISTER_HASH(jvmstring3,
+   $.desc       = "jvmstring3",
+   $.hash_flags =
+         FLAG_HASH_SMALL_SEED,
+   $.impl_flags =
+         FLAG_IMPL_MULTIPLY     |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_SLOW,
+   $.bits = 32,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = jvmstring3<false>,
+   $.hashfn_bswap    = jvmstring3<true>
  );
