@@ -716,6 +716,7 @@ HashInfo g_hashes[] =
 { pengyhash_test,       64, 0x1FC2217B, "pengyhash",   "pengyhash", GOOD, {} },
 { mx3hash64_test,       64, 0x4DB51E5B, "mx3",         "mx3 64bit", GOOD, {0x10} /* !! and all & 0x10 */},
 { axhash64_test,        64, 0x16BAEA10, "axhash",      "axhash 64bit", GOOD, {} },
+{ adzehash64_test,      64, 0x16BAEA11, "adzehash",    "adzehash 64bit", GOOD, {} },
 #ifdef HAVE_UMASH
 { umash32,              32, 0x9451AF3B, "umash32",     "umash 32", GOOD, {0x90e37057} /* !! */},
 { umash32_hi,           32, 0x0CC4850F, "umash32_hi",  "umash 32 hi", GOOD, {} },

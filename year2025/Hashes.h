@@ -1447,3 +1447,8 @@ inline void axhash64_test( const void * key, int len, uint32_t seed, void * out 
   *(uint64_t*)out = ax_hash_seeded(key, (size_t) len, (uint64_t)seed);
 }
 
+#include "adzehash.h"
+inline void adzehash64_test( const void * key, int len, uint32_t seed, void * out ) {
+  *(uint64_t*)out = adze_hash_seeded(key, (size_t) len, (uint64_t)seed);
+}
+
