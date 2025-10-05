@@ -14,7 +14,7 @@
 
           0     1     2     3     4     5     6     7     8     9    10    11    12
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4485  1270   562   279   129    76    50    19     5     4     1     2     1
+         4397  1268   615   281   163    80    36    22     8     8     3     2     0
 
          13    14    15    16    17    18    19    20    21    22    23    24    25+
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
@@ -25,7 +25,7 @@ Summary for: adze
 Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 360.381356 seconds
+Verification value is 0x00000001 - Testing took 391.748336 seconds
 */
 
 //------------------------------------------------------------
@@ -50,12 +50,12 @@ static inline uint64_t mix(uint64_t x) {
     return x;
 }
 
-static inline uint64_t mix_multiple(uint64_t h, uint64_t x) {
+static inline uint64_t mix_multiple(uint64_t a, uint64_t b) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     return
-          (ROTL64(h, Q2) + x) * Q
-        + (ROTL64(x, R2) + h) * R;
+          (ROTL64(a, Q2) + b) * Q
+        + (ROTL64(b, R2) + a) * R;
 }
 
 static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c) {
@@ -116,7 +116,7 @@ static inline uint64_t adzehash(const uint8_t* buf, size_t len, uint64_t seed) {
     constexpr int S = 25;
 
     // This strengthens the hash against tests that mainly use the seed.
-    uint64_t s = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) ^ (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
+    uint64_t s = (len ^ seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
     
     while (len >= 64) {
         len -= 64;
@@ -200,8 +200,8 @@ REGISTER_HASH(adze,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x659CD7D4,
-    $.verification_BE = 0x0B16A381,
+    $.verification_LE = 0x603832DE,
+    $.verification_BE = 0x01183EA4,
     $.hashfn_native = adze<false>,
     $.hashfn_bswap = adze<true>
 );
