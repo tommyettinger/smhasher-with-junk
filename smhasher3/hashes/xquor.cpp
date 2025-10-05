@@ -27,6 +27,26 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 366.494846 seconds
+
+With change from Ax's imbalanced mixStream to the current rotate-add-multiply-sum method:
+
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4477  1278   555   275   132    81    50    19     6     6     1     2     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: xquor
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 355.978727 seconds
 */
 
 //------------------------------------------------------------
@@ -44,12 +64,12 @@ static const uint64_t W = UINT64_C(0xE95E1DD17D35802B);
 static const uint64_t X = UINT64_C(0xEBEDEED9D803C871);
 
 static inline uint64_t mix(uint64_t x) {
-    //constexpr int R = 27;
-    //x ^= x * x | O;
-    //x = ROTR64(x, R);
-    //x ^= x * x | O;
-    //x ^= x >> R;
-    //return x;
+/*    constexpr int R = 27;
+    x ^= x * x | O;
+    x = ROTR64(x, R);
+    x ^= x * x | O;
+    x ^= x >> R;
+    return x;*/
     constexpr int R0 = 23;
     constexpr int R1 = 43;
     constexpr int R2 = 11;
@@ -61,17 +81,17 @@ static inline uint64_t mix(uint64_t x) {
 }
 
 static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
-    constexpr uint32_t R1 = 39;
-    x *= C;
-    x ^= (x >> R1);
-    h += x * C;
-    h *= C;
-    return h;
-    //constexpr int R = 27;
-    //x ^= x * x | O;
-    //h += ROTR64(x, R);
-    //h ^= h * h | O;
-    //return h ^ h >> R;
+    //constexpr uint32_t R1 = 39;
+    //x *= C;
+    //x ^= (x >> R1);
+    //h += x * C;
+    //h *= C;
+    //return h;
+    constexpr int Q2 = 28;
+    constexpr int R2 = 29;
+    return
+        (ROTL64(h, Q2) + x) * Q
+        + (ROTL64(x, R2) + h) * R;
 }
 
 static inline uint64_t mix_stream_bulk(uint64_t a, uint64_t b, uint64_t c) {
@@ -129,12 +149,11 @@ static inline uint64_t mix_stream_bulk(uint64_t a, uint64_t b, uint64_t c, uint6
 
 template <bool bswap>
 static inline uint64_t xquorhash(const uint8_t* buf, size_t len, uint64_t seed) {
-    constexpr int R1 = 37;
     constexpr int R2 = 25;
-    constexpr int R3 = 50;
 
     // This strengthens the hash against tests that mainly use the seed.
-    uint64_t s = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) ^ (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
+    //uint64_t s = (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)) + len;
+    uint64_t s = (len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) ^ (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
     
     while (len >= 64) {
         len -= 64;
@@ -218,8 +237,8 @@ REGISTER_HASH(xquor,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x139CC0CF,
-    $.verification_BE = 0x6B0A9FD6,
+    $.verification_LE = 0xA0A96299,
+    $.verification_BE = 0x9ED03863,
     $.hashfn_native = xquor<false>,
     $.hashfn_bswap = xquor<true>
 );
