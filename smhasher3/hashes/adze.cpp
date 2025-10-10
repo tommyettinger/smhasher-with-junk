@@ -83,6 +83,31 @@ Overall result: pass            ( 188 / 188 passed)
 Verification value is 0x00000001 - Testing took 346.351209 seconds
 */
 
+// adze7, small gains...
+/*
+Average        -    20.36 cycles/hash
+Average       - 12.74 bytes/cycle - 41.54 GiB/sec @ 3.5 ghz
+Average       - 12.68 bytes/cycle - 41.33 GiB/sec @ 3.5 ghz
+
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4369  1283   617   284   173    81    35    22     6     7     3     3     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 346.568612 seconds
+*/
+
 //------------------------------------------------------------
 // MX3 multiplier
 static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
@@ -94,6 +119,8 @@ static const uint64_t S = UINT64_C(0xD1B54A32D192ED2D);
 static const uint64_t T = UINT64_C(0xDB4F0B9175AE2169);
 static const uint64_t U = UINT64_C(0xE19B01AA9D42C66D);
 static const uint64_t V = UINT64_C(0xE60E2B722B53AEF3);
+static const uint64_t W = UINT64_C(0xE95E1DD17D35802B);
+static const uint64_t X = UINT64_C(0xEBEDEED9D803C871);
 
 static inline uint64_t mix(uint64_t x) {
     constexpr int R0 = 23;
@@ -164,6 +191,24 @@ static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t
         + (ROTL64(d, T2) + e) * T
         + (ROTL64(e, U2) + f) * U
         + (ROTL64(f, V2) + a) * V;
+}
+
+static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t g) {
+    constexpr int Q2 = 28;
+    constexpr int R2 = 29;
+    constexpr int S2 = 27;
+    constexpr int T2 = 25;
+    constexpr int U2 = 26;
+    constexpr int V2 = 30;
+    constexpr int W2 = 23;
+    return 
+          (ROTL64(a, Q2) + b) * Q
+        + (ROTL64(b, R2) + c) * R
+        + (ROTL64(c, S2) + d) * S
+        + (ROTL64(d, T2) + e) * T
+        + (ROTL64(e, U2) + f) * U
+        + (ROTL64(f, V2) + g) * V
+        + (ROTL64(g, W2) + a) * W;
 }
 
 
@@ -396,6 +441,87 @@ static void adze6(const void* in, const size_t len, const seed_t seed, void* out
     PUT_U64<bswap>(h, (uint8_t*)out, 0);
 }
 
+template <bool bswap>
+static inline uint64_t adze7hash(const uint8_t* buf, size_t len, uint64_t seed) {
+    constexpr int S = 25;
+
+    // This strengthens the hash against tests that mainly use the seed.
+    uint64_t s = (len ^ seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
+
+    while (len >= 112) {
+        len -= 112;
+        s = s * C +
+            mix_multiple(
+                GET_U64<bswap>(buf, 0),
+                GET_U64<bswap>(buf, 8),
+                GET_U64<bswap>(buf, 16),
+                GET_U64<bswap>(buf, 24),
+                GET_U64<bswap>(buf, 32),
+                GET_U64<bswap>(buf, 40),
+                GET_U64<bswap>(buf, 48));
+        s = (s ^ s >> S) +
+            mix_multiple(
+                GET_U64<bswap>(buf, 56),
+                GET_U64<bswap>(buf, 64),
+                GET_U64<bswap>(buf, 72),
+                GET_U64<bswap>(buf, 80),
+                GET_U64<bswap>(buf, 88),
+                GET_U64<bswap>(buf, 96),
+                GET_U64<bswap>(buf, 104));
+        buf += 112;
+    }
+
+    while (len >= 32) {
+        len -= 32;
+        s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        buf += 32;
+    }
+
+    switch (len) {
+    case 1:  s = mix_multiple(s, buf[0]); break;
+    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+    case 31: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+    }
+
+    return mix(s);
+}
+
+//------------------------------------------------------------
+template <bool bswap>
+static void adze7(const void* in, const size_t len, const seed_t seed, void* out) {
+    uint64_t h = adze7hash<bswap>((const uint8_t*)in, len, (uint64_t)seed);
+
+    PUT_U64<bswap>(h, (uint8_t*)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(adzehash,
     $.src_url = "https://github.com/tommyettinger/",
@@ -445,4 +571,19 @@ REGISTER_HASH(adze6,
     $.verification_BE = 0,
     $.hashfn_native = adze6<false>,
     $.hashfn_bswap = adze6<true>
+);
+
+REGISTER_HASH(adze7,
+    $.desc = "adze7 hash 64-bit",
+    $.hash_flags =
+    0,
+    $.impl_flags =
+    FLAG_IMPL_MULTIPLY_64_64 |
+    FLAG_IMPL_ROTATE |
+    FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
+    $.bits = 64,
+    $.verification_LE = 0,
+    $.verification_BE = 0,
+    $.hashfn_native = adze7<false>,
+    $.hashfn_bswap = adze7<true>
 );
