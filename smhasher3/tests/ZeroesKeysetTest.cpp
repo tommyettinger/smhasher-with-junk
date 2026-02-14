@@ -60,8 +60,9 @@
 // We reuse one block of empty bytes, otherwise the RAM cost is enormous.
 
 template <typename hashtype>
-static bool ZeroKeyImpl( HashFn hash, const seed_t seed, flags_t flags ) {
-    int keycount = 200 * 1024;
+static bool ZeroKeyImpl( const HashInfo * hinfo, const seed_t seed, flags_t flags ) {
+    const HashFn hash     = hinfo->hashFn(g_hashEndian);
+    int          keycount = 200 * 1024;
 
     printf("Keyset 'Zeroes' - %d keys\n", keycount);
 
@@ -71,18 +72,26 @@ static bool ZeroKeyImpl( HashFn hash, const seed_t seed, flags_t flags ) {
     addVCodeInput(nullblock, keycount);
 
     //----------
-    std::vector<hashtype> hashes;
+    std::vector<hashtype> hashes( keycount );
 
-    hashes.resize(keycount);
+    if (hinfo->isDoNothing()) {
+        std::fill(hashes.begin(), hashes.end(), 0);
+    }
 
     for (int i = 0; i < keycount; i++) {
         hash(nullblock, i, seed, &hashes[i]);
     }
 
-    bool result = TestHashList(hashes).testDeltas(1).reportFlags(flags).dumpFailKeys([&]( hidx_t i ) {
-            printf("0x%016" PRIx64 "\t%d copies of 0x00\t", g_seed, i);
-            hashtype v; hash(nullblock, i, seed, &v); v.printhex(NULL);
-        });
+    auto keyprint = [&]( hidx_t i ) {
+                hashtype v( 0 );
+
+                hash(nullblock, i, seed, &v);
+                printf("0x%016" PRIx64 "\t%d copies of 0x00\t", g_seed, i);
+                v.printhex(NULL);
+            };
+
+    bool result = TestHashList(hashes).testDeltas(1).reportFlags(flags).dumpFailKeys(keyprint);
+
     printf("\n");
 
     delete [] nullblock;
@@ -98,14 +107,13 @@ static bool ZeroKeyImpl( HashFn hash, const seed_t seed, flags_t flags ) {
 
 template <typename hashtype>
 bool ZeroKeyTest( const HashInfo * hinfo, flags_t flags ) {
-    const HashFn hash   = hinfo->hashFn(g_hashEndian);
     bool         result = true;
 
     printf("[[[ Keyset 'Zeroes' Tests ]]]\n\n");
 
     const seed_t seed = hinfo->Seed(g_seed);
 
-    result &= ZeroKeyImpl<hashtype>(hash, seed, flags);
+    result &= ZeroKeyImpl<hashtype>(hinfo, seed, flags);
 
     printf("%s\n", result ? "" : g_failstr);
 

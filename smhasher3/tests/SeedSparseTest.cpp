@@ -86,8 +86,11 @@ static bool SeedSparseTestImpl( const HashInfo * hinfo, uint32_t keylen, flags_t
 
     //----------
 
-    std::vector<hashtype> hashes;
-    hashes.resize(totalkeys);
+    std::vector<hashtype> hashes( totalkeys );
+
+    if (hinfo->isDoNothing()) {
+        std::fill(hashes.begin(), hashes.end(), 0);
+    }
 
     seed_t hseed = hinfo->Seed(0, HashInfo::SEED_FORCED);
     hash(key, keylen, hseed, &hashes[cnt++]);
@@ -102,14 +105,19 @@ static bool SeedSparseTestImpl( const HashInfo * hinfo, uint32_t keylen, flags_t
         } while (iseed != 0);
     }
 
-    bool result = TestHashList(hashes).reportFlags(flags).testDeltas(1).dumpFailKeys([&]( hidx_t i ) {
-            seed_t setbits = InverseKChooseUpToK(i, 0, maxbits, bigseed ? 64 : 32);
-            seed_t iseed   = nthlex(i, setbits);
-            seed_t hseed   = hinfo->Seed(iseed, HashInfo::SEED_FORCED);
+    auto keyprint = [&]( hidx_t i ) {
+                seed_t   setbits = InverseKChooseUpToK(i, 0, maxbits, bigseed ? 64 : 32);
+                seed_t   iseed   = nthlex(i, setbits);
+                seed_t   hseed   = hinfo->Seed(iseed, HashInfo::SEED_FORCED);
+                hashtype v( 0 );
 
-            printf("0x%016" PRIx64 "\t\"%.*s\"\t", (uint64_t)iseed, keylen, key);
-            hashtype v; hash(key, keylen, hseed, &v); v.printhex(NULL);
-        });
+                printf("0x%016" PRIx64 "\t\"%.*s\"\t", (uint64_t)iseed, keylen, key);
+                hash(key, keylen, hseed, &v);
+                v.printhex(NULL);
+            };
+
+    bool result = TestHashList(hashes).reportFlags(flags).testDeltas(1).dumpFailKeys(keyprint);
+
     printf("\n");
 
     recordTestResult(result, "SeedSparse", keylen);
@@ -131,11 +139,11 @@ bool SeedSparseTest( const HashInfo * hinfo, flags_t flags ) {
 
     if (hinfo->is32BitSeed()) {
         for (const auto testkeylen: testkeylens) {
-            result &= SeedSparseTestImpl<hashtype,  7, false>(hinfo, testkeylen, flags);
+            result &= SeedSparseTestImpl<hashtype, 7, false>(hinfo, testkeylen, flags);
         }
     } else {
         for (const auto testkeylen: testkeylens) {
-            result &= SeedSparseTestImpl<hashtype,  5,  true>(hinfo, testkeylen, flags);
+            result &= SeedSparseTestImpl<hashtype, 5,  true>(hinfo, testkeylen, flags);
         }
     }
 

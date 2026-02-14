@@ -49,9 +49,12 @@ REGISTER_FAMILY(donothing,
    $.src_status = HashFamilyInfo::SRC_FROZEN
  );
 
+// Speed tests use this as a baseline hash for measuring overhead. Don't
+// mess with it too much.
 REGISTER_HASH(donothing_32,
    $.desc       = "Do-Nothing function (measure call overhead)",
    $.hash_flags =
+         FLAG_HASH_DONOTHING        |
          FLAG_HASH_MOCK,
    $.impl_flags =
          FLAG_IMPL_SANITY_FAILS     |
@@ -66,6 +69,7 @@ REGISTER_HASH(donothing_32,
 REGISTER_HASH(donothing_64,
    $.desc       = "Do-Nothing function (measure call overhead)",
    $.hash_flags =
+         FLAG_HASH_DONOTHING        |
          FLAG_HASH_MOCK,
    $.impl_flags =
          FLAG_IMPL_SANITY_FAILS     |
@@ -80,6 +84,7 @@ REGISTER_HASH(donothing_64,
 REGISTER_HASH(donothing_128,
    $.desc       = "Do-Nothing function (measure call overhead)",
    $.hash_flags =
+         FLAG_HASH_DONOTHING        |
          FLAG_HASH_MOCK,
    $.impl_flags =
          FLAG_IMPL_SANITY_FAILS     |
@@ -94,6 +99,7 @@ REGISTER_HASH(donothing_128,
 REGISTER_HASH(donothing_256,
    $.desc       = "Do-Nothing function (measure call overhead)",
    $.hash_flags =
+         FLAG_HASH_DONOTHING        |
          FLAG_HASH_MOCK,
    $.impl_flags =
          FLAG_IMPL_SANITY_FAILS     |
@@ -108,6 +114,7 @@ REGISTER_HASH(donothing_256,
 REGISTER_HASH(donothingOAAT_32,
    $.desc       = "Do-Nothing OAAT function (measure call+OAAT overhead)",
    $.hash_flags =
+         FLAG_HASH_DONOTHING        |
          FLAG_HASH_MOCK,
    $.impl_flags =
          FLAG_IMPL_SANITY_FAILS     |
@@ -123,6 +130,7 @@ REGISTER_HASH(donothingOAAT_32,
 REGISTER_HASH(donothingOAAT_64,
    $.desc       = "Do-Nothing OAAT function (measure call+OAAT overhead)",
    $.hash_flags =
+         FLAG_HASH_DONOTHING        |
          FLAG_HASH_MOCK,
    $.impl_flags =
          FLAG_IMPL_SANITY_FAILS     |
@@ -138,6 +146,7 @@ REGISTER_HASH(donothingOAAT_64,
 REGISTER_HASH(donothingOAAT_128,
    $.desc       = "Do-Nothing OAAT function (measure call+OAAT overhead)",
    $.hash_flags =
+         FLAG_HASH_DONOTHING        |
          FLAG_HASH_MOCK,
    $.impl_flags =
          FLAG_IMPL_SANITY_FAILS     |

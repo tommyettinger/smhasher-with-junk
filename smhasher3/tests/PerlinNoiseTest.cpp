@@ -74,6 +74,7 @@ static bool PerlinNoise( int Xbits, int Ybits, int inputLen, int step,
     const uint64_t xMax = (UINT64_C(1) << Xbits);
     const uint64_t yMax = (UINT64_C(1) << Ybits);
     const HashFn   hash = hinfo->hashFn(g_hashEndian);
+    hashtype       h( 0 );
 
     printf("Generating coordinates from %3i-byte keys - %" PRIu64 " keys\n", inputLen, xMax * yMax);
 
@@ -87,23 +88,32 @@ static bool PerlinNoise( int Xbits, int Ybits, int inputLen, int step,
             uint64_t xin = COND_BSWAP(x, isBE());
             memcpy(key, &xin, sizeof(xin));
 
-            hashtype h;
             hash(key, inputLen, seed, &h);
             addVCodeInput(key, inputLen);
             hashes.push_back(h);
         }
     }
 
-    bool result = TestHashList(hashes).reportFlags(flags).testDistribution(extra).
-        testDeltas(xMax).dumpFailKeys([&]( hidx_t i ) {
-                uint64_t x = i % xMax;
-                uint32_t y = i / xMax;
+    auto keyprint = [&]( hidx_t i ) {
+                uint64_t x        = i % xMax;
+                uint32_t y        = i / xMax;
 
-                ExtBlob xb(key, inputLen); memcpy(key, &x, sizeof(x));
-                printf("0x%08" PRIx32 "        \t", y); xb.printbytes(NULL); printf("\t");
                 const seed_t seed = hinfo->Seed(y, HashInfo::SEED_FORCED);
-                hashtype v; hash(key, inputLen, seed, &v); v.printhex(NULL);
-            });
+                ExtBlob      xb( key, inputLen );
+
+                memcpy(key, &x, sizeof(x));
+
+                printf("0x%08" PRIx32 "        \t", y);
+                xb.printbytes(NULL);
+                printf("\t");
+
+                hashtype v( 0 );
+                hash(key, inputLen, seed, &v);
+                v.printhex(NULL);
+            };
+
+    bool result = TestHashList(hashes).reportFlags(flags).testDistribution(extra).
+            testDeltas(xMax).dumpFailKeys(keyprint);
 
     printf("\n");
 

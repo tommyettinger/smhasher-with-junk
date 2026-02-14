@@ -110,7 +110,7 @@ static void AES_EncryptRound( const uint8_t rk8[] /*16*/, uint8_t block[16] ) {
 #endif
 }
 
-static void AES_DecryptRound( const uint8_t rk8[]  /*16*/, uint8_t block[16] ) {
+static void AES_DecryptRound( const uint8_t rk8[] /*16*/, uint8_t block[16] ) {
 #if defined(HAVE_X86_64_AES)
     AES_DecryptRound_AESNI(rk8, block);
 #elif defined(HAVE_ARM_AES)
@@ -119,6 +119,30 @@ static void AES_DecryptRound( const uint8_t rk8[]  /*16*/, uint8_t block[16] ) {
     AES_DecryptRound_PPC(rk8, block);
 #else
     AES_DecryptRound_portable(rk8, block);
+#endif
+}
+
+static void AES_EncryptRoundNoMixCol( const uint8_t rk8[] /*16*/, uint8_t block[16] ) {
+#if defined(HAVE_X86_64_AES)
+    AES_EncryptRoundNoMixCol_AESNI(rk8, block);
+#elif defined(HAVE_ARM_AES)
+    AES_EncryptRoundNoMixCol_ARM(rk8, block);
+#elif defined(HAVE_PPC_AES)
+    AES_EncryptRoundNoMixCol_PPC(rk8, block);
+#else
+    AES_EncryptRoundNoMixCol_portable(rk8, block);
+#endif
+}
+
+static void AES_DecryptRoundNoMixCol( const uint8_t rk8[] /*16*/, uint8_t block[16] ) {
+#if defined(HAVE_X86_64_AES)
+    AES_DecryptRoundNoMixCol_AESNI(rk8, block);
+#elif defined(HAVE_ARM_AES)
+    AES_DecryptRoundNoMixCol_ARM(rk8, block);
+#elif defined(HAVE_PPC_AES)
+    AES_DecryptRoundNoMixCol_PPC(rk8, block);
+#else
+    AES_DecryptRoundNoMixCol_portable(rk8, block);
 #endif
 }
 

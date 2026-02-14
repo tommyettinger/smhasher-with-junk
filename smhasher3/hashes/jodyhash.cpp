@@ -98,12 +98,12 @@ static int jody_block_hash( const uint8_t * RESTRICT data, T * hash, const size_
         element2 ^= jh_s_constant;
         element  += JODY_HASH_CONSTANT;
 
-        *hash += element;
-        *hash ^= element2;
-        *hash  = JH_ROL(*hash, JH_SHIFT2);
-        *hash += element;
+        *hash    += element;
+        *hash    ^= element2;
+        *hash     = JH_ROL(*hash, JH_SHIFT2);
+        *hash    += element;
 
-        data  += sizeof(T);
+        data     += sizeof(T);
     }
 
     /* Handle data tail (for blocks indivisible by sizeof(T)) */
@@ -145,7 +145,7 @@ static void jodyhash64( const void * in, const size_t len, const seed_t seed, vo
 
 //------------------------------------------------------------
 REGISTER_FAMILY(jodyhash,
-   $.src_url    = "https://github.com/jbruchon/jodyhash",
+   $.src_url    = "https://codeberg.org/jbruchon/jodyhash",
    $.src_status = HashFamilyInfo::SRC_STABLEISH
  );
 
@@ -180,6 +180,5 @@ REGISTER_HASH(jodyhash_64,
    $.verification_LE = 0xC1CBFA34,
    $.verification_BE = 0x93494125,
    $.hashfn_native   = jodyhash64<false>,
-   $.hashfn_bswap    = jodyhash64<true>,
-   $.badseeds        = { 0xffffffffe0c2a486 }
+   $.hashfn_bswap    = jodyhash64<true>
  );

@@ -103,7 +103,7 @@ int main(int argc, char * argv[]) {
     uint64_t r;
 
     if (usestream) {
-        RNG.reseed(seed, stream);
+        RNG.reseed({seed, stream});
     } else {
         RNG.reseed(seed);
     }
@@ -121,14 +121,14 @@ int main(int argc, char * argv[]) {
             for (unsigned i = 0; i < STRIDE; i++) {
                 WRITE_NEXT();
             }
-            RNG.reseed(seed, ++stream);
+            RNG.reseed({seed, ++stream});
             break;
         case 3:
             for (unsigned i = 0; i < STRIDE; i++) {
                 WRITE_NEXT();
             }
             if (usestream) {
-                RNG.reseed(++seed, stream);
+                RNG.reseed({++seed, stream});
             } else {
                 RNG.reseed(++seed);
             }
@@ -140,10 +140,10 @@ int main(int argc, char * argv[]) {
                     for (unsigned k = 0; k < STRIDE; k++) {
                         WRITE_NEXT();
                     }
-                    RNG.reseed(seed, ++stream);
+                    RNG.reseed({seed, ++stream});
                 }
                 stream = basestream;
-                RNG.reseed(++seed, stream);
+                RNG.reseed({++seed, stream});
             }
             stream += STRIDE;
             break;

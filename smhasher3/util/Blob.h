@@ -72,8 +72,14 @@ class Blob {
         memset(bytes + plen, 0, _bytes - plen);
     }
 
-    Blob( uint64_t x ) :
-        Blob((x = COND_BSWAP( x, isBE()), &x), sizeof(x)) {}
+    Blob( uint64_t x ) {
+        if (likely(x == 0)) {
+            memset(bytes, 0, _bytes);
+        } else {
+            x = COND_BSWAP(x, isBE());
+            Blob(&x, sizeof(x));
+        }
+    }
 
     //----------
     // unary operators
@@ -90,7 +96,7 @@ class Blob {
 
     Blob & operator = ( const uint64_t & x ) {
         const uint64_t y    = COND_BSWAP(x, isBE());
-              size_t   ylen = std::min(sizeof(y), _bytes);
+        size_t         ylen = std::min(sizeof(y), _bytes);
 
         memcpy(bytes, &y, ylen);
         memset(bytes + ylen, 0, _bytes - ylen);
@@ -103,27 +109,28 @@ class Blob {
 
     bool operator < ( const Blob & k ) const {
         size_t i = _bytes;
+
 #pragma GCC unroll 4
         while (i >= 8) {
             uint64_t a, b;
             i -= 8;
-            memcpy(&a, &bytes[i], 8)  ; a = COND_BSWAP(a, isBE());
+            memcpy(&a, &bytes  [i], 8); a = COND_BSWAP(a, isBE());
             memcpy(&b, &k.bytes[i], 8); b = COND_BSWAP(b, isBE());
-            if (a < b) { return true; }
-            if (a > b) { return false; }
+            if (likely(a < b)) { return true; }
+            if (likely(a > b)) { return false; }
         }
-        while (i >= 4) {
+        if (i >= 4) {
             uint32_t a, b;
             i -= 4;
-            memcpy(&a, &bytes[i], 4)  ; a = COND_BSWAP(a, isBE());
+            memcpy(&a, &bytes  [i], 4); a = COND_BSWAP(a, isBE());
             memcpy(&b, &k.bytes[i], 4); b = COND_BSWAP(b, isBE());
-            if (a < b) { return true; }
-            if (a > b) { return false; }
+            if (likely(a < b)) { return true; }
+            if (likely(a > b)) { return false; }
         }
         while (i >= 1) {
             i -= 1;
-            if (bytes[i] < k.bytes[i]) { return true; }
-            if (bytes[i] > k.bytes[i]) { return false; }
+            if (likely(bytes[i] < k.bytes[i])) { return true; }
+            if (likely(bytes[i] > k.bytes[i])) { return false; }
         }
         return false;
     }
@@ -184,7 +191,8 @@ class Blob {
         }
     }
 
-    FORCE_INLINE uint32_t printbytes( const char * prefix = "", size_t validbits = _bits, bool flipbits = false ) const {
+    FORCE_INLINE uint32_t printbytes( const char * prefix = "", size_t validbits = _bits,
+            bool flipbits = false ) const {
         if (flipbits) {
             return _printhex_flip<true>(prefix, validbits, bytes, _bytes);
         } else {
@@ -283,7 +291,8 @@ class Blob {
     }
 
     template <bool bytewise = false>
-    static uint32_t _printhex_flip( const char * prefix, const size_t validbits, const uint8_t * bytes, const size_t len ) {
+    static uint32_t _printhex_flip( const char * prefix, const size_t validbits,
+            const uint8_t * bytes, const size_t len ) {
         VLA_ALLOC(char, buf, 3 * len + 1);
         char * p = &buf[0];
         size_t i = len;
@@ -358,7 +367,7 @@ class Blob {
 
     static FORCE_INLINE uint32_t _highzerobits( const uint8_t * bytes, const size_t len ) {
         uint32_t zb = 0;
-        size_t i = len;
+        size_t   i  = len;
 
         while (i >= 8) {
             uint64_t a;
@@ -383,7 +392,7 @@ class Blob {
         while (i >= 1) {
             uint32_t a;
             i -= 1;
-            a = bytes[i];
+            a  = bytes[i];
             if (a != 0) {
                 zb += clz4(a);
                 return zb;
@@ -426,8 +435,7 @@ class Blob {
         _xor(out, in1, in2, len);
     }
 
-    static FORCE_INLINE void _xor( uint8_t * out, const uint8_t * in1,
-            const uint8_t * in2, size_t len ) {
+    static FORCE_INLINE void _xor( uint8_t * out, const uint8_t * in1, const uint8_t * in2, size_t len ) {
         while (len >= 8) {
             uint64_t a, b;
             len -= 8;
@@ -455,8 +463,7 @@ class Blob {
         _and(out, in1, in2, len);
     }
 
-    static FORCE_INLINE void _and( uint8_t * out, const uint8_t * in1,
-            const uint8_t * in2, size_t len ) {
+    static FORCE_INLINE void _and( uint8_t * out, const uint8_t * in1, const uint8_t * in2, size_t len ) {
         while (len >= 8) {
             uint64_t a, b;
             len -= 8;
@@ -491,6 +498,7 @@ class Blob {
     // from the "Bit Twiddling Hacks" webpage
     static FORCE_INLINE uint8_t _byterev( uint8_t b ) {
         uint32_t t = b * UINT32_C(0x0802);
+
         return ((t >> 4 & UINT32_C(0x2211)) |
                 (t      & UINT32_C(0x8844)))  * UINT32_C(0x10101) >> 12;
         // b =                           abcdefgh
@@ -520,6 +528,7 @@ class Blob {
     static void _lrot( size_t c, uint8_t * bytes, const size_t len ) {
         const size_t byteoffset = c >> 3;
         const size_t bitoffset  = c & 7;
+
         VLA_ALLOC(uint8_t, tmp, len);
 
         for (size_t i = 0; i < len; i++) {
@@ -550,6 +559,7 @@ class Blob {
 template <>
 FORCE_INLINE bool Blob<32>::operator < ( const Blob & k ) const {
     uint32_t x, y;
+
     memcpy(&x, bytes, 4);   x = COND_BSWAP(x, isBE());
     memcpy(&y, k.bytes, 4); y = COND_BSWAP(y, isBE());
     return (x < y) ? true : false;
@@ -558,6 +568,7 @@ FORCE_INLINE bool Blob<32>::operator < ( const Blob & k ) const {
 template <>
 FORCE_INLINE bool Blob<64>::operator < ( const Blob & k ) const {
     uint64_t x, y;
+
     memcpy(&x, bytes, 8);   x = COND_BSWAP(x, isBE());
     memcpy(&y, k.bytes, 8); y = COND_BSWAP(y, isBE());
     return (x < y) ? true : false;
@@ -584,6 +595,7 @@ FORCE_INLINE void Blob<64>::flipbit( size_t bit ) {
 template <>
 FORCE_INLINE uint32_t Blob<32>::getbit( size_t bit ) const {
     uint32_t v;
+
     memcpy(&v, bytes, 4);
     if (isBE()) { bit ^= 0x18; }
     return (v >> bit) & 1;
@@ -592,6 +604,7 @@ FORCE_INLINE uint32_t Blob<32>::getbit( size_t bit ) const {
 template <>
 FORCE_INLINE uint32_t Blob<64>::getbit( size_t bit ) const {
     uint64_t v;
+
     memcpy(&v, bytes, 8);
     if (isBE()) { bit ^= 0x38; }
     return (v >> bit) & 1;
@@ -600,7 +613,8 @@ FORCE_INLINE uint32_t Blob<64>::getbit( size_t bit ) const {
 template <>
 FORCE_INLINE uint32_t Blob<32>::window( size_t start, size_t count ) const {
     const uint32_t mask = (1 << count) - 1;
-    uint32_t v;
+    uint32_t       v;
+
     memcpy(&v, bytes, 4);
     v = COND_BSWAP(v, isBE());
     if (likely(start > 0)) {
@@ -612,7 +626,8 @@ FORCE_INLINE uint32_t Blob<32>::window( size_t start, size_t count ) const {
 template <>
 FORCE_INLINE uint32_t Blob<64>::window( size_t start, size_t count ) const {
     const uint32_t mask = (1 << count) - 1;
-    uint64_t v;
+    uint64_t       v;
+
     memcpy(&v, bytes, 8);
     v = COND_BSWAP(v, isBE());
     if (likely(start > 0)) {

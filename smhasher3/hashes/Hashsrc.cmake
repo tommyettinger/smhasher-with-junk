@@ -50,6 +50,7 @@ set(HASH_SRC_FILES
   hashes/rainbow.cpp
   hashes/wyhash.cpp
   hashes/aquahash.cpp
+  hashes/aesnihash-peterrk.cpp
   hashes/md5.cpp
   hashes/murmurhash3.cpp
   hashes/mx3.cpp
@@ -57,6 +58,7 @@ set(HASH_SRC_FILES
   hashes/rapidhash.cpp
   hashes/pearson.cpp
   hashes/multiply_shift.cpp
+  hashes/goodhart.cpp
   hashes/komihash.cpp
   hashes/aesnihash-majek.cpp
   hashes/tabulation.cpp
@@ -74,6 +76,7 @@ set(HASH_SRC_FILES
   hashes/donothing.cpp
   hashes/rust-fxhash.cpp
   hashes/falcon_oaat.cpp
+  hashes/tenthash.cpp
   hashes/fasthash.cpp
   hashes/pengyhash.cpp
   hashes/superfasthash.cpp
@@ -87,4 +90,11 @@ set(HASH_SRC_FILES
   hashes/witchy.cpp
   hashes/jvmstring.cpp
   hashes/chibihash.cpp
+  hashes/mulxp_hash.cpp
+  hashes/museair.cpp
+  hashes/a5hash.cpp
+  hashes/w1hash.cpp
+  hashes/xmsx.cpp
+  hashes/gxhash.cpp
+  hashes/rust-rapidhash.cpp
 )

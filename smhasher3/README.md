@@ -12,13 +12,8 @@ Test Results
 ------------
 
 If you are interested in the **[latest hash test results](results/README.md)**
-(currently from SMHasher3 `SMHasher3 beta3-c6b9cc18`), they are in the
+(currently from SMHasher3 `SMHasher3 release-`), they are in the
 `results/` directory.
-
-There are a few hashes which do not pass all the tests, but are very close
-to doing so. These are: `chaskey-12` are `MeowHash`. These failures are
-false positives. The failure thresholds have been adjusted, and these
-hashes are expected to be listed as "passing" in the next round of results.
 
 Summary
 -------
@@ -65,12 +60,17 @@ Additional significant changes include:
 Current status
 --------------
 
-As of 2023-12-12, SMHasher3 beta3 has been released.
+As of 2025-10-16, I consider SMHasher3 to have been fully released.
 
-I have hopes to release a 1.0 version sometime before the end of September
-2024. The current code should still be very useful in evaluating hashes, as
-most remaining features are either additional tests, tweaks to specific
-hashes, or quality-of-life usage enhancements.
+From this point, the plan is to have two branches: "main" and "dev". The
+main branch will have new hashes and updated hashes added to it as I am
+able. The dev branch will have those changes added to it also. Feature
+development will happen only on the dev branch, and those changes will
+occasionally get added to main, when some chunk of functionality is
+complete.
+
+There won't be explicit release versioning. Instead, the version string has
+been updated to include the commit date of the last commit.
 
 This code is compiled and run successfully on Linux x64, arm, and powerpc
 using gcc and clang quite often. Importantly, I do not have the ability to
@@ -87,7 +87,7 @@ How to build
 
 - `mkdir build`
 - `cd build`
-- `cmake ..` or `C=mycc CXX=mycxx CXXFLAGS="-foo bar" cmake ..` as needed for your system
+- `cmake ..` or `CC=mycc CXX=mycxx CXXFLAGS="-foo bar" cmake ..` as needed for your system
 - `make -j4` or `make -j4 all test`
 
 How to use
@@ -304,23 +304,27 @@ on a fast hash function (wyhash) with --extra but without BadSeed testing
 takes 1578 seconds and finds 40 failing tests, while smhasher-rurban takes
 2860 seconds and finds 2 failing tests.
 
-For beta3, or shortly thereafter, I plan on publishing some explicit data
-from performance profiling, to show the places that I think are the best to
-look for more performance gains, or at least would have the highest impact.
+In the future, I plan on publishing some explicit data from performance
+profiling, to show the places that I think are the best to look for more
+performance gains, or at least would have the highest impact.
 
-Right now, there are 3 places that already have work underway. First, I
-have more ways to improve blobsort() performance significantly, I'm pretty
-sure. Second, another contributor is working on improving the bit
-correlation histogram code (util/Histogram.h _and_ the related code in the
-BIC and SeedBIC tests). Third, a number of tests can be augmented to use
-threads. I have a number of thoughts on this issue, so please reach out if
-you decide to start on that.
+A number of additional tests could be augmented to use threads.
+
+It would also be theoretically possible to change testing to use a work
+queue and then have a thread pool of workers. However, I think that this
+would require some way of wrapping all of the `printf()` calls in the
+tests, since stdout is a global object and doesn't exist per-thread, and
+this would almost certainly require a lot more memory at runtime, since
+tests could not generally share memory structures (such as bucket counts)
+across threads. I don't like either of those things, so I'm not sure that
+thread pools are a good approach. I'd be very open to suggestions for
+working around those issues!
 
 Goals and non-goals
 -------------------
 
-The priority of SMHasher3 is to be the best test utility for hash function
-quality. Other important goals are:
+The priority of SMHasher3 is to be the best black-box test utility for hash
+function quality. Other important goals are:
 
 - Support as many platforms as practical
 - Have identical results on those platforms
@@ -337,7 +341,7 @@ quality. Other important goals are:
 SMHasher3 also does performance testing, and this is expected to be worked on and
 expanded in the future. However, performance testing fidelity will always come second
 to functional testing. The goal of the performance testing in SMHasher3 will be to
-provide effective general comparisons of hash functions, not absolute performance
+provide effective relative comparisons of hash functions, not absolute performance
 ratings or measurements.
 
 There are some other things that SMHasher3 is explicitly NOT trying to do:
@@ -356,12 +360,12 @@ forked copy of SMHasher to SMHasher3.
 Endianness support and terminology
 ----------------------------------
 
-One of the goals for SMHasher3 is full support of both big- and little-endian
-systems. Currently this is, in some sense, a little bit more than half
-complete. Every hash implementation computes results for both endiannesses,
-regardless of system endianness. Most of the testing code is not yet
-endian-independent, however, and so test results will currently vary greatly
-depending on the system.
+One of the long-term goals for SMHasher3 is full support of both big- and
+little-endian systems. Currently this is, in some sense, a little bit more
+than half complete. Every hash implementation computes results for both
+endiannesses, regardless of system endianness. Most of the testing code is
+not yet endian-independent, however, and so test results will currently vary
+greatly depending on the system.
 
 For hash authors, this represents a tiny bit of extra work, but it can be put off
 until late in hash development, and is not very difficult to add.
@@ -395,18 +399,21 @@ me know if you find something confusing.
 Hash verification codes
 -----------------------
 
-In beta2 of SMHasher3, the algorithm for computing hash verification codes is
-unchanged from the base SMHasher. Most hashes' verification codes are also unchanged,
-but a number have changed for various reasons, and some have been added or removed;
-see `Changelog.md` for specifics. This should help verify that the hash
-implementations didn't change unexpectedly when they were ported.
+Currently, the algorithm for computing hash verification codes is unchanged from
+the base SMHasher. Many hashes' verification codes are also unchanged, but a number
+have changed for various reasons, and some have been added or removed; see `Changelog.md`
+for specifics. This should help verify that the hash implementations didn't change
+unexpectedly when they were ported.
 
 Since SMHasher3 supports 64-bit seeds and the current algorithm for computing
 verification codes does not exercise even all of the low 32 seed bits, I expect that
-the algorithm will change in the near future.
+the algorithm will change in the future. There are a number of complications to that,
+and it will likely require coordination with the larger community.
 
 A stand-alone vanilla C99 program for computing hash verification codes outside of
-SMHasher3 is in `misc/hashverify.c`.
+SMHasher3 is in `misc/hashverify.c`. To the extent possible, I use this to verify that
+any hash (re-)implementation in SMHasher3 produces the same results as the published
+reference implementation.
 
 VCodes
 ------
@@ -426,7 +433,7 @@ If the `--vcode` command-line option is used, then these signatures are computed
 reported on. A final summary "verification value" is computed from these 3 component
 VCode signatures, and is reported on the last line of output. They are an easy way to
 compare complete operation across runs and/or platforms, without having to compare
-result-by-result. There is a small but noticable performance hit when this is
+result-by-result. There is a small but noticeable performance hit when this is
 enabled. If it is not enabled, then the VCode component output line is no longer
 emitted, but the final summary code is (with a value of 1 to indicate it was not
 computed), to keep output lengths consistent.
@@ -579,7 +586,7 @@ would not require any relicensing of the test code.
 
 This decision was not taken lightly, as I would prefer to keep the
 original authors' license when possible, as was done with the
-modifications made to the hash implmentations. I believe this to have
+modifications made to the hash implementations. I believe this to have
 been the least bad option to get the improvements in SMHasher3 out to
 the world.
 

@@ -191,12 +191,14 @@ class Rand {
     constexpr static unsigned  RANDS_PER_ROUND = 4;
     constexpr static unsigned  RNG_KEYS        = 5;
     constexpr static unsigned  BUFLEN = PARALLEL * RANDS_PER_ROUND;
+    static uint64_t            GLOBAL_SEED;
 
   private:
     friend void RandTest( const unsigned runs );
 
     uint64_t  rngbuf[BUFLEN];  // Always in LE byte order
-    uint64_t  xseed[RNG_KEYS]; // Threefry keys (xseed[0] is the counter)
+    uint64_t  xseed[RNG_KEYS]; // Threefry keys
+    uint64_t  counter;
     uint64_t  bufidx;          // The next rngbuf[] index to be given out
     uint64_t  rseed;           // The actual seed value
     void refill_buf( void * buf );
@@ -204,25 +206,27 @@ class Rand {
     //-----------------------------------------------------------------------------
 
     inline void update_xseed( void ) {
-        // Set key 1 to 0. Orthogonal generation mode will use key 1 for
+        // Set key 0 to 0. Orthogonal generation mode will use key 0 for
         // data storage, so it can't really be used for normal mode, and 0
-        // is as fine a constant as any other here, since keys 2-4 will
+        // is as fine a constant as any other here, since keys 1-4 will
         // definitely have a variety of bits set.
-        xseed[1] = 0;
+        xseed[0] = 0;
 
         // Init keys 2&3 from seed value. This derivation of 2 random-ish
         // 64-bit keys from 1 64-bit input is fairly arbitrary, but is also
         // aesthetically pleasing. It also leaves the low bits of both keys
         // set to 1, which is relied upon in other places.
         const uint64_t M1 = UINT64_C(0x9E3779B97F4A7C15); // phi
-        const uint64_t M2 = UINT64_C(0x6A09E667F3BCC909); // sqrt(2) - 1
+        const uint64_t M2 = UINT64_C(0x6A09E667F3BCC90B); // sqrt(2) - 1
+        const uint64_t M3 = UINT64_C(0xBB67AE8584CAA73D); // sqrt(3) - 1
 
-        xseed[2] = ((rseed             | 1) * M1);
-        xseed[3] = ((ROTR64(rseed, 32) | 1) * M2);
+        xseed[1] = ((rseed             | 1) * M1);
+        xseed[2] = ((ROTR64(rseed, 21) | 1) * M2);
+        xseed[3] = ((ROTR64(rseed, 43) | 1) * M3);
 
         // Init key 4 from the Threefish specification.
         const uint64_t K1 = UINT64_C(0x1BD11BDAA9FC1A22);
-        xseed[4] = K1 ^ xseed[2] ^ xseed[3];
+        xseed[4] = K1 ^ xseed[1] ^ xseed[2] ^ xseed[3];
     }
 
     //-----------------------------------------------------------------------------
@@ -253,36 +257,37 @@ class Rand {
     // like normal ones, so they should be used with care.
 
     inline void enable_ortho( void ) {
-        //assert(xseed[1] == 0);
-        //assert((xseed[2] & 1) == 1);
-        //assert((xseed[3] & 1) == 1);
+        verify(xseed[0] == 0);
+        verify((xseed[2] & 1) == 1);
+        verify((xseed[3] & 1) == 1);
 
-        // Set key 1 to the offset of the random value about to be given
-        // out, fixup key 4 to reflect the new key 1 value, and seek to
+        // Set key 0 to the offset of the random value about to be given
+        // out, fixup key 4 to reflect the new key 0 value, and seek to
         // offset 0, which also invalidates the cache.
         //
         // To ensure there is no overlap between these values and values
-        // generated regularly, we clear the low bits of keys 2&3. Note
-        // that this nets no effect on the correct value of key 4!
-        xseed[1]  = getoffset();
-        xseed[2] ^= 1;
-        xseed[3] ^= 1;
-        xseed[4] ^= xseed[1];
+        // generated regularly, we negate keys 2 & 3. Note that this nets
+        // no effect on the correct value of key 4! Note also that key 1 is
+        // left unchanged.
+        xseed[0] = getoffset();
+        xseed[2] = ~xseed[2];
+        xseed[3] = ~xseed[3];
+        xseed[4] = xseed[4] ^ xseed[0];
         seek(0);
     }
 
     inline void disable_ortho( uint64_t fwd = 0 ) {
-        //assert((xseed[2] & 1) == 0);
-        //assert((xseed[3] & 1) == 0);
+        verify((xseed[2] & 1) == 0);
+        verify((xseed[3] & 1) == 0);
 
-        // Restore bufidx and xseed[0] via seek(), moving the specified
-        // number of places forward, remove fixup of key 4, restore keys
-        // 2&3, and set key 1 back to 0.
-        seek(xseed[1] + fwd);
-        xseed[4] ^= xseed[1];
-        xseed[3] ^= 1;
-        xseed[2] ^= 1;
-        xseed[1]  = 0;
+        // Restore bufidx and counter via seek(), moving the specified
+        // number of places forward, remove fixup of key 4, restore keys 2
+        // & 3, and set key 0 back to 0.
+        seek(xseed[0] + fwd);
+        xseed[4] = xseed[4] ^ xseed[0];
+        xseed[3] = ~xseed[3];
+        xseed[2] = ~xseed[2];
+        xseed[0] = 0;
     }
 
     //-----------------------------------------------------------------------------
@@ -302,13 +307,15 @@ class Rand {
     //   mix(0, b) != b, in general,
     //   mix(0, 0) != 0,
     static inline uint64_t weakmix( uint64_t a, uint64_t b ) {
-        const uint64_t K = UINT64_C(0xBB67AE8584CAA73B); // sqrt(3) - 1
+        const uint64_t K = UINT64_C(0x3C6EF372FE94F82B); // sqrt(5) - 1
+
         return (3 * a) + (5 * b) + (4 * a * b) + K;
     }
 
     //-----------------------------------------------------------------------------
 
   public:
+
     Rand( uint64_t seed = 0 ) {
         reseed(seed);
     }
@@ -324,7 +331,7 @@ class Rand {
     }
 
     inline void reseed( uint64_t seed ) {
-        rseed = seed;
+        rseed = weakmix(seed, GLOBAL_SEED);
         seek(0);
         update_xseed();
     }
@@ -347,18 +354,18 @@ class Rand {
     }
 
     inline void seek( uint64_t offset ) {
-        xseed[0] = offset / RANDS_PER_ROUND;
-        bufidx   = BUFLEN + (offset % RANDS_PER_ROUND);
+        counter = offset / RANDS_PER_ROUND;
+        bufidx  = BUFLEN + (offset % RANDS_PER_ROUND);
     }
 
     inline uint64_t getoffset( void ) const {
-        return (xseed[0] * RANDS_PER_ROUND) + bufidx - BUFLEN;
+        return (counter * RANDS_PER_ROUND) + bufidx - BUFLEN;
     }
 
     //-----------------------------------------------------------------------------
 
     inline uint64_t rand_u64( void ) {
-        if (expectp(bufidx >= BUFLEN, 1.0 / BUFLEN)) {
+        if (expectp((bufidx >= BUFLEN), 1.0 / BUFLEN)) {
             refill_buf(rngbuf);
             bufidx -= BUFLEN;
         }
@@ -383,7 +390,7 @@ class Rand {
     //-----------------------------------------------------------------------------
 
     bool operator == ( const Rand & k ) const {
-        if (memcmp(&xseed[1], &k.xseed[1], sizeof(xseed) - sizeof(xseed[0])) != 0) {
+        if (memcmp(&xseed[0], &k.xseed[0], sizeof(xseed)) != 0) {
             return false;
         }
         if (rseed != k.rseed) {

@@ -36,6 +36,7 @@ static constexpr ssize_t SMALLSORT_CUTOFF = 1024;
 template <bool track_idxs, typename T>
 static void movemin( T * begin, T * end, hidx_t * idxs ) {
     T * min = begin;
+
     for (T * i = begin + 1; i != end; i++) {
         if (*i < *min) {
             min = i;
@@ -52,28 +53,55 @@ static void movemin( T * begin, T * end, hidx_t * idxs ) {
 // via movemin(), or with the magic knowledge (that comes from sorting a
 // larger array by sections) there are more elements before begin that are
 // smaller than any element in [begin, end).
-template <bool unguarded, bool track_idxs, typename T>
-static void insertionsort( T * begin, T * end, hidx_t * idxs ) {
-    hidx_t v;
+//
+// When this is called with unlimited == false, we estimate the maximum
+// number of moves that should be seen by the time we're halfway done (as a
+// function of _work_, not elements), if insertionsort is likely to be
+// faster than radixsort. If we hit this number and we're not halfway done,
+// give up so the caller can fallback to radixsort (or possibly some other
+// sort). This number depends on the length of the type being sorted, and
+// was determined empirically.
+//
+// Since work for non-trivial cases of insertionsort goes as the square of
+// the number of elements, half the work should be done when sqrt(1/2) =~
+// .7071 of the elements are completed.
+template <bool unlimited, bool unguarded, bool track_idxs, typename T>
+static bool insertionsort( T * begin, T * end, hidx_t * idxs ) {
+    const T * const  midpoint = begin  + (end - begin) * 7 / 10;
+    const size_t     movlimit = T::len * (end - begin) / 2;
+    size_t           movcount = 0;
+    hidx_t           v;
+
     for (T * i = begin + 1; i != end; i++) {
         T * node = i;
         T * next = i - 1;
         T   val  = std::move(*node);
         if (track_idxs) {
-            v    = std::move(*(idxs + (node - begin)));
+            v = std::move(*(idxs + (node - begin)));
         }
         while ((unguarded || (next >= begin)) && (val < *next)) {
             if (track_idxs) {
                 *(idxs + (node - begin)) = std::move(*(idxs + (next - begin)));
             }
             *node = std::move(*next);
-            node = next--;
+            node  = next--;
+            movcount++;
         }
         if (track_idxs) {
             *(idxs + (node - begin)) = std::move(v);
         }
         *node = std::move(val);
+        if (!unlimited) {
+            if (unlikely(movcount > movlimit)) {
+                if (i < midpoint) {
+                    return false;
+                }
+                movcount = 0;
+            }
+        }
     }
+
+    return true;
 }
 
 // Sort entry point for small blocks of items, where "small" is defined via
@@ -89,7 +117,7 @@ static void smallsort( T * begin, T * end, hidx_t * idxs, bool guarded = true ) 
     if (guarded) {
         movemin<track_idxs>(begin++, end, idxs++);
     }
-    insertionsort<true, track_idxs>(begin, end, idxs);
+    insertionsort<true, true, track_idxs>(begin, end, idxs);
 }
 
 //-----------------------------------------------------------------------------
@@ -99,29 +127,30 @@ static const uint32_t RADIX_MASK = RADIX_SIZE - 1;
 
 template <bool track_idxs, typename T>
 static void radixsort( T * begin, T * end, hidx_t * idxs ) {
-    const uint32_t RADIX_LEVELS = T::len;
-    const size_t   count        = end - begin;
+    constexpr uint32_t RADIX_LEVELS = T::len;
+    const size_t       count        = end - begin;
 
     uint32_t freqs[RADIX_SIZE][RADIX_LEVELS] = {};
-    T *      ptr = begin;
+    T *      last = begin + count - 1;
 
     // Record byte frequencies in each position over all items except
     // the last one.
-    assume(begin <= (end - SMALLSORT_CUTOFF));
-    do {
+    assume(begin < last);
+    for (T * ptr = begin; ptr < last; ptr++) {
         prefetch(ptr + 64);
         for (uint32_t pass = 0; pass < RADIX_LEVELS; pass++) {
             uint8_t value = (*ptr)[pass];
             ++freqs[value][pass];
         }
-    } while (++ptr < (end - 1));
+    }
     // Process the last item separately, so that we can record which
     // passes (if any) would do no reordering of items, and which can
     // therefore be skipped entirely.
     uint32_t trivial_passes = 0;
+#pragma GCC unroll 1
     for (uint32_t pass = 0; pass < RADIX_LEVELS; pass++) {
-        uint8_t value = (*ptr)[pass];
-        if (++freqs[value][pass] == count) {
+        uint8_t value = (*last)[pass];
+        if (unlikely(++freqs[value][pass] == count)) {
             trivial_passes |= 1UL << pass;
         }
     }
@@ -136,7 +165,7 @@ static void radixsort( T * begin, T * end, hidx_t * idxs ) {
 
     for (uint32_t pass = 0; pass < RADIX_LEVELS; pass++) {
         // If this pass would do nothing, just skip it.
-        if (trivial_passes & (1UL << pass)) {
+        if (unlikely(trivial_passes & (1UL << pass))) {
             continue;
         }
 
@@ -145,12 +174,14 @@ static void radixsort( T * begin, T * end, hidx_t * idxs ) {
         // way all the entries end up contiguous with no gaps.
         T * queue_ptrs[RADIX_SIZE];
         T * next = to;
+#pragma GCC unroll 8
         for (size_t i = 0; i < RADIX_SIZE; i++) {
             queue_ptrs[i] = next;
             next += freqs[i][pass];
         }
 
         // Copy each element into its queue based on the current byte.
+#pragma GCC unroll 4
         for (size_t i = 0; i < count; i++) {
             uint8_t index = from[i][pass];
             if (track_idxs) {
@@ -172,7 +203,8 @@ static void radixsort( T * begin, T * end, hidx_t * idxs ) {
     // Because the swap always happens in the above loop, the "from"
     // area has the sorted payload. If that's not the original array,
     // then do a final copy.
-    if (from != begin) {
+    if (unlikely(from != begin)) {
+        assume(count >= SMALLSORT_CUTOFF);
         if (track_idxs) {
             std::copy(idxfrom, idxfrom + count, idxs);
         }
@@ -204,29 +236,35 @@ static void flagsort( T * begin, T * end, hidx_t * idxs, T * base, int digit ) {
     } while (++ptr < (end - 1));
     // As in radix sort, if this pass would do no rearrangement, then
     // there's no need to iterate over every item. If there are no more
-    // passes, then we're just done. Otherwise, since this case is only
-    // likely to hit in degenerate cases (e.g. donothing64), just devolve
-    // into radixsort since that performs better for those. smallsort()
-    // isn't used here because these blocks must be large.
+    // passes, then we're just done. Otherwise, hitting this condition in
+    // real-world data is a little suspicious. This is only likely to hit
+    // in oddball cases.
     //
-    // Ideally, this would fallback to insertionsort(), because it's
-    // significantly better on average, but that has dreadful performance
-    // on lists of different values which have identical prefixes. Some bad
-    // hashes (like FNV variants) can generate those. To use
-    // insertionsort(), we might need to do something introsort-like and
-    // detect when it is starting to take too long, and then
-    // fall-further-back to radixsort().
+    // Currently, if this case is hit then we first try devolving into
+    // insertionsort with a heuristic maximum number of item movements. In
+    // cases where every item is identical (e.g. donothing128), or where
+    // the items are nearly sorted, or where there are not too many items,
+    // insertionsort will have enough leeway to finish sorting this
+    // section. That won't be true in the more degenerate cases, because
+    // insertionsort has dreadful worst-case performance, and so we'll
+    // further fallback to radixsort.
+    //
+    // smallsort() isn't used here because these blocks must be large.
     if (unlikely(++freqs[(*ptr)[digit]] == count)) {
         if (digit != 0) {
             assume((end - begin) > SMALLSORT_CUTOFF);
-            radixsort<track_idxs>(begin, end, idxs);
-#if SOMEDAY_MAYBE
+            // Start with a limited version of insertionsort
             if (begin == base) {
-                insertionsort<false, track_idxs>(begin, end, idxs);
+                if (insertionsort<false, false, track_idxs>(begin, end, idxs)) {
+                    return;
+                }
             } else {
-                insertionsort<true, track_idxs>(begin, end, idxs);
+                if (insertionsort<false, true, track_idxs>(begin, end, idxs)) {
+                    return;
+                }
             }
-#endif
+            // If that takes too much time, fallback further to radixsort
+            radixsort<track_idxs>(begin, end, idxs);
         }
         return;
     }
@@ -270,7 +308,7 @@ static void flagsort( T * begin, T * end, hidx_t * idxs, T * base, int digit ) {
     // smallsort if there are only a few entries in the block.
     ptr = begin;
     for (size_t i = 0; i < RADIX_SIZE; i++) {
-        if (expectp(freqs[i] > SMALLSORT_CUTOFF, 0.00390611)) {
+        if (expectp((freqs[i] > SMALLSORT_CUTOFF), 0.00390611)) {
             flagsort<track_idxs>(ptr, ptr + freqs[i], idxs, base, digit - 1);
         } else if (expectp((freqs[i] > 1), 0.3847)) {
             smallsort<track_idxs>(ptr, ptr + freqs[i], idxs, (ptr == base));
@@ -293,8 +331,8 @@ template <bool track_idxs = true, class Iter>
 static void blobsort( Iter iter_begin, Iter iter_end, std::vector<hidx_t> & idxvec ) {
     typedef typename std::iterator_traits<Iter>::value_type T;
     const size_t count = iter_end - iter_begin;
-    T * begin = &(*iter_begin);
-    T * end   = &(*iter_end  );
+    T *          begin = &(*iter_begin);
+    T *          end   = &(*iter_end);
 
     if (track_idxs) {
         if (idxvec.size() != count) {
@@ -304,7 +342,7 @@ static void blobsort( Iter iter_begin, Iter iter_end, std::vector<hidx_t> & idxv
     }
 
     hidx_t * idxs = track_idxs ? &(*idxvec.begin()) : NULL;
-    if (count <= SMALLSORT_CUTOFF) {
+    if (unlikely(count <= SMALLSORT_CUTOFF)) {
         if (count <= 1) {
             return;
         }
@@ -319,6 +357,7 @@ static void blobsort( Iter iter_begin, Iter iter_end, std::vector<hidx_t> & idxv
 template <class Iter>
 static void blobsort( Iter iter_begin, Iter iter_end ) {
     std::vector<hidx_t> dummy;
+
     blobsort<false>(iter_begin, iter_end, dummy);
 }
 

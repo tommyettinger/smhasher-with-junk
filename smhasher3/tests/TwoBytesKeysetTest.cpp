@@ -85,9 +85,9 @@ static void TwoBytesLenKeygen( HashFn hash, const seed_t seed, size_t keylen, st
     memset(&key[0], 0, keylen);
     hashes.reserve(keycount);
 
+    hashtype h( 0 );
     for (size_t byteA = 0; byteA < keylen; byteA++) {
         for (unsigned valA = 1; valA <= 255; valA++) {
-            hashtype h;
             key[byteA] = (uint8_t)valA;
             hash(&key[0], keylen, seed, &h);
             addVCodeInput(&key[0], keylen);
@@ -107,7 +107,6 @@ static void TwoBytesLenKeygen( HashFn hash, const seed_t seed, size_t keylen, st
             for (unsigned valA = 1; valA <= 255; valA++) {
                 key[byteA] = (uint8_t)valA;
                 for (unsigned valB = 1; valB <= 255; valB++) {
-                    hashtype h;
                     key[byteB] = (uint8_t)valB;
                     hash(&key[0], keylen, seed, &h);
                     addVCodeInput(&key[0], keylen);
@@ -126,27 +125,35 @@ static bool TwoBytesTestLen( HashFn hash, const seed_t seed, size_t keylen, flag
 
     TwoBytesLenKeygen(hash, seed, keylen, hashes);
 
+    auto keyprint = [&]( hidx_t i ) {
+                VLA_ALLOC(uint8_t, key, keylen);
+                memset(&key[0], 0, keylen);
+
+                if (i < (keylen * 255)) {
+                    uint8_t val = (i % 255) + 1;
+                    key[i / 255] = val;
+                    printf("0x%016" PRIx64 "\t%4zd zeroes except key[%4d] = 0x%02x                  \t",
+                            g_seed, keylen, i / 255, val);
+                } else {
+                    i -= keylen * 255;
+                    uint8_t  valB = (i % 255) + 1; i /= 255;
+                    uint8_t  valA = (i % 255) + 1; i /= 255;
+                    uint32_t posA, posB;
+                    GetDoubleLoopIndices(keylen, i, posA, posB);
+                    key[posA] = valA;
+                    key[posB] = valB;
+                    printf("0x%016" PRIx64 "\t%4zd zeroes except key[%4d] = 0x%02x, key[%4d] = 0x%02x\t",
+                            g_seed, keylen, posA, valA, posB, valB);
+                }
+
+                hashtype v( 0 );
+                hash(&key[0], keylen, seed, &v);
+                v.printhex(NULL);
+            };
+
     bool result = TestHashList(hashes).reportFlags(flags).testDeltas(1).
-        testDistribution(extra).dumpFailKeys([&]( hidx_t i ) {
-            VLA_ALLOC(uint8_t, key, keylen); memset(&key[0], 0, keylen);
-            if (i < (keylen * 255)) {
-                uint8_t val = (i % 255) + 1;
-                key[i / 255] = val;
-                printf("0x%016" PRIx64 "\t%4zd zeroes except key[%4d] = 0x%02x                  \t",
-                        g_seed, keylen, i / 255, val);
-            } else {
-                i -= keylen * 255;
-                uint8_t valB = (i % 255) + 1; i /= 255;
-                uint8_t valA = (i % 255) + 1; i /= 255;
-                uint32_t posA, posB;
-                GetDoubleLoopIndices(keylen, i, posA, posB);
-                key[posA] = valA;
-                key[posB] = valB;
-                printf("0x%016" PRIx64 "\t%4zd zeroes except key[%4d] = 0x%02x, key[%4d] = 0x%02x\t",
-                        g_seed, keylen, posA, valA, posB, valB);
-            }
-            hashtype v; hash(&key[0], keylen, seed, &v); v.printhex(NULL);
-        });
+            testDistribution(extra).dumpFailKeys(keyprint);
+
     printf("\n");
 
     recordTestResult(result, "TwoBytes", keylen);
@@ -180,10 +187,11 @@ static void TwoBytesUpToLenKeygen( HashFn hash, const seed_t seed, size_t maxlen
     VLA_ALLOC(uint8_t, key, maxlen);
     memset(&key[0], 0, maxlen);
     hashes.reserve(keycount);
+
+    hashtype h( 0 );
     for (size_t keylen = 2; keylen <= maxlen; keylen++) {
         for (size_t byteA = 0; byteA < keylen; byteA++) {
             for (unsigned valA = 1; valA <= 255; valA++) {
-                hashtype h;
                 key[byteA] = (uint8_t)valA;
                 hash(&key[0], keylen, seed, &h);
                 addVCodeInput(&key[0], keylen);
@@ -201,7 +209,6 @@ static void TwoBytesUpToLenKeygen( HashFn hash, const seed_t seed, size_t maxlen
                 for (unsigned valA = 1; valA <= 255; valA++) {
                     key[byteA] = (uint8_t)valA;
                     for (unsigned valB = 1; valB <= 255; valB++) {
-                        hashtype h;
                         key[byteB] = (uint8_t)valB;
                         hash(&key[0], keylen, seed, &h);
                         addVCodeInput(&key[0], keylen);
@@ -221,33 +228,42 @@ static bool TwoBytesTestUpToLen( HashFn hash, const seed_t seed, size_t maxlen, 
 
     TwoBytesUpToLenKeygen(hash, seed, maxlen, hashes);
 
+    auto keyprint = [&]( hidx_t i ) {
+                const uint32_t keylencnt = Sum1toN(maxlen) - 1;
+                uint32_t       keylen;
+
+                VLA_ALLOC(uint8_t, key, maxlen);
+                memset(&key[0], 0, maxlen);
+
+                if (i < (keylencnt * 255)) {
+                    // One non-zero byte
+                    uint8_t val = (i % 255) + 1;    i /= 255;
+                    // Keylens start at 2, not 1, so there's some off-by-1
+                    keylen = InverseSum1toN(i + 1); i -= Sum1toN(keylen) - 1; keylen++;
+                    key[i] = val;
+                    printf("0x%016" PRIx64 "\t%4d zeroes except key[%4d] = 0x%02x                  \t",
+                            g_seed, keylen, i, val);
+                } else {
+                    // Two non-zero bytes
+                    i -= keylencnt * 255;
+                    uint8_t valB = (i % 255) + 1; i /= 255;
+                    uint8_t valA = (i % 255) + 1; i /= 255;
+                    keylen = InverseNChooseUpToK(i, 2, maxlen, 2);
+                    uint32_t posA, posB;
+                    GetDoubleLoopIndices(keylen, i, posA, posB);
+                    key[posA] = valA;
+                    key[posB] = valB;
+                    printf("0x%016" PRIx64 "\t%4d zeroes except key[%4d] = 0x%02x, key[%4d] = 0x%02x\t",
+                            g_seed, keylen, posA, valA, posB, valB);
+                }
+
+                hashtype v( 0 );
+                hash(&key[0], keylen, seed, &v);
+                v.printhex(NULL);
+            };
+
     bool result = TestHashList(hashes).reportFlags(flags).testDeltas(1).
-        testDistribution(extra).dumpFailKeys([&]( hidx_t i ) {
-            uint32_t keylen; VLA_ALLOC(uint8_t, key, maxlen); memset(&key[0], 0, maxlen);
-            const uint32_t keylencnt = Sum1toN(maxlen) - 1;
-            if (i < (keylencnt * 255)) {
-                // One non-zero byte
-                uint8_t val = (i % 255) + 1;    i /= 255;
-                // Keylens start at 2, not 1, so there's some off-by-1
-                keylen = InverseSum1toN(i + 1); i -= Sum1toN(keylen) - 1; keylen++;
-                key[i] = val;
-                printf("0x%016" PRIx64 "\t%4d zeroes except key[%4d] = 0x%02x                  \t",
-                        g_seed, keylen, i, val);
-            } else {
-                // Two non-zero bytes
-                i -= keylencnt * 255;
-                uint8_t valB = (i % 255) + 1; i /= 255;
-                uint8_t valA = (i % 255) + 1; i /= 255;
-                keylen = InverseNChooseUpToK(i, 2, maxlen, 2);
-                uint32_t posA, posB;
-                GetDoubleLoopIndices(keylen, i, posA, posB);
-                key[posA] = valA;
-                key[posB] = valB;
-                printf("0x%016" PRIx64 "\t%4d zeroes except key[%4d] = 0x%02x, key[%4d] = 0x%02x\t",
-                        g_seed, keylen, posA, valA, posB, valB);
-            }
-            hashtype v; hash(&key[0], keylen, seed, &v); v.printhex(NULL);
-        });
+            testDistribution(extra).dumpFailKeys(keyprint);
     printf("\n");
 
     recordTestResult(result, "TwoBytes", maxlen);

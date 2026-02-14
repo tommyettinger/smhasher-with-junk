@@ -34,12 +34,12 @@ static inline void AES_Encrypt_PPC( const uint8_t rk8[] /*16*(Nr + 1)*/, const u
     vec_vsx_st((__vector unsigned char)block, 0, ct);
 }
 
-// This is surely not the best way to do this?!? But doing things the
+// XXX This is surely not the best way to do this?!? But doing things the
 // expected way (just passing the keys in to vec_decrypt()) does not
 // produce the correct results.
 template <int Nr>
 static inline void AES_Decrypt_PPC( const uint8_t rk8[] /*16*(Nr + 1)*/, const uint8_t ct[16], uint8_t pt[16] ) {
-    vec_t zero = { 0 };
+    vec_t zero  = { 0 };
     vec_t block = (vec_t)vec_vsx_ld(0, ct);
 
     block = vec_xor(block, (vec_t)vec_vsx_ld(0, rk8));
@@ -64,9 +64,25 @@ static inline void AES_EncryptRound_PPC( const uint8_t rk8[], uint8_t block[16] 
 
 static inline void AES_DecryptRound_PPC( const uint8_t rk8[], uint8_t block[16] ) {
     vec_t zero = { 0 };
-    vec_t tmp = (vec_t)vec_vsx_ld(0, block);
+    vec_t tmp  = (vec_t)vec_vsx_ld(0, block);
 
     tmp = vec_decrypt(tmp, zero);
+    tmp = vec_xor(tmp, (vec_t)vec_vsx_ld(0, rk8));
+    vec_vsx_st((__vector unsigned char)tmp, 0, block);
+}
+
+static inline void AES_EncryptRoundNoMixCol_PPC( const uint8_t rk8[], uint8_t block[16] ) {
+    vec_t tmp = (vec_t)vec_vsx_ld(0, block);
+
+    tmp = vec_encryptlast(tmp, (vec_t)vec_vsx_ld(0, rk8));
+    vec_vsx_st((__vector unsigned char)tmp, 0, block);
+}
+
+static inline void AES_DecryptRoundNoMixCol_PPC( const uint8_t rk8[], uint8_t block[16] ) {
+    vec_t zero = { 0 };
+    vec_t tmp  = (vec_t)vec_vsx_ld(0, block);
+
+    tmp = vec_decryptlast(tmp, zero);
     tmp = vec_xor(tmp, (vec_t)vec_vsx_ld(0, rk8));
     vec_vsx_st((__vector unsigned char)tmp, 0, block);
 }

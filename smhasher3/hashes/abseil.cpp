@@ -24,8 +24,8 @@
 //------------------------------------------------------------
 // Import the existing CityHash implementations
 namespace CityHash {
-    #define IMPORT_CITY
-    #include "cityhash.cpp"
+  #define IMPORT_CITY
+  #include "cityhash.cpp"
 }
 
 //------------------------------------------------------------
@@ -75,13 +75,66 @@ namespace CityHash {
 // Any random values are fine. These values are just digits from the
 // decimal part of pi.
 // https://en.wikipedia.org/wiki/Nothing-up-my-sleeve_number
-static constexpr uint64_t kHashSalt[5] = {
+static constexpr uint64_t kStaticRandomData[5] = {
     UINT64_C(0x243f6a8885a308d3), UINT64_C(0x13198a2e03707344),
     UINT64_C(0xa4093822299f31d0), UINT64_C(0x082efa98ec4e6c89),
     UINT64_C(0x452821e638d01377),
 };
 
+// The same table, but with byte-swapped items. This will match the
+// contents of the real kStaticRandomData[] array on opposite-endian
+// platforms, so that we can compute PrecombineLengthMix() for each
+// endianness, regardless of native endianness. That is the only place this
+// array is used at the byte-level; word-level access never needs this
+// version of the table.
+static constexpr uint64_t kStaticRandomDataBSWP[5] = {
+    UINT64_C(0xd308a385886a3f24), UINT64_C(0x447370032e8a1913),
+    UINT64_C(0xd0319f29223809a4), UINT64_C(0x896c4eec98fa2e08),
+    UINT64_C(0x7713d038e6212845),
+};
+
+static constexpr uint64_t kMul = UINT64_C(0x79d5f9e0de1e8cf5);
+
 //------------------------------------------------------------
+// Chunksize for AbslHashValue()
+
+static constexpr size_t PiecewiseChunkSize() { return 1024; }
+
+//------------------------------------------------------------
+// Common data reading routines
+
+template <bool bswap>
+static std::pair<uint64_t, uint64_t> Read9To16( const uint8_t * p, const size_t len ) {
+    uint64_t low_mem  = GET_U64<bswap>(p          , 0);
+    uint64_t high_mem = GET_U64<bswap>(p + len - 8, 0);
+
+    return { low_mem, high_mem };
+}
+
+template <bool bswap>
+static uint64_t Read4To8( const uint8_t * p, size_t len ) {
+    uint32_t low_mem  = GET_U32<bswap>(p          , 0);
+    uint32_t high_mem = GET_U32<bswap>(p + len - 4, 0);
+
+    return (static_cast<uint64_t>(low_mem) << 32) | high_mem;
+}
+
+static uint32_t Read1To3( const uint8_t * p, size_t len ) {
+    // The trick used by this implementation is to avoid branches if possible.
+    uint32_t mem0 = p[0];
+    uint32_t mem1 = p[len / 2];
+    uint32_t mem2 = p[len - 1];
+
+    return (mem0 << 16) | mem2 | (mem1 << 8);
+}
+
+template <bool bswap>
+static uint64_t Read8( const uint8_t * p ) {
+    return GET_U64<bswap>(p, 0);
+}
+
+//------------------------------------------------------------
+// Some common hashing routines
 
 static uint64_t Mix( uint64_t v0, uint64_t v1 ) {
     uint64_t rlo, rhi;
@@ -90,175 +143,37 @@ static uint64_t Mix( uint64_t v0, uint64_t v1 ) {
     return rlo ^ rhi;
 }
 
-static FORCE_INLINE uint64_t Mix32( uint64_t state, uint64_t v ) {
-    const uint64_t kMul = UINT64_C(0xcc9e2d51);
-    uint64_t m = state + v;
-    m *= kMul;
-    return static_cast<uint64_t>(m ^ (m >> (sizeof(m) * 8 / 2)));
+static FORCE_INLINE uint64_t CombineRawImpl( uint64_t state, uint64_t value ) {
+    return Mix(state ^ value, kMul);
 }
-
-static FORCE_INLINE uint64_t Mix64( uint64_t state, uint64_t v ) {
-    // We do the addition in 64-bit space to make sure the 128-bit
-    // multiplication is fast. If we were to do it as 128 bits, then
-    // the compiler has to assume that the high word is non-zero and
-    // needs to perform 2 multiplications instead of one.
-    const uint64_t kMul = UINT64_C(0x9ddfea08eb382d69);
-    uint64_t mlo, mhi;
-    MathMult::mult64_128(mlo, mhi, state + v, kMul);
-    return mlo ^ mhi;
-}
-
-//------------------------------------------------------------
-// Chunksize for AbslHashValue()
-
-static constexpr size_t PiecewiseChunkSize() { return 1024; }
-
-//------------------------------------------------------------
 
 template <bool bswap>
-static void LowLevelHash( const void * in, const size_t starting_length, const seed_t seed, void * out ) {
-    // Prefetch the cacheline that data resides in.
-    prefetch(in);
+static inline uint64_t PrecombineLengthMix( uint64_t state, size_t len ) {
+    assume(len + sizeof(uint64_t) <= sizeof(kStaticRandomData));
+    uint64_t data;
 
-    const uint8_t * ptr = static_cast<const uint8_t *>(in             );
-    uint64_t        len = static_cast<uint64_t       >(starting_length);
-    uint64_t        current_state = seed ^ kHashSalt[0];
-
-    if (len > 64) {
-        // If we have more than 64 bytes, we're going to handle chunks of 64
-        // bytes at a time. We're going to build up two separate hash states
-        // which we will then hash together.
-        uint64_t duplicated_state = current_state;
-
-        do {
-            // Always prefetch the next cacheline.
-            prefetch(ptr + ABSL_CACHELINE_SIZE);
-
-            uint64_t a   = GET_U64<bswap>(ptr,  0);
-            uint64_t b   = GET_U64<bswap>(ptr,  8);
-            uint64_t c   = GET_U64<bswap>(ptr, 16);
-            uint64_t d   = GET_U64<bswap>(ptr, 24);
-            uint64_t e   = GET_U64<bswap>(ptr, 32);
-            uint64_t f   = GET_U64<bswap>(ptr, 40);
-            uint64_t g   = GET_U64<bswap>(ptr, 48);
-            uint64_t h   = GET_U64<bswap>(ptr, 56);
-
-            uint64_t cs0 = Mix(a ^ kHashSalt[1], b ^ current_state);
-            uint64_t cs1 = Mix(c ^ kHashSalt[2], d ^ current_state);
-            current_state = (cs0 ^ cs1);
-
-            uint64_t ds0 = Mix(e ^ kHashSalt[3], f ^ duplicated_state);
-            uint64_t ds1 = Mix(g ^ kHashSalt[4], h ^ duplicated_state);
-            duplicated_state = (ds0 ^ ds1);
-
-            ptr += 64;
-            len -= 64;
-        } while (len > 64);
-
-        current_state = current_state ^ duplicated_state;
+    if (isLE()) {
+        data = GET_U64<bswap>((const uint8_t *)(&kStaticRandomData[0]), len);
+    } else {
+        data = GET_U64<bswap>((const uint8_t *)(&kStaticRandomDataBSWP[0]), len);
     }
+    return state ^ data;
+}
 
-    // We now have a data `ptr` with at most 64 bytes and the current state
-    // of the hashing state machine stored in current_state.
-    while (len > 16) {
-        uint64_t a = GET_U64<bswap>(ptr, 0);
-        uint64_t b = GET_U64<bswap>(ptr, 8);
+template <bool bswap>
+static FORCE_INLINE uint64_t CombineSmallContiguousImpl( uint64_t state, const uint8_t * first, size_t len ) {
+    uint64_t v;
 
-        current_state = Mix(a ^ kHashSalt[1], b ^ current_state);
-
-        ptr += 16;
-        len -= 16;
-    }
-
-    // We now have a data `ptr` with at most 16 bytes.
-    uint64_t a = 0;
-    uint64_t b = 0;
-    if (len > 8) {
-        // When we have at least 9 and at most 16 bytes, set A to the first 64
-        // bits of the input and B to the last 64 bits of the input. Yes, they will
-        // overlap in the middle if we are working with less than the full 16
-        // bytes.
-        a = GET_U64<bswap>(ptr, 0);
-        b = GET_U64<bswap>(ptr, len - 8);
-    } else if (len > 3) {
-        // If we have at least 4 and at most 8 bytes, set A to the first 32
-        // bits and B to the last 32 bits.
-        a = GET_U32<bswap>(ptr, 0);
-        b = GET_U32<bswap>(ptr, len - 4);
+    assume(len <= 8);
+    if (len >= 4) {
+        v = Read4To8<bswap>(first, len);
     } else if (len > 0) {
-        // If we have at least 1 and at most 3 bytes, read all of the provided
-        // bits into A, with some adjustments.
-        a = static_cast<uint64_t>((ptr[0] << 16) | (ptr[len >> 1] << 8) | ptr[len - 1]);
-        b = 0;
+        v = Read1To3(first, len);
     } else {
-        a = 0;
-        b = 0;
+        // Empty string must modify the state.
+        v = 0x57;
     }
-
-    uint64_t w = Mix(a ^ kHashSalt[1], b ^ current_state);
-    uint64_t z = kHashSalt[1] ^ starting_length;
-    uint64_t h = Mix(w, z);
-
-    PUT_U64<bswap>(h, (uint8_t *)out, 0);
-}
-
-//------------------------------------------------------------
-
-template <bool bswap>
-static std::pair<uint64_t, uint64_t> Read9To16( const uint8_t * p, const size_t len ) {
-    uint64_t low_mem  = GET_U64<bswap>(p,           0);
-    uint64_t high_mem = GET_U64<bswap>(p + len - 8, 0);
-    uint64_t most_significant, least_significant;
-
-    if (isLE() ^ bswap) {
-        most_significant  = high_mem;
-        least_significant = low_mem;
-    } else {
-        most_significant  = low_mem;
-        least_significant = high_mem;
-    }
-
-    return {least_significant, most_significant};
-}
-
-template <bool bswap>
-static uint64_t Read4To8( const uint8_t * p, size_t len ) {
-    uint32_t low_mem  = GET_U32<bswap>(p,           0);
-    uint32_t high_mem = GET_U32<bswap>(p + len - 4, 0);
-    uint32_t most_significant, least_significant;
-
-    if (isLE() ^ bswap) {
-        most_significant  = high_mem;
-        least_significant = low_mem;
-    } else {
-        most_significant  = low_mem;
-        least_significant = high_mem;
-    }
-
-    return (static_cast<uint64_t>(most_significant) << (len - 4) * 8) | least_significant;
-}
-
-template <bool bswap>
-static uint32_t Read1To3( const uint8_t * p, size_t len ) {
-    // The trick used by this implementation is to avoid branches if possible.
-    uint8_t mem0 = p[0];
-    uint8_t mem1 = p[len / 2];
-    uint8_t mem2 = p[len - 1];
-    uint8_t significant0, significant1, significant2;
-
-    if (isLE() ^ bswap) {
-        significant2 = mem2;
-        significant1 = mem1;
-        significant0 = mem0;
-    } else {
-        significant2 = mem0;
-        significant1 = len == 2 ? mem0 : mem1;
-        significant0 = mem2;
-    }
-
-    return static_cast<uint32_t>(significant0                      |
-                                 (significant1 << (len / 2 * 8))   |
-                                 (significant2 << ((len - 1) * 8)));
+    return CombineRawImpl(state, v);
 }
 
 //------------------------------------------------------------
@@ -273,48 +188,52 @@ static uint32_t CityHash32( const uint8_t * s, const size_t len ) {
 }
 
 template <bool bswap>
-static uint64_t CombineLargeContiguousImpl32( uint64_t state, const uint8_t * first, size_t len ) {
+static FORCE_INLINE uint64_t HashBlockOn32Bit( uint64_t state, const uint8_t * data, size_t len ) {
+    // TODO(b/417141985): expose and use CityHash32WithSeed.
+    // Note: we can't use PrecombineLengthMix here because len can be up to 1024.
+    return CombineRawImpl(state + len, CityHash32<bswap>(data, len));
+}
+
+template <bool bswap>
+static NEVER_INLINE uint64_t SplitAndCombineOn32Bit( uint64_t state, const uint8_t * first, size_t len ) {
     while (len >= PiecewiseChunkSize()) {
-        if (isLE()) {
-            state = Mix32(state, CityHash32<false>(first, PiecewiseChunkSize()));
-        } else {
-            state = Mix32(state, CityHash32<true>(first, PiecewiseChunkSize()));
-        }
-        len -= PiecewiseChunkSize();
+        state  = HashBlockOn32Bit<bswap>(state, first, PiecewiseChunkSize());
+        len   -= PiecewiseChunkSize();
         first += PiecewiseChunkSize();
+    }
+    // Do not call CombineContiguousImpl for empty range since it is
+    // modifying state.
+    if (len == 0) {
+        return state;
     }
     // Handle the remainder.
     return CombineContiguousImpl32<bswap>(state, first, len);
 }
 
 template <bool bswap>
-static inline uint64_t CombineContiguousImpl32( uint64_t state, const uint8_t * first, const size_t len ) {
-    // For large values we use CityHash, for small ones we just use a
-    // multiplicative hash.
-    uint64_t v;
-    if (len > 8) {
-        if (unlikely(len > PiecewiseChunkSize())) {
-            return CombineLargeContiguousImpl32<bswap>(state, first, len);
-        }
-        if (isLE()) {
-            v = CityHash32<false>(first, len);
-        } else {
-            v = CityHash32<true>(first, len);
-        }
-    } else if (len >= 4) {
-        v = Read4To8<bswap>(first, len);
-    } else if (len > 0) {
-        v = Read1To3<bswap>(first, len);
-    } else {
-        // Empty ranges have no effect.
-        return state;
+static uint64_t CombineLargeContiguousImpl32( uint64_t state, const uint8_t * first, size_t len ) {
+    assume(len > 8);
+
+    if (likely(len <= PiecewiseChunkSize())) {
+        return HashBlockOn32Bit<bswap>(state, first, len);
     }
-    return Mix32(state, v);
+    return SplitAndCombineOn32Bit<bswap>(state, first, len);
+}
+
+template <bool bswap>
+static inline uint64_t CombineContiguousImpl32( uint64_t state, const uint8_t * first, const size_t len ) {
+    // For large values we use CityHash, for small ones we use custom low
+    // latency hash.
+    if (len <= 8) {
+        return CombineSmallContiguousImpl<bswap>(PrecombineLengthMix<bswap>(state, len), first, len);
+    }
+    return CombineLargeContiguousImpl32<bswap>(state, first, len);
 }
 
 template <bool bswap>
 static void ABSL32( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint64_t h = Mix32(CombineContiguousImpl32<bswap>(seed, (const uint8_t *)in, len), len);
+    uint64_t h = CombineContiguousImpl32<bswap>(seed, (const uint8_t *)in, len);
+
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
 }
 
@@ -322,82 +241,169 @@ static void ABSL32( const void * in, const size_t len, const seed_t seed, void *
 // 64-bit version of AbslHashValue() for a string
 
 template <bool bswap, bool use_llh>
-static inline uint64_t CombineContiguousImpl64( uint64_t state, uint64_t seed, const uint8_t * first, size_t len );
+static inline uint64_t CombineContiguousImpl64( uint64_t state, const uint8_t * first, const size_t len );
 
 template <bool bswap>
-static uint64_t CityHash64( const uint8_t * s, const size_t len ) {
-    return CityHash::CityHash64<bswap>(s, len);
+static uint64_t CityHash64( uint64_t state, const uint8_t * s, const size_t len ) {
+#if 0
+    if (isLE()) {
+        return CityHash::CityHash64WithSeed<false>(s, len, state);
+    } else {
+        return CityHash::CityHash64WithSeed<true>(s, len, state);
+    }
+#else
+    return CityHash::CityHash64WithSeed<bswap>(s, len, state);
+#endif
+}
+
+template <bool bswap>
+static uint64_t Mix32Bytes( uint64_t current_state, const uint8_t * ptr ) {
+    uint64_t a   = Read8<bswap>(ptr     );
+    uint64_t b   = Read8<bswap>(ptr +  8);
+    uint64_t c   = Read8<bswap>(ptr + 16);
+    uint64_t d   = Read8<bswap>(ptr + 24);
+
+    uint64_t cs0 = Mix(a ^ kStaticRandomData[1], b ^ current_state);
+    uint64_t cs1 = Mix(c ^ kStaticRandomData[2], d ^ current_state);
+
+    return cs0 ^ cs1;
+}
+
+template <bool bswap>
+static uint64_t LowLevelHashLenGt32( uint64_t seed, const uint8_t * ptr, size_t len ) {
+    assume(len > 32);
+    uint64_t        current_state = seed ^ kStaticRandomData[0] ^ len;
+    const uint8_t * last_32_ptr   = ptr + len - 32;
+
+    if (len > 64) {
+        // If we have more than 64 bytes, we're going to handle chunks of
+        // 64 bytes at a time. We're going to build up four separate hash
+        // states which we will then hash together. This avoids short
+        // dependency chains.
+        uint64_t duplicated_state0 = current_state;
+        uint64_t duplicated_state1 = current_state;
+        uint64_t duplicated_state2 = current_state;
+
+        do {
+            prefetch(ptr + 5 * ABSL_CACHELINE_SIZE);
+
+            uint64_t a = Read8<bswap>(ptr     );
+            uint64_t b = Read8<bswap>(ptr +  8);
+            uint64_t c = Read8<bswap>(ptr + 16);
+            uint64_t d = Read8<bswap>(ptr + 24);
+            uint64_t e = Read8<bswap>(ptr + 32);
+            uint64_t f = Read8<bswap>(ptr + 40);
+            uint64_t g = Read8<bswap>(ptr + 48);
+            uint64_t h = Read8<bswap>(ptr + 56);
+
+            current_state     = Mix(a ^ kStaticRandomData[1], b ^ current_state    );
+            duplicated_state0 = Mix(c ^ kStaticRandomData[2], d ^ duplicated_state0);
+            duplicated_state1 = Mix(e ^ kStaticRandomData[3], f ^ duplicated_state1);
+            duplicated_state2 = Mix(g ^ kStaticRandomData[4], h ^ duplicated_state2);
+
+            ptr += 64;
+            len -= 64;
+        } while (len > 64);
+
+        current_state = (current_state ^ duplicated_state0) ^ (duplicated_state1 + duplicated_state2);
+    }
+
+    // We now have a data `ptr` with at most 64 bytes and the current state
+    // of the hashing state machine stored in current_state.
+    if (len > 32) {
+        current_state = Mix32Bytes<bswap>(current_state, ptr);
+    }
+
+    // We now have a data `ptr` with at most 32 bytes and the current state
+    // of the hashing state machine stored in current_state. But we can
+    // safely read from `ptr + len - 32`.
+    return Mix32Bytes<bswap>(current_state, last_32_ptr);
 }
 
 template <bool bswap, bool use_llh>
-static inline uint64_t Hash64( uint64_t seed, const uint8_t * first, size_t len ) {
+static FORCE_INLINE uint64_t HashBlockOn64Bit( uint64_t state, const uint8_t * data, size_t len ) {
     if (use_llh) {
-        uint64_t h;
-        LowLevelHash<bswap>(first, len, seed, &h);
-        h = COND_BSWAP(h, bswap);
-        return h;
+        return LowLevelHashLenGt32<bswap>(state, data, len);
     } else {
-        if (isLE()) {
-            return CityHash64<false>(first, len);
-        } else {
-            return CityHash64<true>(first, len);
-        }
+        return CityHash64<bswap>(state, data, len);
     }
 }
 
 template <bool bswap, bool use_llh>
-static inline uint64_t CombineLargeContiguousImpl64( uint64_t state, uint64_t seed, const uint8_t * first, size_t len ) {
+static NEVER_INLINE uint64_t SplitAndCombineOn64Bit( uint64_t state, const uint8_t * first, size_t len ) {
     while (len >= PiecewiseChunkSize()) {
-        state = Mix64(state, Hash64<bswap, use_llh>(seed, first, PiecewiseChunkSize()));
-        len -= PiecewiseChunkSize();
+        state  = HashBlockOn64Bit<bswap, use_llh>(state, first, PiecewiseChunkSize());
+        len   -= PiecewiseChunkSize();
         first += PiecewiseChunkSize();
     }
+    // Do not call CombineContiguousImpl for empty range since it is
+    // modifying state.
+    if (len == 0) {
+        return state;
+    }
     // Handle the remainder.
-    return CombineContiguousImpl64<bswap, use_llh>(state, seed, first, len);
+    return CombineContiguousImpl64<bswap, use_llh>(state, first, len);
 }
 
 template <bool bswap, bool use_llh>
-static inline uint64_t CombineContiguousImpl64( uint64_t state, uint64_t seed, const uint8_t * first, size_t len ) {
-    // For large values we use LowLevelHash or CityHash depending on the platform,
-    // for small ones we just use a multiplicative hash.
-    uint64_t v;
-    if (len > 16) {
-        if (unlikely(len > PiecewiseChunkSize())) {
-            return CombineLargeContiguousImpl64<bswap, use_llh>(state, seed, first, len);
-        }
-        v = Hash64<bswap, use_llh>(seed, first, len);
-    } else if (len > 8) {
-        // This hash function was constructed by the ML-driven algorithm discovery
-        // using reinforcement learning. We fed the agent lots of inputs from
-        // microbenchmarks, SMHasher, low hamming distance from generated inputs and
-        // picked up the one that was good on micro and macrobenchmarks.
-        auto p = Read9To16<bswap>(first, len);
-        uint64_t lo = p.first;
-        uint64_t hi = p.second;
-        // Rotation by 53 was found to be most often useful when discovering these
-        // hashing algorithms with ML techniques.
-        lo = ROTR64(lo, 53);
-        state += UINT64_C(0x9ddfea08eb382d69);
-        lo    += state;
-        state ^= hi;
-        uint64_t rlo, rhi;
-        MathMult::mult64_128(rlo, rhi, state, lo);
-        uint64_t h = rlo ^ rhi;
-        return h;
-    } else if (len >= 4) {
-        v = Read4To8<bswap>(first, len);
-    } else if (len > 0) {
-        v = Read1To3<bswap>(first, len);
-    } else {
-        // Empty ranges have no effect.
-        return state;
+static uint64_t CombineLargeContiguousImpl64( uint64_t state, const uint8_t * first, size_t len ) {
+    assume(len > 32);
+
+    if (likely(len <= PiecewiseChunkSize())) {
+        return HashBlockOn64Bit<bswap, use_llh>(state, first, len);
     }
-    return Mix64(state, v);
+    return SplitAndCombineOn64Bit<bswap, use_llh>(state, first, len);
+}
+
+template <bool bswap>
+static FORCE_INLINE uint64_t CombineContiguousImpl17to32( uint64_t state, const uint8_t * first, size_t len ) {
+    assume(len >= 17);
+    assume(len <= 32);
+    // Do two mixes of overlapping 16-byte ranges in parallel to minimize
+    // latency.
+    const uint8_t * tail = first + (len - 16);
+    const uint64_t  m0   = Mix(Read8<bswap>(first) ^ kStaticRandomData[1], Read8<bswap>(first + 8) ^ state);
+    const uint64_t  m1   = Mix(Read8<bswap>(tail)  ^ kStaticRandomData[3], Read8<bswap>(tail  + 8) ^ state);
+    return m0 ^ m1;
+}
+
+template <bool bswap>
+static FORCE_INLINE uint64_t CombineContiguousImpl9to16( uint64_t state, const uint8_t * first, size_t len ) {
+    assume(len >= 9);
+    assume(len <= 16);
+    // Note: any time one half of the mix function becomes zero it will
+    // fail to incorporate any bits from the other half. However, there is
+    // exactly 1 in 2^64 values for each side that achieve this, and only
+    // when the size is exactly 16 -- for smaller sizes there is an
+    // overlapping byte that makes this impossible unless the seed is
+    // *also* incredibly unlucky.
+    auto p = Read9To16<bswap>(first, len);
+    return Mix(state ^ p.first, kMul ^ p.second);
+}
+
+template <bool bswap, bool use_llh>
+static inline uint64_t CombineContiguousImpl64( uint64_t state, const uint8_t * first, const size_t len ) {
+    // For large values we use LowLevelHash or CityHash depending on the platform,
+    // for small ones we use custom low latency hash.
+    if (len <= 8) {
+        return CombineSmallContiguousImpl<bswap>(PrecombineLengthMix<bswap>(state, len), first, len);
+    }
+    if (len <= 16) {
+        return CombineContiguousImpl9to16<bswap>(PrecombineLengthMix<bswap>(state, len), first, len);
+    }
+    if (len <= 32) {
+        return CombineContiguousImpl17to32<bswap>(PrecombineLengthMix<bswap>(state, len), first, len);
+    }
+    // We must not mix length into the state here because calling
+    // CombineContiguousImpl twice with PiecewiseChunkSize() must be equivalent
+    // to calling CombineLargeContiguousImpl once with 2 * PiecewiseChunkSize().
+    return CombineLargeContiguousImpl64<bswap, use_llh>(state, first, len);
 }
 
 template <bool bswap, bool use_llh>
 static void ABSL64( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint64_t h = Mix64(CombineContiguousImpl64<bswap, use_llh>(seed, seed, (const uint8_t *)in, len), len);
+    uint64_t h = CombineContiguousImpl64<bswap, use_llh>(seed, (const uint8_t *)in, len);
+
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
 }
 
@@ -407,241 +413,242 @@ REGISTER_FAMILY(AbseilHashes,
    $.src_status = HashFamilyInfo::SRC_ACTIVE
  );
 
-// Also all-zero seed?
-// Also golden seed?
-
-REGISTER_HASH(Abseil_lowlevel,
-   $.desc            = "Abseil internal low-level hash",
-   $.hash_flags      =
-         0,
-   $.impl_flags      =
-         FLAG_IMPL_LICENSE_APACHE2,
-   $.bits            = 64,
-   $.verification_LE = 0xD3CF7B11,
-   $.verification_BE = 0x5515DFEE,
-   $.hashfn_native   = LowLevelHash<false>,
-   $.hashfn_bswap    = LowLevelHash<true>,
-   $.badseeddesc     = "Many bad seeds, unsure of details; see abseil.cpp for examples",
-   $.badseeds        = {
-            0x030de468, 0x197ba2fe, 0x2c0e2fc1, 0x394c9e50, 0x3fb038b6, 0x458a6ffe, 0x58b25934, 0x5b48b660,
-            0x600df26a, 0x6af5461f, 0x7143e148, 0x7470957e, 0x7902d968, 0x7d1253f7, 0x7f6d84c0, 0x810e65f4,
-            0x81b968d0, 0x90b8c47f, 0xac31277c, 0xc52498f6, 0xee281ac8, 0xf70bb998, 0xfacc778f,
-            0xffffffff026ed87f, 0xffffffff03aa7ce8, 0xffffffff03d08483, 0xffffffff0473948f,
-            0xffffffff04f687ab, 0xffffffff059e7564, 0xffffffff060c9467, 0xffffffff0723a2a4,
-            0xffffffff072f4778, 0xffffffff092705f8, 0xffffffff092f0f0b, 0xffffffff0a1bb8ad,
-            0xffffffff0b3924e6, 0xffffffff0b3f0b1a, 0xffffffff0d332c11, 0xffffffff10a707fb,
-            0xffffffff14ac159e, 0xffffffff14ec8c48, 0xffffffff1730841c, 0xffffffff178e3498,
-            0xffffffff19392113, 0xffffffff199ee464, 0xffffffff1cb0adef, 0xffffffff1e744ae7,
-            0xffffffff219f85e0, 0xffffffff233283da, 0xffffffff29f4951a, 0xffffffff30b37e64,
-            0xffffffff3328d8a6, 0xffffffff392be46c, 0xffffffff392fd7a8, 0xffffffff3986ccab,
-            0xffffffff3a378408, 0xffffffff3a5360e0, 0xffffffff3a591046, 0xffffffff3bb9b728,
-            0xffffffff422e2550, 0xffffffff45cd8d7c, 0xffffffff490a37a3, 0xffffffff490dd988,
-            0xffffffff4a20e2e4, 0xffffffff4e0b90b4, 0xffffffff500b965a, 0xffffffff512c0a54,
-            0xffffffff570b6465, 0xffffffff5b0c59ee, 0xffffffff5c9c8a98, 0xffffffff5dd70508,
-            0xffffffff5e083bb7, 0xffffffff5e128593, 0xffffffff684c74f4, 0xffffffff6860ad8d,
-            0xffffffff692e6346, 0xffffffff6a09647c, 0xffffffff71ddddbe, 0xffffffff7863cf10,
-            0xffffffff788eb7b9, 0xffffffff792c2610, 0xffffffff7933aef2, 0xffffffff793d5811,
-            0xffffffff79677fd7, 0xffffffff79f58a54, 0xffffffff7a2c0d5e, 0xffffffff7b05b406,
-            0xffffffff7b331847, 0xffffffff7b33199a, 0xffffffff7bc38564, 0xffffffff7c38ce5d,
-            0xffffffff7d2ee53e, 0xffffffff7e490011, 0xffffffff804b2f44, 0xffffffff80cb61f0,
-            0xffffffff8124c663, 0xffffffff81359a16, 0xffffffff816c848b, 0xffffffff8205b456,
-            0xffffffff83648b1c, 0xffffffff836d9a68, 0xffffffff83c28f28, 0xffffffff83d94d2b,
-            0xffffffff84af1064, 0xffffffff84b124a4, 0xffffffff84b48c7e, 0xffffffff84ef66f8,
-            0xffffffff85b82834, 0xffffffff872498d8, 0xffffffff8725646a, 0xffffffff873087d0,
-            0xffffffff87b47385, 0xffffffff8b240418, 0xffffffff8ba81338, 0xffffffff8c482988,
-            0xffffffff8d0882e8, 0xffffffff8dedcdd1, 0xffffffff8dfd7398, 0xffffffff8ece9910,
-            0xffffffff8f35eb5e, 0xffffffff8ffd9997, 0xffffffff98b451d0, 0xffffffff9e089d68,
-            0xffffffffa12a8468, 0xffffffffa52f8445, 0xffffffffa58b1e9d, 0xffffffffa911856a,
-            0xffffffffa946aee8, 0xffffffffa9c444e3, 0xffffffffa9ee1be4, 0xffffffffadc0a817,
-            0xffffffffb12f9816, 0xffffffffb13044b4, 0xffffffffb32edc3d, 0xffffffffb3b1957c,
-            0xffffffffb58ec81e, 0xffffffffb61093ff, 0xffffffffb82b4b1a, 0xffffffffb92f9bf7,
-            0xffffffffb9e1d22e, 0xffffffffba3c24be, 0xffffffffbabb97d7, 0xffffffffbc295fcb,
-            0xffffffffbc2c0d44, 0xffffffffbde0da40, 0xffffffffbe3bcc45, 0xffffffffc230bbe0,
-            0xffffffffc8e8706d, 0xffffffffc9217320, 0xffffffffcb8c648f, 0xffffffffd0308366,
-            0xffffffffd1ec5568, 0xffffffffd7fce448, 0xffffffffd8f26c7c, 0xffffffffd9d194eb,
-            0xffffffffd9dc5412, 0xffffffffda119874, 0xffffffffda638511, 0xffffffffdcd0cb30,
-            0xffffffffdd33864a, 0xffffffffe0aee5f0, 0xffffffffe2357bb2, 0xffffffffe631d37f,
-            0xffffffffe665b97b, 0xffffffffe6ad97f6, 0xffffffffe6ed9233, 0xffffffffe73405e6,
-            0xffffffffe77e1f48, 0xffffffffe7d8a272, 0xffffffffe8eb4400, 0xffffffffe90c77be,
-            0xffffffffe9606ef4, 0xffffffffea4c2848, 0xffffffffeacd4479, 0xffffffffeb3fe607,
-            0xffffffffecb81f80, 0xffffffffedcf8430, 0xffffffffef982f09, 0xfffffffff09893e8,
-            0xfffffffff0bc87d0, 0xfffffffff0ecf28c, 0xfffffffff1609292, 0xfffffffff1aa7cbc,
-            0xfffffffff1da84e8, 0xfffffffff22c9b10, 0xfffffffff5d85c63, 0xfffffffff5f31698,
-            0xfffffffff60005e5, 0xfffffffff824026f, 0xfffffffff8fa9ad0, 0xfffffffff90dcc64,
-            0xfffffffff934827c, 0xfffffffff9420a3a, 0xfffffffff97ed86b, 0xfffffffffa8676e4,
-            0xfffffffffbc82068, 0xfffffffffbf89578, 0xfffffffffd409df7, 0xfffffffffdd83310,
-            0xfffffffffdded588, 0xfffffffffddf85e6, 0xfffffffffe349023, 0xfffffffffe7c9734
-   }
- );
-
 REGISTER_HASH(Abseil32,
    $.desc            = "Abseil hash (for 32-bit environments)",
    $.hash_flags      =
          0,
    $.impl_flags      =
+         FLAG_IMPL_MULTIPLY_64_64  |
+         FLAG_IMPL_MULTIPLY_64_128 |
+         FLAG_IMPL_ROTATE          |
          FLAG_IMPL_LICENSE_APACHE2,
    $.bits            = 64,
-   $.verification_LE = 0x45D6E7B0,
-   $.verification_BE = 0x2C90699F,
+   $.verification_LE = 0x9C56A962,
+   $.verification_BE = 0x4CEEA989,
    $.hashfn_native   = ABSL32<false>,
    $.hashfn_bswap    = ABSL32<true>,
-   $.badseeds        = { 0xffffffff }
- );
+   $.seedfixfn       = excludeBadseeds,
+   $.badseeds        = {
+            0x04dff984, 0x07e179cd, 0x0d61dc56, 0x0df1d3ab, 0x1061b386, 0x12de1c38, 0x13e458fd, 0x1693edc5,
+            0x1bcf794d, 0x20b9a223, 0x22360df3, 0x23209dca, 0x240d3c4b, 0x2a8cf2cc, 0x2babe4dd, 0x2c60fd68,
+            0x3907d5be, 0x396ff30a, 0x3b3c0dc4, 0x3c42ab0a, 0x40d7eff8, 0x4399e7e6, 0x48219ca9, 0x4d9ebb2d,
+            0x50aefabc, 0x52f72f78, 0x543c79b7, 0x555391af, 0x56f21429, 0x5b8ee0a8, 0x5bdba59e, 0x5c44ac6e,
+            0x611bedd3, 0x621a4848, 0x62801812, 0x63a4c28f, 0x64cb6abb, 0x69e7fb84, 0x6a11bca8, 0x6acc181c,
+            0x6ad54355, 0x6bf5f13c, 0x73fedc73, 0x75e368a1, 0x778d979c, 0x782afcf3, 0x78e27d91, 0x7ac6ad8d,
+            0x7c8db815, 0x7df34ef5, 0x7eefe1b7, 0x85877240, 0x86132110, 0x8a265023, 0x8b48834a, 0x8b55844c,
+            0x8bcb4a33, 0x8c77c65c, 0x8d7a5d3e, 0x8f120ab4, 0x9d5cfe5e, 0xa020397b, 0xa02efbb5, 0xa11aaa15,
+            0xa1499aa8, 0xa2f5d350, 0xa308e84d, 0xa37e3914, 0xa43df127, 0xa96bbf90, 0xaad0f8b0, 0xab170515,
+            0xabe7bcbb, 0xad738701, 0xad917285, 0xaddfd3ec, 0xaec53194, 0xb391fd3b, 0xb6df3830, 0xb71709e2,
+            0xb8a95cee, 0xb902f1ec, 0xbca4a607, 0xbce16238, 0xc0670d36, 0xc5cbffb6, 0xc8e3ef4a, 0xc9fd8bee,
+            0xcc6b6568, 0xce087006, 0xcf39d40e, 0xd1fd2d50, 0xd35e2d85, 0xd63b3d68, 0xdec094e2, 0xdfd16106,
+            0xe3dda8b9, 0xed8c7854, 0xeef1fc3e, 0xf01a4b27, 0xf0d96d4c, 0xf13c328e, 0xf38a9d99, 0xf4fcb39f,
+            0xf7f085a3, 0xfa262aa1, 0xfb4173b6, 0xfe5586fc,
+            0xffffffff01aa7903, 0xffffffff0f2692b3, 0xffffffff127387ab, 0xffffffff1c225746,
+            0xffffffff202e9ef9, 0xffffffff213f6b1d, 0xffffffff29c4c297, 0xffffffff2ca1d27a,
+            0xffffffff2e02d2af, 0xffffffff33949a97, 0xffffffff36027411, 0xffffffff371c10b5,
+            0xffffffff3a340049, 0xffffffff431e9dc7, 0xffffffff46fd0e13, 0xffffffff48e8f61d,
+            0xffffffff4920c7cf, 0xffffffff4c6e02c4, 0xffffffff513ace6b, 0xffffffff552f074f,
+            0xffffffff5c81c6eb, 0xffffffff5cf717b2, 0xffffffff5ee555ea, 0xffffffff5fd1044a,
+            0xffffffff62a301a1, 0xffffffff7434b5cc, 0xffffffff74aa7bb3, 0xffffffff74b77cb5,
+            0xffffffff81101e48, 0xffffffff820cb10a, 0xffffffff837247ea, 0xffffffff85395272,
+            0xffffffff88726863, 0xffffffff940a0ec3, 0xffffffff952abcaa, 0xffffffff95ee4357,
+            0xffffffff9618047b, 0xffffffff9c5b3d70, 0xffffffff9d7fe7ed, 0xffffffff9de5b7b7,
+            0xffffffff9ee4122c, 0xffffffffa4245a61, 0xffffffffa4711f57, 0xffffffffa90debd6,
+            0xffffffffabc38648, 0xffffffffad08d087, 0xffffffffb26144d2, 0xffffffffb7de6356,
+            0xffffffffbc661819, 0xffffffffc4c3f23b, 0xffffffffc6900cf5, 0xffffffffd39f0297,
+            0xffffffffddc9f20c, 0xffffffffdf465ddc, 0xffffffffe43086b2, 0xffffffffed21e3c7,
+            0xfffffffff29e23a9, 0xfffffffffb20067b,
+   }
+);
 
 REGISTER_HASH(Abseil64_llh,
    $.desc            = "Abseil hash (for 64-bit environments, with 128-bit intrinsics)",
    $.hash_flags      =
          0,
    $.impl_flags      =
+         FLAG_IMPL_MULTIPLY_64_128 |
          FLAG_IMPL_LICENSE_APACHE2,
    $.bits            = 64,
-   $.verification_LE = 0x301C73CB,
-   $.verification_BE = 0x38206C0E,
+   $.verification_LE = 0x07203CDB,
+   $.verification_BE = 0x68AA434B,
    $.hashfn_native   = ABSL64<false, true>,
    $.hashfn_bswap    = ABSL64<true, true>,
-   $.badseeds        = { // For 1-byte keys, if keybyte+seed == UINT64_C(-1), hash is always 0
-            0xffffffffffffff00, 0xffffffffffffff01, 0xffffffffffffff02, 0xffffffffffffff03,
-            0xffffffffffffff04, 0xffffffffffffff05, 0xffffffffffffff06, 0xffffffffffffff07,
-            0xffffffffffffff08, 0xffffffffffffff09, 0xffffffffffffff0a, 0xffffffffffffff0b,
-            0xffffffffffffff0c, 0xffffffffffffff0d, 0xffffffffffffff0e, 0xffffffffffffff0f,
-            0xffffffffffffff10, 0xffffffffffffff11, 0xffffffffffffff12, 0xffffffffffffff13,
-            0xffffffffffffff14, 0xffffffffffffff15, 0xffffffffffffff16, 0xffffffffffffff17,
-            0xffffffffffffff18, 0xffffffffffffff19, 0xffffffffffffff1a, 0xffffffffffffff1b,
-            0xffffffffffffff1c, 0xffffffffffffff1d, 0xffffffffffffff1e, 0xffffffffffffff1f,
-            0xffffffffffffff20, 0xffffffffffffff21, 0xffffffffffffff22, 0xffffffffffffff23,
-            0xffffffffffffff24, 0xffffffffffffff25, 0xffffffffffffff26, 0xffffffffffffff27,
-            0xffffffffffffff28, 0xffffffffffffff29, 0xffffffffffffff2a, 0xffffffffffffff2b,
-            0xffffffffffffff2c, 0xffffffffffffff2d, 0xffffffffffffff2e, 0xffffffffffffff2f,
-            0xffffffffffffff30, 0xffffffffffffff31, 0xffffffffffffff32, 0xffffffffffffff33,
-            0xffffffffffffff34, 0xffffffffffffff35, 0xffffffffffffff36, 0xffffffffffffff37,
-            0xffffffffffffff38, 0xffffffffffffff39, 0xffffffffffffff3a, 0xffffffffffffff3b,
-            0xffffffffffffff3c, 0xffffffffffffff3d, 0xffffffffffffff3e, 0xffffffffffffff3f,
-            0xffffffffffffff40, 0xffffffffffffff41, 0xffffffffffffff42, 0xffffffffffffff43,
-            0xffffffffffffff44, 0xffffffffffffff45, 0xffffffffffffff46, 0xffffffffffffff47,
-            0xffffffffffffff48, 0xffffffffffffff49, 0xffffffffffffff4a, 0xffffffffffffff4b,
-            0xffffffffffffff4c, 0xffffffffffffff4d, 0xffffffffffffff4e, 0xffffffffffffff4f,
-            0xffffffffffffff50, 0xffffffffffffff51, 0xffffffffffffff52, 0xffffffffffffff53,
-            0xffffffffffffff54, 0xffffffffffffff55, 0xffffffffffffff56, 0xffffffffffffff57,
-            0xffffffffffffff58, 0xffffffffffffff59, 0xffffffffffffff5a, 0xffffffffffffff5b,
-            0xffffffffffffff5c, 0xffffffffffffff5d, 0xffffffffffffff5e, 0xffffffffffffff5f,
-            0xffffffffffffff60, 0xffffffffffffff61, 0xffffffffffffff62, 0xffffffffffffff63,
-            0xffffffffffffff64, 0xffffffffffffff65, 0xffffffffffffff66, 0xffffffffffffff67,
-            0xffffffffffffff68, 0xffffffffffffff69, 0xffffffffffffff6a, 0xffffffffffffff6b,
-            0xffffffffffffff6c, 0xffffffffffffff6d, 0xffffffffffffff6e, 0xffffffffffffff6f,
-            0xffffffffffffff70, 0xffffffffffffff71, 0xffffffffffffff72, 0xffffffffffffff73,
-            0xffffffffffffff74, 0xffffffffffffff75, 0xffffffffffffff76, 0xffffffffffffff77,
-            0xffffffffffffff78, 0xffffffffffffff79, 0xffffffffffffff7a, 0xffffffffffffff7b,
-            0xffffffffffffff7c, 0xffffffffffffff7d, 0xffffffffffffff7e, 0xffffffffffffff7f,
-            0xffffffffffffff80, 0xffffffffffffff81, 0xffffffffffffff82, 0xffffffffffffff83,
-            0xffffffffffffff84, 0xffffffffffffff85, 0xffffffffffffff86, 0xffffffffffffff87,
-            0xffffffffffffff88, 0xffffffffffffff89, 0xffffffffffffff8a, 0xffffffffffffff8b,
-            0xffffffffffffff8c, 0xffffffffffffff8d, 0xffffffffffffff8e, 0xffffffffffffff8f,
-            0xffffffffffffff90, 0xffffffffffffff91, 0xffffffffffffff92, 0xffffffffffffff93,
-            0xffffffffffffff94, 0xffffffffffffff95, 0xffffffffffffff96, 0xffffffffffffff97,
-            0xffffffffffffff98, 0xffffffffffffff99, 0xffffffffffffff9a, 0xffffffffffffff9b,
-            0xffffffffffffff9c, 0xffffffffffffff9d, 0xffffffffffffff9e, 0xffffffffffffff9f,
-            0xffffffffffffffa0, 0xffffffffffffffa1, 0xffffffffffffffa2, 0xffffffffffffffa3,
-            0xffffffffffffffa4, 0xffffffffffffffa5, 0xffffffffffffffa6, 0xffffffffffffffa7,
-            0xffffffffffffffa8, 0xffffffffffffffa9, 0xffffffffffffffaa, 0xffffffffffffffab,
-            0xffffffffffffffac, 0xffffffffffffffad, 0xffffffffffffffae, 0xffffffffffffffaf,
-            0xffffffffffffffb0, 0xffffffffffffffb1, 0xffffffffffffffb2, 0xffffffffffffffb3,
-            0xffffffffffffffb4, 0xffffffffffffffb5, 0xffffffffffffffb6, 0xffffffffffffffb7,
-            0xffffffffffffffb8, 0xffffffffffffffb9, 0xffffffffffffffba, 0xffffffffffffffbb,
-            0xffffffffffffffbc, 0xffffffffffffffbd, 0xffffffffffffffbe, 0xffffffffffffffbf,
-            0xffffffffffffffc0, 0xffffffffffffffc1, 0xffffffffffffffc2, 0xffffffffffffffc3,
-            0xffffffffffffffc4, 0xffffffffffffffc5, 0xffffffffffffffc6, 0xffffffffffffffc7,
-            0xffffffffffffffc8, 0xffffffffffffffc9, 0xffffffffffffffca, 0xffffffffffffffcb,
-            0xffffffffffffffcc, 0xffffffffffffffcd, 0xffffffffffffffce, 0xffffffffffffffcf,
-            0xffffffffffffffd0, 0xffffffffffffffd1, 0xffffffffffffffd2, 0xffffffffffffffd3,
-            0xffffffffffffffd4, 0xffffffffffffffd5, 0xffffffffffffffd6, 0xffffffffffffffd7,
-            0xffffffffffffffd8, 0xffffffffffffffd9, 0xffffffffffffffda, 0xffffffffffffffdb,
-            0xffffffffffffffdc, 0xffffffffffffffdd, 0xffffffffffffffde, 0xffffffffffffffdf,
-            0xffffffffffffffe0, 0xffffffffffffffe1, 0xffffffffffffffe2, 0xffffffffffffffe3,
-            0xffffffffffffffe4, 0xffffffffffffffe5, 0xffffffffffffffe6, 0xffffffffffffffe7,
-            0xffffffffffffffe8, 0xffffffffffffffe9, 0xffffffffffffffea, 0xffffffffffffffeb,
-            0xffffffffffffffec, 0xffffffffffffffed, 0xffffffffffffffee, 0xffffffffffffffef,
-            0xfffffffffffffff0, 0xfffffffffffffff1, 0xfffffffffffffff2, 0xfffffffffffffff3,
-            0xfffffffffffffff4, 0xfffffffffffffff5, 0xfffffffffffffff6, 0xfffffffffffffff7,
-            0xfffffffffffffff8, 0xfffffffffffffff9, 0xfffffffffffffffa, 0xfffffffffffffffb,
-            0xfffffffffffffffc, 0xfffffffffffffffd, 0xfffffffffffffffe, 0xffffffffffffffff
+   $.seedfixfn       = excludeBadseeds,
+   $.badseeds        = {
+            0x0340676a, 0x04dff984, 0x04ffe39d, 0x08677e59, 0x09104b9b, 0x0ad4b645, 0x0d61dc56, 0x0ed0ac11,
+            0x0eee231a, 0x12de1c38, 0x17d1c332, 0x19193e5d, 0x1bcf794d, 0x1ce4e11d, 0x1d507e3c, 0x1ebfbb5f,
+            0x1f7f88fa, 0x203cb978, 0x20b9a223, 0x22360df3, 0x23327a07, 0x25fb45b7, 0x2a96e741, 0x2c60fd68,
+            0x2e158318, 0x3050bec1, 0x37d8a4c9, 0x396ff30a, 0x3ac0c0bf, 0x3b3c0dc4, 0x3ca01d05, 0x3d11d0f4,
+            0x3fd5e275, 0x412f2f09, 0x4296a911, 0x4399e7e6, 0x45107895, 0x48219ca9, 0x4869437a, 0x49566ec3,
+            0x4996a255, 0x4d9ebb2d, 0x51ed8ac9, 0x52f72f78, 0x543c79b7, 0x56f21429, 0x585223d9, 0x5a7c5704,
+            0x5b8ee0a8, 0x5bdba59e, 0x5dd8beaf, 0x5eecf749, 0x5ff35335, 0x5ff4a656, 0x611bedd3, 0x616c5243,
+            0x621a4848, 0x62801812, 0x63a4c28f, 0x6942a715, 0x69e7fb84, 0x6a11bca8, 0x6ad54355, 0x6bf5f13c,
+            0x6caa4239, 0x6dd002da, 0x6ed15576, 0x76cb2a15, 0x778d979c, 0x78da2935, 0x7ac6ad8d, 0x7aca5c71,
+            0x7b1263f3, 0x7b36a991, 0x7c8db815, 0x7df34ef5, 0x7ed0811d, 0x7eefe1b7, 0x838906e9, 0x84328645,
+            0x86ecbb4f, 0x874b1fda, 0x892c91c5, 0x89949eb9, 0x8b48834a, 0x8b55844c, 0x8bcb4a33, 0x8bea89de,
+            0x8e114e2a, 0x8e283f29, 0x8f096066, 0x90815695, 0x936861b1, 0x949d38d7, 0x94c03819, 0x96a58cc2,
+            0x96e79d16, 0x96e9bf1a, 0x99ea5a63, 0x9a947ac7, 0x9aa0bc21, 0x9b6c7451, 0x9c13e2f1, 0x9c1fee85,
+            0x9d5cfe5e, 0x9d67691a, 0x9ed32326, 0xa02efbb5, 0xa0a3f452, 0xa11aaa15, 0xa212a391, 0xa2f83ffa,
+            0xa308e84d, 0xa37e3914, 0xa8524503, 0xa8e49721, 0xa9145d59, 0xa91d500e, 0xa9d28d65, 0xaad0a3e3,
+            0xaad0f8b0, 0xade5d259, 0xae5622ec, 0xae8d2115, 0xae911f3a, 0xaec53194, 0xaeca63e7, 0xb2ae3215,
+            0xb391fd3b, 0xb398323f, 0xb39898c7, 0xb3dc2361, 0xb62fcb31, 0xb65caaa1, 0xb6c3b399, 0xb6df3830,
+            0xb71709e2, 0xb793736b, 0xb7e81395, 0xb7fe285f, 0xb810fd66, 0xb902f1ec, 0xb994a8d9, 0xba80a5c3,
+            0xbae93511, 0xbce16238, 0xbd35e910, 0xbd383d8a, 0xbd50131b, 0xbd72bc14, 0xbda91a07, 0xbe1182d9,
+            0xbe28a15a, 0xbe5bde8a, 0xbe67a10f, 0xbe80b0b9, 0xbec0a2e1, 0xbed6cee6, 0xbee652e1, 0xbee8a319,
+            0xbeedb2e5, 0xbfd0aef6, 0xc0f8be51, 0xc5cbffb6, 0xc6009cb7, 0xc6d18f59, 0xc8e3ef4a, 0xc9fd8bee,
+            0xcba4a363, 0xcc6b6568, 0xcd184c5d, 0xcee4eaef, 0xd1fd2d50, 0xd35e2d85, 0xd480a74a, 0xd63b3d68,
+            0xd6e00f8f, 0xdcd5bae2, 0xdcfac90e, 0xddd02255, 0xde7ba384, 0xdec094e2, 0xded1bbd1, 0xdfb6944a,
+            0xdfd16106, 0xe3d44285, 0xe3dda8b9, 0xe9411b16, 0xeb01b359, 0xeb547077, 0xed8c7854, 0xf0d96d4c,
+            0xf85166de, 0xfc925739, 0xfdf03c91, 0xfe532907, 0xfe5586fc,
+            0xffffffff0169bb15, 0xffffffff01aa7903, 0xffffffff01d1bd45, 0xffffffff0530ff9d,
+            0xffffffff05502219, 0xffffffff06cf5b95, 0xffffffff07d087a1, 0xffffffff0a2f7a95,
+            0xffffffff0da10d01, 0xffffffff0eb456ad, 0xffffffff0f2692b3, 0xffffffff12531b12,
+            0xffffffff127387ab, 0xffffffff16663b1a, 0xffffffff18389717, 0xffffffff193df3b4,
+            0xffffffff1a28151c, 0xffffffff1c225746, 0xffffffff1d2c89cc, 0xffffffff1d83b3a1,
+            0xffffffff1d8cd0ad, 0xffffffff1ea9ad29, 0xffffffff1ec0ae8e, 0xffffffff1f256f7c,
+            0xffffffff202e9ef9, 0xffffffff2030701f, 0xffffffff213f6b1d, 0xffffffff21dc8f09,
+            0xffffffff23509c89, 0xffffffff26c1bb19, 0xffffffff27e82121, 0xffffffff297d5c83,
+            0xffffffff29c4c297, 0xffffffff2beea35d, 0xffffffff2ca1d27a, 0xffffffff2d9ce69f,
+            0xffffffff2e02d2af, 0xffffffff2eb0b3e3, 0xffffffff2ef53d77, 0xffffffff3353e1f9,
+            0xffffffff33949a97, 0xffffffff33dccd1e, 0xffffffff35533ffd, 0xffffffff36027411,
+            0xffffffff371c10b5, 0xffffffff392cdbdb, 0xffffffff3a340049, 0xffffffff3b01637a,
+            0xffffffff3b44d2b7, 0xffffffff3ba8ab98, 0xffffffff3cdaa354, 0xffffffff3d07a999,
+            0xffffffff3d228d51, 0xffffffff3e48af5a, 0xffffffff3ea8e50a, 0xffffffff3ed005d9,
+            0xffffffff3feaeb37, 0xffffffff4131d79d, 0xffffffff41a18402, 0xffffffff42e06619,
+            0xffffffff431e9dc7, 0xffffffff46bc9d4d, 0xffffffff46fd0e13, 0xffffffff47082b19,
+            0xffffffff48e8f61d, 0xffffffff4920c7cf, 0xffffffff4ae822ba, 0xffffffff4c6e02c4,
+            0xffffffff4d9f830d, 0xffffffff4e3ec5d1, 0xffffffff4ea4a31b, 0xffffffff4ea6ad2a,
+            0xffffffff4ec0fa9a, 0xffffffff4ed1e26e, 0xffffffff4ed32066, 0xffffffff513ace6b,
+            0xffffffff53d8e327, 0xffffffff53ec77ae, 0xffffffff54a6039e, 0xffffffff552f074f,
+            0xffffffff55918446, 0xffffffff56afd819, 0xffffffff5c81c6eb, 0xffffffff5cd294df,
+            0xffffffff5cf717b2, 0xffffffff5da0bbfd, 0xffffffff5e1ac3c9, 0xffffffff5ec0096f,
+            0xffffffff5ecfbd48, 0xffffffff5ee555ea, 0xffffffff5f305bb3, 0xffffffff5fd1044a,
+            0xffffffff62a301a1, 0xffffffff6586ff19, 0xffffffff6835b116, 0xffffffff6d055d05,
+            0xffffffff6ed52eda, 0xffffffff6ed8fc49, 0xffffffff7434b5cc, 0xffffffff746e0309,
+            0xffffffff74aa7bb3, 0xffffffff74b77cb5, 0xffffffff761386eb, 0xffffffff7d143fc1,
+            0xffffffff7e58bbbf, 0xffffffff7e60e312, 0xffffffff7eacbd99, 0xffffffff7f67bb32,
+            0xffffffff7f6cfdc7, 0xffffffff81101e48, 0xffffffff820cb10a, 0xffffffff837247ea,
+            0xffffffff8496e35d, 0xffffffff85395272, 0xffffffff8693bcf7, 0xffffffff86e08fd9,
+            0xffffffff88726863, 0xffffffff8ec0538a, 0xffffffff92c5031f, 0xffffffff940a0ec3,
+            0xffffffff952abcaa, 0xffffffff95ee4357, 0xffffffff9618047b, 0xffffffff9669bf9f,
+            0xffffffff96b0bbd2, 0xffffffff9ad4a2cd, 0xffffffff9c5b3d70, 0xffffffff9d7fe7ed,
+            0xffffffff9de5b7b7, 0xffffffff9ee4122c, 0xffffffffa0308dd9, 0xffffffffa12080ce,
+            0xffffffffa4245a61, 0xffffffffa4711f57, 0xffffffffa760c391, 0xffffffffa8d1ac22,
+            0xffffffffa90debd6, 0xffffffffab797aac, 0xffffffffabc38648, 0xffffffffad08d087,
+            0xffffffffad304307, 0xffffffffae57bf76, 0xffffffffaf44a319, 0xffffffffb26144d2,
+            0xffffffffb2cefddb, 0xffffffffb2fce2c1, 0xffffffffb33f1749, 0xffffffffb7de6356,
+            0xffffffffb890401f, 0xffffffffb8c4a2d9, 0xffffffffb8ee7915, 0xffffffffb9d18460,
+            0xffffffffbae6a222, 0xffffffffbc661819, 0xffffffffbc68bd95, 0xffffffffbdc1b743,
+            0xffffffffbe20bfa7, 0xffffffffbe40e126, 0xffffffffbe69dce4, 0xffffffffbea8990a,
+            0xffffffffbec8a59e, 0xffffffffbef02911, 0xffffffffbfddb5df, 0xffffffffbfe8a304,
+            0xffffffffc0afee19, 0xffffffffc116ccfd, 0xffffffffc150bb15, 0xffffffffc1ec1ce7,
+            0xffffffffc2abd6b9, 0xffffffffc2eb6d67, 0xffffffffc3e6f301, 0xffffffffc4c3f23b,
+            0xffffffffc55f3ee0, 0xffffffffc668b894, 0xffffffffc6900cf5, 0xffffffffc786941a,
+            0xffffffffcc6bd584, 0xffffffffccd84f99, 0xffffffffd17e5816, 0xffffffffd21fc8bd,
+            0xffffffffd39f0297, 0xffffffffd552061d, 0xffffffffd55bf4f7, 0xffffffffd916c30a,
+            0xffffffffda50bf1b, 0xffffffffda50db59, 0xffffffffdbd48954, 0xffffffffdd2e831a,
+            0xffffffffdd95c72f, 0xffffffffddc9f20c, 0xffffffffdf465ddc, 0xffffffffe43086b2,
+            0xffffffffea284b19, 0xffffffffea511287, 0xffffffffed219889, 0xffffffffed21e3c7,
+            0xffffffffefe6fa9e, 0xfffffffff1689795, 0xfffffffff29e23a9, 0xfffffffff45323e6,
+            0xfffffffff9f02259, 0xfffffffffb20067b, 0xfffffffffcbf17c5, 0xfffffffffd31fc02,
+            0xfffffffffd90df14, 0xfffffffffdd5c535, 0xfffffffffe07a2b7, 0xfffffffffed0511d,
+            0xffffffffff50aaac,
    }
- );
+);
 
 REGISTER_HASH(Abseil64_city,
    $.desc            = "Abseil hash (for 64-bit environments, without 128-bit intrinsics)",
    $.hash_flags      =
          0,
    $.impl_flags      =
+         FLAG_IMPL_MULTIPLY_64_64  |
+         FLAG_IMPL_MULTIPLY_64_128 |
+         FLAG_IMPL_ROTATE          |
          FLAG_IMPL_LICENSE_APACHE2,
    $.bits            = 64,
-   $.verification_LE = 0xA80E05DA,
-   $.verification_BE = 0xCA7890B6,
+   $.verification_LE = 0xBCA82904,
+   $.verification_BE = 0x3DE6C260,
    $.hashfn_native   = ABSL64<false, false>,
    $.hashfn_bswap    = ABSL64<true, false>,
-   $.badseeds        = { // For 1-byte keys, if keybyte+seed == UINT64_C(-1), hash is always 0
-            0xffffffffffffff00, 0xffffffffffffff01, 0xffffffffffffff02, 0xffffffffffffff03,
-            0xffffffffffffff04, 0xffffffffffffff05, 0xffffffffffffff06, 0xffffffffffffff07,
-            0xffffffffffffff08, 0xffffffffffffff09, 0xffffffffffffff0a, 0xffffffffffffff0b,
-            0xffffffffffffff0c, 0xffffffffffffff0d, 0xffffffffffffff0e, 0xffffffffffffff0f,
-            0xffffffffffffff10, 0xffffffffffffff11, 0xffffffffffffff12, 0xffffffffffffff13,
-            0xffffffffffffff14, 0xffffffffffffff15, 0xffffffffffffff16, 0xffffffffffffff17,
-            0xffffffffffffff18, 0xffffffffffffff19, 0xffffffffffffff1a, 0xffffffffffffff1b,
-            0xffffffffffffff1c, 0xffffffffffffff1d, 0xffffffffffffff1e, 0xffffffffffffff1f,
-            0xffffffffffffff20, 0xffffffffffffff21, 0xffffffffffffff22, 0xffffffffffffff23,
-            0xffffffffffffff24, 0xffffffffffffff25, 0xffffffffffffff26, 0xffffffffffffff27,
-            0xffffffffffffff28, 0xffffffffffffff29, 0xffffffffffffff2a, 0xffffffffffffff2b,
-            0xffffffffffffff2c, 0xffffffffffffff2d, 0xffffffffffffff2e, 0xffffffffffffff2f,
-            0xffffffffffffff30, 0xffffffffffffff31, 0xffffffffffffff32, 0xffffffffffffff33,
-            0xffffffffffffff34, 0xffffffffffffff35, 0xffffffffffffff36, 0xffffffffffffff37,
-            0xffffffffffffff38, 0xffffffffffffff39, 0xffffffffffffff3a, 0xffffffffffffff3b,
-            0xffffffffffffff3c, 0xffffffffffffff3d, 0xffffffffffffff3e, 0xffffffffffffff3f,
-            0xffffffffffffff40, 0xffffffffffffff41, 0xffffffffffffff42, 0xffffffffffffff43,
-            0xffffffffffffff44, 0xffffffffffffff45, 0xffffffffffffff46, 0xffffffffffffff47,
-            0xffffffffffffff48, 0xffffffffffffff49, 0xffffffffffffff4a, 0xffffffffffffff4b,
-            0xffffffffffffff4c, 0xffffffffffffff4d, 0xffffffffffffff4e, 0xffffffffffffff4f,
-            0xffffffffffffff50, 0xffffffffffffff51, 0xffffffffffffff52, 0xffffffffffffff53,
-            0xffffffffffffff54, 0xffffffffffffff55, 0xffffffffffffff56, 0xffffffffffffff57,
-            0xffffffffffffff58, 0xffffffffffffff59, 0xffffffffffffff5a, 0xffffffffffffff5b,
-            0xffffffffffffff5c, 0xffffffffffffff5d, 0xffffffffffffff5e, 0xffffffffffffff5f,
-            0xffffffffffffff60, 0xffffffffffffff61, 0xffffffffffffff62, 0xffffffffffffff63,
-            0xffffffffffffff64, 0xffffffffffffff65, 0xffffffffffffff66, 0xffffffffffffff67,
-            0xffffffffffffff68, 0xffffffffffffff69, 0xffffffffffffff6a, 0xffffffffffffff6b,
-            0xffffffffffffff6c, 0xffffffffffffff6d, 0xffffffffffffff6e, 0xffffffffffffff6f,
-            0xffffffffffffff70, 0xffffffffffffff71, 0xffffffffffffff72, 0xffffffffffffff73,
-            0xffffffffffffff74, 0xffffffffffffff75, 0xffffffffffffff76, 0xffffffffffffff77,
-            0xffffffffffffff78, 0xffffffffffffff79, 0xffffffffffffff7a, 0xffffffffffffff7b,
-            0xffffffffffffff7c, 0xffffffffffffff7d, 0xffffffffffffff7e, 0xffffffffffffff7f,
-            0xffffffffffffff80, 0xffffffffffffff81, 0xffffffffffffff82, 0xffffffffffffff83,
-            0xffffffffffffff84, 0xffffffffffffff85, 0xffffffffffffff86, 0xffffffffffffff87,
-            0xffffffffffffff88, 0xffffffffffffff89, 0xffffffffffffff8a, 0xffffffffffffff8b,
-            0xffffffffffffff8c, 0xffffffffffffff8d, 0xffffffffffffff8e, 0xffffffffffffff8f,
-            0xffffffffffffff90, 0xffffffffffffff91, 0xffffffffffffff92, 0xffffffffffffff93,
-            0xffffffffffffff94, 0xffffffffffffff95, 0xffffffffffffff96, 0xffffffffffffff97,
-            0xffffffffffffff98, 0xffffffffffffff99, 0xffffffffffffff9a, 0xffffffffffffff9b,
-            0xffffffffffffff9c, 0xffffffffffffff9d, 0xffffffffffffff9e, 0xffffffffffffff9f,
-            0xffffffffffffffa0, 0xffffffffffffffa1, 0xffffffffffffffa2, 0xffffffffffffffa3,
-            0xffffffffffffffa4, 0xffffffffffffffa5, 0xffffffffffffffa6, 0xffffffffffffffa7,
-            0xffffffffffffffa8, 0xffffffffffffffa9, 0xffffffffffffffaa, 0xffffffffffffffab,
-            0xffffffffffffffac, 0xffffffffffffffad, 0xffffffffffffffae, 0xffffffffffffffaf,
-            0xffffffffffffffb0, 0xffffffffffffffb1, 0xffffffffffffffb2, 0xffffffffffffffb3,
-            0xffffffffffffffb4, 0xffffffffffffffb5, 0xffffffffffffffb6, 0xffffffffffffffb7,
-            0xffffffffffffffb8, 0xffffffffffffffb9, 0xffffffffffffffba, 0xffffffffffffffbb,
-            0xffffffffffffffbc, 0xffffffffffffffbd, 0xffffffffffffffbe, 0xffffffffffffffbf,
-            0xffffffffffffffc0, 0xffffffffffffffc1, 0xffffffffffffffc2, 0xffffffffffffffc3,
-            0xffffffffffffffc4, 0xffffffffffffffc5, 0xffffffffffffffc6, 0xffffffffffffffc7,
-            0xffffffffffffffc8, 0xffffffffffffffc9, 0xffffffffffffffca, 0xffffffffffffffcb,
-            0xffffffffffffffcc, 0xffffffffffffffcd, 0xffffffffffffffce, 0xffffffffffffffcf,
-            0xffffffffffffffd0, 0xffffffffffffffd1, 0xffffffffffffffd2, 0xffffffffffffffd3,
-            0xffffffffffffffd4, 0xffffffffffffffd5, 0xffffffffffffffd6, 0xffffffffffffffd7,
-            0xffffffffffffffd8, 0xffffffffffffffd9, 0xffffffffffffffda, 0xffffffffffffffdb,
-            0xffffffffffffffdc, 0xffffffffffffffdd, 0xffffffffffffffde, 0xffffffffffffffdf,
-            0xffffffffffffffe0, 0xffffffffffffffe1, 0xffffffffffffffe2, 0xffffffffffffffe3,
-            0xffffffffffffffe4, 0xffffffffffffffe5, 0xffffffffffffffe6, 0xffffffffffffffe7,
-            0xffffffffffffffe8, 0xffffffffffffffe9, 0xffffffffffffffea, 0xffffffffffffffeb,
-            0xffffffffffffffec, 0xffffffffffffffed, 0xffffffffffffffee, 0xffffffffffffffef,
-            0xfffffffffffffff0, 0xfffffffffffffff1, 0xfffffffffffffff2, 0xfffffffffffffff3,
-            0xfffffffffffffff4, 0xfffffffffffffff5, 0xfffffffffffffff6, 0xfffffffffffffff7,
-            0xfffffffffffffff8, 0xfffffffffffffff9, 0xfffffffffffffffa, 0xfffffffffffffffb,
-            0xfffffffffffffffc, 0xfffffffffffffffd, 0xfffffffffffffffe, 0xffffffffffffffff
+   $.seedfixfn       = excludeBadseeds,
+   $.badseeds        = {
+            0x0340676a, 0x04dff984, 0x04ffe39d, 0x08677e59, 0x09104b9b, 0x0ad4b645, 0x0d61dc56, 0x0ed0ac11,
+            0x0eee231a, 0x12de1c38, 0x17d1c332, 0x19193e5d, 0x1bcf794d, 0x1ce4e11d, 0x1d507e3c, 0x1ebfbb5f,
+            0x1f7f88fa, 0x203cb978, 0x20b9a223, 0x22360df3, 0x23327a07, 0x25fb45b7, 0x2a96e741, 0x2c60fd68,
+            0x2e158318, 0x3050bec1, 0x37d8a4c9, 0x396ff30a, 0x3ac0c0bf, 0x3b3c0dc4, 0x3ca01d05, 0x3d11d0f4,
+            0x3fd5e275, 0x412f2f09, 0x4296a911, 0x4399e7e6, 0x45107895, 0x48219ca9, 0x4869437a, 0x49566ec3,
+            0x4996a255, 0x4d9ebb2d, 0x51ed8ac9, 0x52f72f78, 0x543c79b7, 0x56f21429, 0x585223d9, 0x5a7c5704,
+            0x5b8ee0a8, 0x5bdba59e, 0x5dd8beaf, 0x5eecf749, 0x5ff35335, 0x5ff4a656, 0x611bedd3, 0x616c5243,
+            0x621a4848, 0x62801812, 0x63a4c28f, 0x6942a715, 0x69e7fb84, 0x6a11bca8, 0x6ad54355, 0x6bf5f13c,
+            0x6caa4239, 0x6dd002da, 0x6ed15576, 0x76cb2a15, 0x778d979c, 0x78da2935, 0x7ac6ad8d, 0x7aca5c71,
+            0x7b1263f3, 0x7b36a991, 0x7c8db815, 0x7df34ef5, 0x7ed0811d, 0x7eefe1b7, 0x838906e9, 0x84328645,
+            0x86ecbb4f, 0x874b1fda, 0x892c91c5, 0x89949eb9, 0x8b48834a, 0x8b55844c, 0x8bcb4a33, 0x8bea89de,
+            0x8e114e2a, 0x8e283f29, 0x8f096066, 0x90815695, 0x936861b1, 0x949d38d7, 0x94c03819, 0x96a58cc2,
+            0x96e79d16, 0x96e9bf1a, 0x99ea5a63, 0x9a947ac7, 0x9aa0bc21, 0x9b6c7451, 0x9c13e2f1, 0x9c1fee85,
+            0x9d5cfe5e, 0x9d67691a, 0x9ed32326, 0xa02efbb5, 0xa0a3f452, 0xa11aaa15, 0xa212a391, 0xa2f83ffa,
+            0xa308e84d, 0xa37e3914, 0xa8524503, 0xa8e49721, 0xa9145d59, 0xa91d500e, 0xa9d28d65, 0xaad0a3e3,
+            0xaad0f8b0, 0xade5d259, 0xae5622ec, 0xae8d2115, 0xae911f3a, 0xaec53194, 0xaeca63e7, 0xb2ae3215,
+            0xb391fd3b, 0xb398323f, 0xb39898c7, 0xb3dc2361, 0xb62fcb31, 0xb65caaa1, 0xb6c3b399, 0xb6df3830,
+            0xb71709e2, 0xb793736b, 0xb7e81395, 0xb7fe285f, 0xb810fd66, 0xb902f1ec, 0xb994a8d9, 0xba80a5c3,
+            0xbae93511, 0xbce16238, 0xbd35e910, 0xbd383d8a, 0xbd50131b, 0xbd72bc14, 0xbda91a07, 0xbe1182d9,
+            0xbe28a15a, 0xbe5bde8a, 0xbe67a10f, 0xbe80b0b9, 0xbec0a2e1, 0xbed6cee6, 0xbee652e1, 0xbee8a319,
+            0xbeedb2e5, 0xbfd0aef6, 0xc0f8be51, 0xc5cbffb6, 0xc6009cb7, 0xc6d18f59, 0xc8e3ef4a, 0xc9fd8bee,
+            0xcba4a363, 0xcc6b6568, 0xcd184c5d, 0xcee4eaef, 0xd1fd2d50, 0xd35e2d85, 0xd480a74a, 0xd63b3d68,
+            0xd6e00f8f, 0xdcd5bae2, 0xdcfac90e, 0xddd02255, 0xde7ba384, 0xdec094e2, 0xded1bbd1, 0xdfb6944a,
+            0xdfd16106, 0xe3d44285, 0xe3dda8b9, 0xe9411b16, 0xeb01b359, 0xeb547077, 0xed8c7854, 0xf0d96d4c,
+            0xf85166de, 0xfc925739, 0xfdf03c91, 0xfe532907, 0xfe5586fc,
+            0xffffffff0169bb15, 0xffffffff01aa7903, 0xffffffff01d1bd45, 0xffffffff0530ff9d,
+            0xffffffff05502219, 0xffffffff06cf5b95, 0xffffffff07d087a1, 0xffffffff0a2f7a95,
+            0xffffffff0da10d01, 0xffffffff0eb456ad, 0xffffffff0f2692b3, 0xffffffff12531b12,
+            0xffffffff127387ab, 0xffffffff16663b1a, 0xffffffff18389717, 0xffffffff193df3b4,
+            0xffffffff1a28151c, 0xffffffff1c225746, 0xffffffff1d2c89cc, 0xffffffff1d83b3a1,
+            0xffffffff1d8cd0ad, 0xffffffff1ea9ad29, 0xffffffff1ec0ae8e, 0xffffffff1f256f7c,
+            0xffffffff202e9ef9, 0xffffffff2030701f, 0xffffffff213f6b1d, 0xffffffff21dc8f09,
+            0xffffffff23509c89, 0xffffffff26c1bb19, 0xffffffff27e82121, 0xffffffff297d5c83,
+            0xffffffff29c4c297, 0xffffffff2beea35d, 0xffffffff2ca1d27a, 0xffffffff2d9ce69f,
+            0xffffffff2e02d2af, 0xffffffff2eb0b3e3, 0xffffffff2ef53d77, 0xffffffff3353e1f9,
+            0xffffffff33949a97, 0xffffffff33dccd1e, 0xffffffff35533ffd, 0xffffffff36027411,
+            0xffffffff371c10b5, 0xffffffff392cdbdb, 0xffffffff3a340049, 0xffffffff3b01637a,
+            0xffffffff3b44d2b7, 0xffffffff3ba8ab98, 0xffffffff3cdaa354, 0xffffffff3d07a999,
+            0xffffffff3d228d51, 0xffffffff3e48af5a, 0xffffffff3ea8e50a, 0xffffffff3ed005d9,
+            0xffffffff3feaeb37, 0xffffffff4131d79d, 0xffffffff41a18402, 0xffffffff42e06619,
+            0xffffffff431e9dc7, 0xffffffff46bc9d4d, 0xffffffff46fd0e13, 0xffffffff47082b19,
+            0xffffffff48e8f61d, 0xffffffff4920c7cf, 0xffffffff4ae822ba, 0xffffffff4c6e02c4,
+            0xffffffff4d9f830d, 0xffffffff4e3ec5d1, 0xffffffff4ea4a31b, 0xffffffff4ea6ad2a,
+            0xffffffff4ec0fa9a, 0xffffffff4ed1e26e, 0xffffffff4ed32066, 0xffffffff513ace6b,
+            0xffffffff53d8e327, 0xffffffff53ec77ae, 0xffffffff54a6039e, 0xffffffff552f074f,
+            0xffffffff55918446, 0xffffffff56afd819, 0xffffffff5c81c6eb, 0xffffffff5cd294df,
+            0xffffffff5cf717b2, 0xffffffff5da0bbfd, 0xffffffff5e1ac3c9, 0xffffffff5ec0096f,
+            0xffffffff5ecfbd48, 0xffffffff5ee555ea, 0xffffffff5f305bb3, 0xffffffff5fd1044a,
+            0xffffffff62a301a1, 0xffffffff6586ff19, 0xffffffff6835b116, 0xffffffff6d055d05,
+            0xffffffff6ed52eda, 0xffffffff6ed8fc49, 0xffffffff7434b5cc, 0xffffffff746e0309,
+            0xffffffff74aa7bb3, 0xffffffff74b77cb5, 0xffffffff761386eb, 0xffffffff7d143fc1,
+            0xffffffff7e58bbbf, 0xffffffff7e60e312, 0xffffffff7eacbd99, 0xffffffff7f67bb32,
+            0xffffffff7f6cfdc7, 0xffffffff81101e48, 0xffffffff820cb10a, 0xffffffff837247ea,
+            0xffffffff8496e35d, 0xffffffff85395272, 0xffffffff8693bcf7, 0xffffffff86e08fd9,
+            0xffffffff88726863, 0xffffffff8ec0538a, 0xffffffff92c5031f, 0xffffffff940a0ec3,
+            0xffffffff952abcaa, 0xffffffff95ee4357, 0xffffffff9618047b, 0xffffffff9669bf9f,
+            0xffffffff96b0bbd2, 0xffffffff9ad4a2cd, 0xffffffff9c5b3d70, 0xffffffff9d7fe7ed,
+            0xffffffff9de5b7b7, 0xffffffff9ee4122c, 0xffffffffa0308dd9, 0xffffffffa12080ce,
+            0xffffffffa4245a61, 0xffffffffa4711f57, 0xffffffffa760c391, 0xffffffffa8d1ac22,
+            0xffffffffa90debd6, 0xffffffffab797aac, 0xffffffffabc38648, 0xffffffffad08d087,
+            0xffffffffad304307, 0xffffffffae57bf76, 0xffffffffaf44a319, 0xffffffffb26144d2,
+            0xffffffffb2cefddb, 0xffffffffb2fce2c1, 0xffffffffb33f1749, 0xffffffffb7de6356,
+            0xffffffffb890401f, 0xffffffffb8c4a2d9, 0xffffffffb8ee7915, 0xffffffffb9d18460,
+            0xffffffffbae6a222, 0xffffffffbc661819, 0xffffffffbc68bd95, 0xffffffffbdc1b743,
+            0xffffffffbe20bfa7, 0xffffffffbe40e126, 0xffffffffbe69dce4, 0xffffffffbea8990a,
+            0xffffffffbec8a59e, 0xffffffffbef02911, 0xffffffffbfddb5df, 0xffffffffbfe8a304,
+            0xffffffffc0afee19, 0xffffffffc116ccfd, 0xffffffffc150bb15, 0xffffffffc1ec1ce7,
+            0xffffffffc2abd6b9, 0xffffffffc2eb6d67, 0xffffffffc3e6f301, 0xffffffffc4c3f23b,
+            0xffffffffc55f3ee0, 0xffffffffc668b894, 0xffffffffc6900cf5, 0xffffffffc786941a,
+            0xffffffffcc6bd584, 0xffffffffccd84f99, 0xffffffffd17e5816, 0xffffffffd21fc8bd,
+            0xffffffffd39f0297, 0xffffffffd552061d, 0xffffffffd55bf4f7, 0xffffffffd916c30a,
+            0xffffffffda50bf1b, 0xffffffffda50db59, 0xffffffffdbd48954, 0xffffffffdd2e831a,
+            0xffffffffdd95c72f, 0xffffffffddc9f20c, 0xffffffffdf465ddc, 0xffffffffe43086b2,
+            0xffffffffea284b19, 0xffffffffea511287, 0xffffffffed219889, 0xffffffffed21e3c7,
+            0xffffffffefe6fa9e, 0xfffffffff1689795, 0xfffffffff29e23a9, 0xfffffffff45323e6,
+            0xfffffffff9f02259, 0xfffffffffb20067b, 0xfffffffffcbf17c5, 0xfffffffffd31fc02,
+            0xfffffffffd90df14, 0xfffffffffdd5c535, 0xfffffffffe07a2b7, 0xfffffffffed0511d,
+            0xffffffffff50aaac,
    }
- );
+);

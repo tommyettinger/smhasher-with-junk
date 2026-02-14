@@ -63,7 +63,7 @@
 template <typename keytype, typename hashtype>
 static void SparseKeygenRecurse( HashFn hash, const seed_t seed, unsigned start, unsigned bitsleft,
         bool inclusive, keytype & k, std::vector<hashtype> & hashes ) {
-    hashtype h;
+    hashtype h( 0 );
 
     for (size_t i = start; i < k.bitlen; i++) {
         k.flipbit(i);
@@ -86,7 +86,7 @@ static void SparseKeygenRecurse( HashFn hash, const seed_t seed, unsigned start,
 template <int keybits, typename hashtype>
 static bool SparseKeyImpl( HashFn hash, const seed_t seed, const unsigned setbits, bool inclusive, flags_t flags ) {
     typedef Blob<keybits> keytype;
-    keytype k(0);
+    keytype k( 0 );
 
     const unsigned keybytes  = keybits / 8;
     const unsigned totalkeys = inclusive ? 1 + chooseUpToK(keybits, setbits) : chooseK(keybits, setbits);
@@ -98,7 +98,7 @@ static bool SparseKeyImpl( HashFn hash, const seed_t seed, const unsigned setbit
             keybytes, inclusive ? "up to" : "exactly", setbits, totalkeys);
 
     if (inclusive) {
-        hashtype h;
+        hashtype h( 0 );
         hash(&k, k.len, seed, &h);
         addVCodeInput(&k, k.len);
         hashes.push_back(h);
@@ -106,30 +106,38 @@ static bool SparseKeyImpl( HashFn hash, const seed_t seed, const unsigned setbit
 
     SparseKeygenRecurse(hash, seed, 0, setbits, inclusive, k, hashes);
 
-    bool result = TestHashList(hashes).reportFlags(flags).testDeltas(1).
-        testDistribution(false).dumpFailKeys([&]( hidx_t n ) {
-            hidx_t t, pos = 0, maxpos = keybits - 1, laterbits = setbits;
-            k = 0;
-            // This loop is very close to the loop in
-            // PermutationKeysetTest.cpp, so the explanatory comments there
-            // also apply here, except that a) there are only two choices
-            // for each position, and b) there are a limited number of
-            // allowed 1 bits, while counts of block occurrences in
-            // Permutation are not limited. That is why this loop uses
-            // chooseUpToK() instead of a table, and why it uses the
-            // laterbits variable at all.
-            while (n > 0) {
-                laterbits--;
-                n--;
-                while (n >= (t = 1 + chooseUpToK(maxpos - pos, laterbits))) {
-                    n -= t;
-                    pos++;
+    // This loop is very close to the loop in PermutationKeysetTest.cpp, so
+    // the explanatory comments there also apply here, except that a) there
+    // are only two choices for each position, and b) there are a limited
+    // number of allowed 1 bits, while counts of block occurrences in
+    // Permutation are not limited. That is why this loop uses
+    // chooseUpToK() instead of a table, and why it uses the laterbits
+    // variable at all.
+    auto keyprint = [&]( hidx_t n ) {
+                hidx_t   t, pos = 0, maxpos = keybits - 1, laterbits = setbits;
+                hashtype v( 0 );
+
+                k = 0;
+                while (n > 0) {
+                    laterbits--;
+                    n--;
+                    while (n >= (t = 1 + chooseUpToK(maxpos - pos, laterbits))) {
+                        n -= t;
+                        pos++;
+                    }
+                    k.flipbit(pos++);
                 }
-                k.flipbit(pos++);
-            }
-            printf("0x%016" PRIx64 "\t", g_seed); k.printbytes(NULL); printf("\t");
-            hashtype v; hash(&k, k.len, seed, &v); v.printhex(NULL);
-        });
+
+                printf("0x%016" PRIx64 "\t", g_seed);
+                k.printbytes(NULL);
+                printf("\t");
+                hash(&k, k.len, seed, &v);
+                v.printhex(NULL);
+            };
+
+    bool result = TestHashList(hashes).reportFlags(flags).testDeltas(1).
+            testDistribution(false).dumpFailKeys(keyprint);
+
     printf("\n");
 
     char buf[16];

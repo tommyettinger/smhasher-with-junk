@@ -51,9 +51,9 @@ static const uint32_t rcon[10] = {
  * Returns the number of rounds for the given cipher key size.
  */
 static int AES_KeySetup_Enc_portable( uint8_t rk8[] /*16*(Nr + 1)*/, const uint8_t cipherKey[], int keyBits ) {
-    int      i = 0;
-    uint32_t temp;
-    uint32_t tempkeys[60];
+    int        i = 0;
+    uint32_t   temp;
+    uint32_t   tempkeys[60];
     uint32_t * rk = tempkeys;
 
     rk[0] = GETU32(cipherKey     );
@@ -173,7 +173,7 @@ static int AES_KeySetup_Dec_portable( uint8_t rk8[] /*16*(Nr + 1)*/, const uint8
 
     /* apply the inverse MixColumn transform to all round keys but the first and the last: */
     for (i = 1; i < Nr; i++) {
-        rk8  += 16;
+        rk8 += 16;
         temp = GETU32(rk8);
         temp =
                 Td0[Te4[(temp >> 24)       ] & 0xff] ^
@@ -541,4 +541,64 @@ static void AES_DecryptRound_portable( const uint8_t rk8[] /*16*/, uint8_t block
     for (unsigned i = 0; i < 16; i++) {
         block[i] ^= rk8[i];
     }
+}
+
+static void AES_EncryptRoundNoMixCol_portable( const uint8_t rk8[] /*16*/, uint8_t block[16] ) {
+    uint32_t t0, t1, t2, t3;
+
+    t0 = (Te4[block[ 0]] & 0xff000000) ^
+         (Te4[block[ 5]] & 0x00ff0000) ^
+         (Te4[block[10]] & 0x0000ff00) ^
+         (Te4[block[15]] & 0x000000ff) ^
+         GETU32(&rk8[0 * 4]);
+    t1 = (Te4[block[ 4]] & 0xff000000) ^
+         (Te4[block[ 9]] & 0x00ff0000) ^
+         (Te4[block[14]] & 0x0000ff00) ^
+         (Te4[block[ 3]] & 0x000000ff) ^
+         GETU32(&rk8[1 * 4]);
+    t2 = (Te4[block[ 8]] & 0xff000000) ^
+         (Te4[block[13]] & 0x00ff0000) ^
+         (Te4[block[ 2]] & 0x0000ff00) ^
+         (Te4[block[ 7]] & 0x000000ff) ^
+         GETU32(&rk8[2 * 4]);
+    t3 = (Te4[block[12]] & 0xff000000) ^
+         (Te4[block[ 1]] & 0x00ff0000) ^
+         (Te4[block[ 6]] & 0x0000ff00) ^
+         (Te4[block[11]] & 0x000000ff) ^
+         GETU32(&rk8[3 * 4]);
+
+    PUTU32(block     , t0);
+    PUTU32(block +  4, t1);
+    PUTU32(block +  8, t2);
+    PUTU32(block + 12, t3);
+}
+
+static void AES_DecryptRoundNoMixCol_portable( const uint8_t rk8[] /*16*/, uint8_t block[16] ) {
+    uint32_t t0, t1, t2, t3;
+
+    t0 = (Td4[block[ 0]] & 0xff000000) ^
+         (Td4[block[13]] & 0x00ff0000) ^
+         (Td4[block[10]] & 0x0000ff00) ^
+         (Td4[block[ 7]] & 0x000000ff) ^
+         GETU32(&rk8[0 * 4]);
+    t1 = (Td4[block[ 4]] & 0xff000000) ^
+         (Td4[block[ 1]] & 0x00ff0000) ^
+         (Td4[block[14]] & 0x0000ff00) ^
+         (Td4[block[11]] & 0x000000ff) ^
+         GETU32(&rk8[1 * 4]);
+    t2 = (Td4[block[ 8]] & 0xff000000) ^
+         (Td4[block[ 5]] & 0x00ff0000) ^
+         (Td4[block[ 2]] & 0x0000ff00) ^
+         (Td4[block[15]] & 0x000000ff) ^
+         GETU32(&rk8[2 * 4]);
+    t3 = (Td4[block[12]] & 0xff000000) ^
+         (Td4[block[ 9]] & 0x00ff0000) ^
+         (Td4[block[ 6]] & 0x0000ff00) ^
+         (Td4[block[ 3]] & 0x000000ff) ^
+         GETU32(&rk8[3 * 4]);
+
+    PUTU32(block     , t0);
+    PUTU32(block +  4, t1);
+    PUTU32(block +  8, t2);
+    PUTU32(block + 12, t3);
 }

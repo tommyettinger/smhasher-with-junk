@@ -33,9 +33,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#if false
-
 #include "Platform.h"
 #include "Hashlib.h"
 
@@ -109,7 +106,7 @@ static void aesnihash_peterrk( const void * in, const size_t len0, const seed_t 
         case  2: mix(GREEDILY_READ(2, msg)); break;
         case  1: mix(GREEDILY_READ(1, msg)); break;
         case  0:
-        default:     // try to keep m & s from register spilling
+        default: // try to keep m & s from register spilling
                  a = _mm_add_epi8(a, s);
                  b = _mm_add_epi8(b, m);
         }
@@ -190,6 +187,4 @@ REGISTER_HASH(aesnihash_peterrk,
    $.hashfn_native   = aesnihash_peterrk,
    $.hashfn_bswap    = aesnihash_peterrk
  );
-#endif
-
 #endif

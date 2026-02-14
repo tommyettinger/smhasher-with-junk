@@ -16,17 +16,21 @@ set(MONOTONIC_VARIANTS
 )
 findVariant(MONOTONIC)
 
-set(TIMING_VARIANTS
+set(CYCLE_TIMING_VARIANTS
   "hardware performance counter"
   "timing"
-  "@FIXEDINT_IMPL@\n@FORCE_INLINE_IMPL@\n@MONOTONIC_IMPL@\n"
-  8
+  "@FIXEDINT_IMPL@\n@FORCE_INLINE_IMPL@\n@NEVER_INLINE_IMPL@\n@MONOTONIC_IMPL@\ndouble cycle_timer_mult'\n"
+  6
 )
-findVariant(TIMING)
+findVariant(CYCLE_TIMING)
 
 # By depending on this .cmake file, the cache will be cleared if the
 # list of files were to ever change, as this file is the only one that
 # can change it.
 list(APPEND TIMING_FILELIST "${DETECT_DIR}/timing.cmake")
+# These also depend on the fixed-size int implementation
+list(APPEND TIMING_FILELIST "${DETECT_DIR}/intsize.cmake")
+# These also depend on the force-inline builtin implementation
+list(APPEND TIMING_FILELIST "${DETECT_DIR}/builtins.cmake")
 
 setCachedVarsDepend(TIMING TIMING_VARLIST TIMING_FILELIST)

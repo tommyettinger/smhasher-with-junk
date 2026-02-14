@@ -21,6 +21,7 @@
 #include <set>
 
 #define HASH_FLAGS                       \
+    FLAG_EXPAND(HASH_DONOTHING)          \
     FLAG_EXPAND(HASH_MOCK)               \
     FLAG_EXPAND(HASH_CRYPTOGRAPHIC)      \
     FLAG_EXPAND(HASH_CRYPTOGRAPHIC_WEAK) \
@@ -58,6 +59,7 @@
     FLAG_EXPAND(IMPL_CANONICAL_BOTH)        \
     FLAG_EXPAND(IMPL_SEED_WITH_HINT)        \
     FLAG_EXPAND(IMPL_LICENSE_PUBLIC_DOMAIN) \
+    FLAG_EXPAND(IMPL_LICENSE_BOOST)         \
     FLAG_EXPAND(IMPL_LICENSE_BSD)           \
     FLAG_EXPAND(IMPL_LICENSE_MIT)           \
     FLAG_EXPAND(IMPL_LICENSE_APACHE2)       \
@@ -215,9 +217,13 @@ class HashInfo {
 
     FORCE_INLINE seed_t getFixedSeed( seed_t seed ) const {
         if (unlikely(seedfixfn != NULL)) {
-            seed = (seed_t)seedfixfn(this, seed);
+            seed = seedfixfn(this, seed);
         }
         return seed;
+    }
+
+    FORCE_INLINE bool isDoNothing( void ) const {
+        return !!(hash_flags & FLAG_HASH_DONOTHING);
     }
 
     FORCE_INLINE bool isMock( void ) const {

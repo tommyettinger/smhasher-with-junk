@@ -17,41 +17,58 @@
  * <https://www.gnu.org/licenses/>.
  */
 #include "Platform.h"
+#include "Timing.h"
 #include "Random.h"
 #include "TestGlobals.h" // For Stats.h
 #include "Stats.h"       // For distribution testing
-#include "Timing.h"
 
 #include <algorithm>
 
+// Default to zero
+uint64_t Rand::GLOBAL_SEED = 0;
+
 //-----------------------------------------------------------------------------
 // Fill a buffer with 4 * PARALLEL random uint64_t values, updating the
-// counter in keyvals[0] to reflect the number of values generated.
+// counter to reflect the number of values generated.
 //
 // This is the Threefry-4x64-16 CBRNG as documented in:
 //   "Parallel random numbers: as easy as 1, 2, 3", by John K. Salmon,
 //     Mark A. Moraes, Ron O. Dror, and David E. Shaw
 //     https://www.thesalmons.org/john/random123/papers/random123sc11.pdf
-static void threefry( void * buf, uint64_t * keyvals ) {
+static void threefry( void * buf, uint64_t & counter, const uint64_t * keyvals ) {
     uint64_t tmpbuf[Rand::BUFLEN];
 
     static_assert(Rand::RANDS_PER_ROUND == 4, "Threefry outputs 4 u64s per call");
-    static_assert(Rand::BUFLEN == (PARALLEL * Rand::RANDS_PER_ROUND),
-            "Rand buffer can hold current PARALLEL setting");
+    static_assert(Rand::BUFLEN == (PARALLEL * Rand::RANDS_PER_ROUND), "Rand buffer can hold current PARALLEL setting");
 
     // This strange construction involving many for() loops from [0,
-    // PARALLEL) allows most compilers to vectorize this sequence of
-    // operations when the platform supports that. It is exactly
-    // equivalent to a single for() loop containing all the STATE()
-    // statements inside of it.
+    // PARALLEL) is exactly equivalent to a single for() loop containing
+    // all the STATE() statements inside of it. Having the extra loops
+    // allows some compilers to more easily auto-vectorize this sequence of
+    // operations when the platform supports that. It also helps GCC do a
+    // better job of insn scheduling. That said, LLVM seems to intensely
+    // dislike this construction, and so we give it a single giant loop.
+#if defined(__llvm__)
+  #define SINGLE_GIANT_LOOP 1
+#else
+  #define SINGLE_GIANT_LOOP 0
+#endif
+
 #define STATE(j) tmpbuf[i + PARALLEL * j]
+
+    // The input to the truncated Threefry cipher is a vector of 4 64-bit
+    // values, which is { 0, counter, counter, 0 }. The choice of which
+    // input value(s) to use as counter(s) is arbitrary; this particular
+    // choice was motivated purely by performance testing.
     for (uint64_t i = 0; i < PARALLEL; i++) {
-        STATE(0) = keyvals[0] + i;
-        STATE(1) = keyvals[1];
-        STATE(2) = keyvals[2];
+        STATE(0) = keyvals[0];
+        STATE(1) = keyvals[1] + counter + i;
+        STATE(2) = keyvals[2] + counter + i;
         STATE(3) = keyvals[3];
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(0) += STATE(1); STATE(1) = ROTL64(STATE(1), 14); STATE(1) ^= STATE(0);
         STATE(2) += STATE(3); STATE(3) = ROTL64(STATE(3), 16); STATE(3) ^= STATE(2);
         STATE(0) += STATE(3); STATE(3) = ROTL64(STATE(3), 52); STATE(3) ^= STATE(0);
@@ -60,17 +77,23 @@ static void threefry( void * buf, uint64_t * keyvals ) {
         STATE(2) += STATE(3); STATE(3) = ROTL64(STATE(3), 40); STATE(3) ^= STATE(2);
         STATE(0) += STATE(3); STATE(3) = ROTL64(STATE(3),  5); STATE(3) ^= STATE(0);
         STATE(2) += STATE(1); STATE(1) = ROTL64(STATE(1), 37); STATE(1) ^= STATE(2);
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(0) += keyvals[1];
         STATE(1) += keyvals[2];
         STATE(2) += keyvals[3];
-        STATE(3) += keyvals[4] ^ (keyvals[0] + i);
+        STATE(3) += keyvals[4];
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(3) += 1;
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(0) += STATE(1); STATE(1) = ROTL64(STATE(1), 25); STATE(1) ^= STATE(0);
         STATE(2) += STATE(3); STATE(3) = ROTL64(STATE(3), 33); STATE(3) ^= STATE(2);
         STATE(0) += STATE(3); STATE(3) = ROTL64(STATE(3), 46); STATE(3) ^= STATE(0);
@@ -79,17 +102,23 @@ static void threefry( void * buf, uint64_t * keyvals ) {
         STATE(2) += STATE(3); STATE(3) = ROTL64(STATE(3), 22); STATE(3) ^= STATE(2);
         STATE(0) += STATE(3); STATE(3) = ROTL64(STATE(3), 32); STATE(3) ^= STATE(0);
         STATE(2) += STATE(1); STATE(1) = ROTL64(STATE(1), 32); STATE(1) ^= STATE(2);
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(0) += keyvals[2];
         STATE(1) += keyvals[3];
-        STATE(2) += keyvals[4] ^ (keyvals[0] + i);
-        STATE(3) += keyvals[0] + i;
+        STATE(2) += keyvals[4];
+        STATE(3) += keyvals[0];
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(3) += 2;
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(0) += STATE(1); STATE(1) = ROTL64(STATE(1), 14); STATE(1) ^= STATE(0);
         STATE(2) += STATE(3); STATE(3) = ROTL64(STATE(3), 16); STATE(3) ^= STATE(2);
         STATE(0) += STATE(3); STATE(3) = ROTL64(STATE(3), 52); STATE(3) ^= STATE(0);
@@ -98,17 +127,23 @@ static void threefry( void * buf, uint64_t * keyvals ) {
         STATE(2) += STATE(3); STATE(3) = ROTL64(STATE(3), 40); STATE(3) ^= STATE(2);
         STATE(0) += STATE(3); STATE(3) = ROTL64(STATE(3),  5); STATE(3) ^= STATE(0);
         STATE(2) += STATE(1); STATE(1) = ROTL64(STATE(1), 37); STATE(1) ^= STATE(2);
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(0) += keyvals[3];
-        STATE(1) += keyvals[4] ^ (keyvals[0] + i);
-        STATE(2) += keyvals[0] + i;
+        STATE(1) += keyvals[4];
+        STATE(2) += keyvals[0];
         STATE(3) += keyvals[1];
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(3) += 3;
+#if !SINGLE_GIANT_LOOP
     }
     for (uint64_t i = 0; i < PARALLEL; i++) {
+#endif
         STATE(0) += STATE(1); STATE(1) = ROTL64(STATE(1), 25); STATE(1) ^= STATE(0);
         STATE(2) += STATE(3); STATE(3) = ROTL64(STATE(3), 33); STATE(3) ^= STATE(2);
         STATE(0) += STATE(3); STATE(3) = ROTL64(STATE(3), 46); STATE(3) ^= STATE(0);
@@ -120,24 +155,35 @@ static void threefry( void * buf, uint64_t * keyvals ) {
     }
 
     // Update the counter to reflect that we've generated PARALLEL values.
-    keyvals[0] += PARALLEL;
+    counter += PARALLEL;
+
+    // Since we want buffered byte-order to be little-endian always (see
+    // Random.h for why), byte-swapping is done on big-endian ints. Doing
+    // this outside the loop below seems to produce better code.
+    if (isBE()) {
+        for (uint64_t i = 0; i < PARALLEL; i++) {
+            for (uint64_t j = 0; j < 4; j++) {
+                STATE(j) = BSWAP(STATE(j));
+            }
+        }
+    }
 
     // This reorders the state values so that the output bytes don't depend
     // on the value of PARALLEL. This usually gets vectorized also.
     uint8_t * rngbuf = static_cast<uint8_t *>(buf);
     for (uint64_t i = 0; i < PARALLEL; i++) {
         for (uint64_t j = 0; j < 4; j++) {
-            uint64_t tmp = COND_BSWAP(STATE(j), isBE());
-            memcpy(&rngbuf[j * 8 + i * 32], &tmp, sizeof(uint64_t));
+            memcpy(&rngbuf[i * 32 + j * 8], &(STATE(j)), sizeof(uint64_t));
         }
     }
 #undef STATE
+#undef SINGLE_GIANT_LOOP
 }
 
 //-----------------------------------------------------------------------------
 
 void Rand::refill_buf( void * buf ) {
-    threefry(buf, xseed);
+    threefry(buf, counter, xseed);
 }
 
 // Fill the user's buffer from our cache of random data as much as
@@ -445,7 +491,7 @@ static inline void fill_seq( uint8_t * buf, const uint32_t k[RandSeq::FEISTEL_MA
 // are set to go, this just fills the entire buffer with random data, and
 // lets fill_seq() overwrite it with 8-byte elements in the right places.
 static void fill_rand( uint8_t * out, const size_t elem_sz, const uint64_t elem_lo,
-        const uint64_t elem_hi, uint64_t * xseed ) {
+        const uint64_t elem_hi, const uint64_t * xseed ) {
     const size_t bytes_per_fill = Rand::BUFLEN * sizeof(uint64_t);
     uint8_t      tmp[Rand::BUFLEN * sizeof(uint64_t)];
 
@@ -454,23 +500,21 @@ static void fill_rand( uint8_t * out, const size_t elem_sz, const uint64_t elem_
     size_t offset_bytes  = (elem_lo * elem_sz) % (sizeof(uint64_t) * Rand::RANDS_PER_ROUND);
     size_t offset_size   = std::min(sizeof(tmp) - offset_bytes, nbytes) % bytes_per_fill;
 
-    xseed[0] = offset_rounds;
-
     if (offset_size > 0) {
-        threefry(tmp, xseed);
+        threefry(tmp, offset_rounds, xseed);
         memcpy(out, &tmp[offset_bytes], offset_size);
         out    += offset_size;
         nbytes -= offset_size;
     }
 
     while (nbytes >= bytes_per_fill) {
-        threefry(out, xseed);
+        threefry(out, offset_rounds, xseed);
         nbytes -= bytes_per_fill;
         out    += bytes_per_fill;
     }
 
     if (nbytes > 0) {
-        threefry(tmp, xseed);
+        threefry(tmp, offset_rounds, xseed);
         memcpy(out, tmp, nbytes);
     }
 }
@@ -579,8 +623,8 @@ RandSeq Rand::get_seq( enum RandSeqType seqtype, const uint32_t szelem ) {
 
 #if !defined(BARE_RNG)
 
-#define WEAKRAND(i) (UINT64_C(0xBB67AE8584CAA73D) * (i + 1))
-#define VERIFY(r, t) { if (!(r)) { printf("%s:%d: Test for %s failed!\n", __FILE__, __LINE__, t); exit(1); } }
+  #define WEAKRAND(i) (UINT64_C(0xBB67AE8584CAA73D) * (i + 1))
+  #define VERIFY(r, t) { if (!(r)) { printf("%s:%d: Test for %s failed!\n", __FILE__, __LINE__, t); exit(1); } }
 #define VERIFYEQUAL(x, y, n) {                                         \
         VERIFY(x.rand_u64() == y.rand_u64(), "Rand() equality");       \
         VERIFY(x.rand_range(n) == y.rand_range(n), "Rand() equality"); \
@@ -775,8 +819,7 @@ void RandTest( const unsigned runs ) {
                 VERIFYEQUAL(testRands1[l], testRands2[l], j + 2);
             }
             for (size_t l = 0; l < Randcount; l++) {
-                VERIFY(memcmp(&buf64_A[l][0], &buf64_B[l][0], bytecnt) == 0,
-                        "Orthogonal outputs match");
+                VERIFY(memcmp(&buf64_A[l][0], &buf64_B[l][0], bytecnt) == 0, "Orthogonal outputs match");
             }
             for (size_t l = 0; l < Randcount; l++) {
                 testRands1[l].enable_ortho();
@@ -1151,26 +1194,28 @@ void RandBenchmark( void ) {
     volatile uint64_t val;
     Rand randbuf[TEST_ITER];
 
-    uint64_t numgen;
+    uint64_t numgen = 0;
     double   deltat;
 
     printf("Raw RNG.........................");
     deltat = UINT64_C(1) << 53;
     for (size_t i = 0; i < TEST_ITER; i++) {
         uint64_t keys[5] = { 1, 2, 3, 4, 5 };
-        uint64_t begin   = timer_start();
-        threefry(buf, keys);
-        uint64_t end     = timer_start();
+        uint64_t begin   = cycle_timer_start();
+        for (size_t j = 0; j < TEST_SIZE / Rand::BUFLEN; j++) {
+            threefry(&buf[j * Rand::BUFLEN], numgen, keys);
+        }
+        uint64_t end     = cycle_timer_start();
         deltat = std::min(deltat, (double)(end - begin));
     }
-    printf("%8.2f\n", deltat);
+    printf("%8.2f\n", deltat / (TEST_SIZE / Rand::BUFLEN));
 
     printf("Object init.....................");
     deltat = UINT64_C(1) << 53;
     for (size_t i = 0; i < TEST_ITER; i++) {
-        uint64_t begin = timer_start();
+        uint64_t begin = cycle_timer_start();
         randbuf[i] = Rand(i);
-        uint64_t end   = timer_start();
+        uint64_t end   = cycle_timer_start();
         deltat = std::min(deltat, (double)(end - begin));
     }
     printf("%8.2f\n", deltat);
@@ -1179,9 +1224,9 @@ void RandBenchmark( void ) {
     deltat = UINT64_C(1) << 53;
     for (size_t i = 0; i < TEST_ITER; i++) {
         Rand r1;
-        uint64_t begin = timer_start();
+        uint64_t begin = cycle_timer_start();
         r1.reseed(i, i);
-        uint64_t end   = timer_start();
+        uint64_t end   = cycle_timer_start();
         deltat = std::min(deltat, (double)(end - begin));
     }
     printf("%8.2f\n", deltat);
@@ -1190,10 +1235,10 @@ void RandBenchmark( void ) {
     deltat = UINT64_C(1) << 53;
     for (size_t i = 0; i < TEST_ITER; i++) {
         Rand r2b;
-        uint64_t begin = timer_start();
+        uint64_t begin = cycle_timer_start();
         r2b.reseed(i, i);
         val = r2b.rand_u64(); (void)val;
-        uint64_t end =   timer_start();
+        uint64_t end =   cycle_timer_start();
         deltat = std::min(deltat, (double)(end - begin));
     }
     printf("%8.2f\n", deltat);
@@ -1202,11 +1247,11 @@ void RandBenchmark( void ) {
     deltat = UINT64_C(1) << 53;
     for (size_t i = 0; i < TEST_ITER; i++) {
         Rand r3;
-        uint64_t begin = timer_start();
+        uint64_t begin = cycle_timer_start();
         for (size_t j = 0; j < 4096; j++) {
             val = r3.rand_u64(); (void)val;
         }
-        uint64_t end =   timer_start();
+        uint64_t end =   cycle_timer_start();
         deltat = std::min(deltat, (double)(end - begin));
     }
     printf("%8.2f\n", deltat / 4096.0);
@@ -1215,11 +1260,11 @@ void RandBenchmark( void ) {
     deltat = UINT64_C(1) << 53;
     for (size_t i = 0; i < TEST_ITER; i++) {
         Rand r4;
-        uint64_t begin = timer_start();
+        uint64_t begin = cycle_timer_start();
         for (size_t j = 0; j < 4096; j++) {
             val = r4.rand_range(j); (void)val;
         }
-        uint64_t end =   timer_start();
+        uint64_t end =   cycle_timer_start();
         deltat = std::min(deltat, (double)(end - begin));
     }
     printf("%8.2f\n", deltat / 4096.0);
@@ -1228,9 +1273,9 @@ void RandBenchmark( void ) {
     deltat = UINT64_C(1) << 53;
     for (size_t i = 0; i < TEST_ITER; i++) {
         Rand r5;
-        uint64_t begin = timer_start();
+        uint64_t begin = cycle_timer_start();
         r5.rand_n(buf, sizeof(buf));
-        uint64_t end   = timer_start();
+        uint64_t end   = cycle_timer_start();
         deltat = std::min(deltat, (double)(end - begin));
     }
     printf("%8.2f\n", deltat / (sizeof(buf) / sizeof(uint64_t)));
@@ -1245,9 +1290,9 @@ void RandBenchmark( void ) {
         // Batched
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs1   = r6.get_seq(SEQ_DIST_1, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             rs1.write(buf, 0, numgen);
-            uint64_t end   = timer_start();
+            uint64_t end   = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1255,11 +1300,11 @@ void RandBenchmark( void ) {
         deltat = UINT64_C(1) << 53;
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs1   = r6.get_seq(SEQ_DIST_1, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 rs1.write(buf, j, 1);
             }
-            uint64_t end =   timer_start();
+            uint64_t end =   cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1270,12 +1315,12 @@ void RandBenchmark( void ) {
             rs2.write(buf, 0, numgen);
 
             RandSeq  rs1   = r6.get_seq(SEQ_DIST_1, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 uint64_t k = GET_U64<false>(buf, j * 8);
                 rs1.write(buf, k, 1);
             }
-            uint64_t end = timer_start();
+            uint64_t end = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\n", deltat / numgen);
@@ -1289,9 +1334,9 @@ void RandBenchmark( void ) {
         // Batched
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs2   = r7.get_seq(SEQ_DIST_2, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             rs2.write(buf, 0, numgen);
-            uint64_t end   = timer_start();
+            uint64_t end   = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1299,11 +1344,11 @@ void RandBenchmark( void ) {
         deltat = UINT64_C(1) << 53;
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs2   = r7.get_seq(SEQ_DIST_2, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 rs2.write(buf, j, 1);
             }
-            uint64_t end =   timer_start();
+            uint64_t end =   cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1314,12 +1359,12 @@ void RandBenchmark( void ) {
             rs3.write(buf, 0, numgen);
 
             RandSeq  rs2   = r7.get_seq(SEQ_DIST_2, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 uint64_t k = GET_U64<false>(buf, j * 8);
                 rs2.write(buf, k, 1);
             }
-            uint64_t end = timer_start();
+            uint64_t end = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\n", deltat / numgen);
@@ -1333,9 +1378,9 @@ void RandBenchmark( void ) {
         // Batched
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs3   = r8.get_seq(SEQ_DIST_3, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             rs3.write(buf, 0, numgen);
-            uint64_t end   = timer_start();
+            uint64_t end   = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1343,11 +1388,11 @@ void RandBenchmark( void ) {
         deltat = UINT64_C(1) << 53;
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs3   = r8.get_seq(SEQ_DIST_3, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 rs3.write(buf, j, 1);
             }
-            uint64_t end =   timer_start();
+            uint64_t end =   cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1358,12 +1403,12 @@ void RandBenchmark( void ) {
             rs4.write(buf, 0, numgen);
 
             RandSeq  rs3   = r8.get_seq(SEQ_DIST_3, szelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 uint64_t k = GET_U64<false>(buf, j * 8);
                 rs3.write(buf, k, 1);
             }
-            uint64_t end = timer_start();
+            uint64_t end = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\n", deltat / numgen);
@@ -1378,9 +1423,9 @@ void RandBenchmark( void ) {
         // Batched
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs4   = r9.get_seq(SEQ_NUM, maxelem - 1);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             rs4.write(buf, 0, numgen);
-            uint64_t end   = timer_start();
+            uint64_t end   = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1388,11 +1433,11 @@ void RandBenchmark( void ) {
         deltat = UINT64_C(1) << 53;
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs4   = r9.get_seq(SEQ_NUM, maxelem - 1);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 rs4.write(buf, j, 1);
             }
-            uint64_t end =   timer_start();
+            uint64_t end =   cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1403,12 +1448,12 @@ void RandBenchmark( void ) {
             rs5.write(buf, 0, numgen);
 
             RandSeq  rs4   = r9.get_seq(SEQ_NUM, maxelem - 1);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 uint64_t k = GET_U64<false>(buf, j * 8);
                 rs4.write(buf, k, 1);
             }
-            uint64_t end = timer_start();
+            uint64_t end = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\n", deltat / numgen);
@@ -1423,9 +1468,9 @@ void RandBenchmark( void ) {
         // Batched
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs5   = rA.get_seq(SEQ_NUM, maxelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             rs5.write(buf, 0, numgen);
-            uint64_t end   = timer_start();
+            uint64_t end   = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1433,11 +1478,11 @@ void RandBenchmark( void ) {
         deltat = UINT64_C(1) << 53;
         for (size_t i = 0; i < TEST_ITER; i++) {
             RandSeq  rs5   = rA.get_seq(SEQ_NUM, maxelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 rs5.write(buf, j, 1);
             }
-            uint64_t end =   timer_start();
+            uint64_t end =   cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\t", deltat / numgen);
@@ -1448,12 +1493,12 @@ void RandBenchmark( void ) {
             rs6.write(buf, 0, numgen);
 
             RandSeq  rs5   = rA.get_seq(SEQ_NUM, maxelem);
-            uint64_t begin = timer_start();
+            uint64_t begin = cycle_timer_start();
             for (uint64_t j = 0; j < numgen; j++) {
                 uint64_t k = GET_U64<false>(buf, j * 8);
                 rs5.write(buf, k, 1);
             }
-            uint64_t end = timer_start();
+            uint64_t end = cycle_timer_start();
             deltat = std::min(deltat, (double)(end - begin));
         }
         printf("%8.2f\n", deltat / numgen);

@@ -18,7 +18,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 #include "Platform.h"
-#include "Timing.h"
 #include "TestGlobals.h"
 #include "Blobsort.h"
 #include "Instantiate.h"
@@ -29,7 +28,7 @@
 //-----------------------------------------------------------------------------
 // Blob sorting routine unit tests
 
-static const size_t SORT_TESTS = 20;
+static const size_t SORT_TESTS = 22;
 static const char * teststr[SORT_TESTS] = {
     "Consecutive numbers, sorted",
     "Consecutive numbers, almost sorted",
@@ -39,13 +38,15 @@ static const char * teststr[SORT_TESTS] = {
     "Random numbers, almost sorted",
     "Random numbers, scrambled",
     "Random numbers, reverse sorted",
-    "Random numbers, many duplicates",
+    "Random numbers, many duplicates, clustered",
     "Random numbers, many duplicates, scrambled",
     "Random number,  all duplicates",
     "Random numbers, all zero in LSB",
     "Random numbers, all zero in MSB",
     "Random numbers, all zero in LSB+1",
     "Random numbers, all zero in MSB+1",
+    "Random numbers, same half-width prefix",
+    "Random numbers, same half-width suffix",
     "Random numbers, each byte has some missing values",
     "All zeroes",
     "All ones",
@@ -59,6 +60,7 @@ static void blobfill( std::vector<blobtype> & blobs, size_t testnum, size_t iter
 
     Rand r( testnum, iternum );
 
+    // Fill in the base data for the selected test
     switch (testnum) {
     case  0: // Consecutive numbers, sorted
     case  1: // Consecutive numbers, sorted almost
@@ -84,7 +86,9 @@ static void blobfill( std::vector<blobtype> & blobs, size_t testnum, size_t iter
     case 12: // All zero bytes in MSB position
     case 13: // All zero bytes in LSB+1 position
     case 14: // All zero bytes in MSB-1 position
-    case 15: // Random numbers, except each position has some missing bytes
+    case 15: // Random numbers, same half-width prefix
+    case 16: // Random numbers, same half-width suffix
+    case 17: // Random numbers, except each position has some missing bytes
     {
         r.rand_n(&blobs[0], blobtype::len * TEST_SIZE);
         break;
@@ -111,24 +115,24 @@ static void blobfill( std::vector<blobtype> & blobs, size_t testnum, size_t iter
         }
         break;
     }
-    case 16: // All zeroes
+    case 18: // All zeroes
     {
         memset((void *)&blobs[0], 0, TEST_SIZE * sizeof(blobtype));
         break;
     }
-    case 17: // All ones
+    case 19: // All ones
     {
         for (uint32_t i = 0; i < TEST_SIZE; i++) {
             blobs[i] = 1;
         }
         break;
     }
-    case 18: // All Fs
+    case 20: // All Fs
     {
         memset((void *)&blobs[0], 0xFF, TEST_SIZE * blobtype::len);
         break;
     }
-    case 19: // All 0xAAA and 0x555
+    case 21: // All 0xAAA and 0x555
     {
         uint64_t rndnum = 0;
         for (uint32_t i = 0; i < TEST_SIZE; i++) {
@@ -143,6 +147,7 @@ static void blobfill( std::vector<blobtype> & blobs, size_t testnum, size_t iter
     default: unreachable(); break;
     }
 
+    // Tweak the base data, if needed for the selected test
     switch (testnum) {
     // Sorted backwards
     case  7:
@@ -189,8 +194,21 @@ static void blobfill( std::vector<blobtype> & blobs, size_t testnum, size_t iter
         }
         break;
     }
-    // Exclude a byte value from each position
+    // Give each entry the same prefix (MSB) or suffix (LSB)
     case 15:
+    case 16:
+    {
+        const size_t          len    = sizeof(blobtype) / 2;
+        const size_t          offset = (testnum == 15) ? (sizeof(blobtype) - len) : 0;
+        const uint8_t * const src    = ((uint8_t *)&blobs[0]) + offset;
+        for (uint32_t i = 1; i < TEST_SIZE; i++) {
+            uint8_t * dst = ((uint8_t *)&blobs[i]) + offset;
+            memcpy(dst, src, len);
+        }
+        break;
+    }
+    // Exclude a byte value from each position
+    case 17:
     {
         uint8_t excludes[blobtype::len];
         r.rand_n(excludes, sizeof(excludes));
@@ -209,8 +227,8 @@ static void blobfill( std::vector<blobtype> & blobs, size_t testnum, size_t iter
 
 template <typename blobtype>
 static bool blobverify( std::vector<blobtype> & blobs, std::vector<blobtype> & orig ) {
-    bool passed     = true;
-    const size_t sz = blobs.size();
+    bool         passed = true;
+    const size_t sz     = blobs.size();
 
     for (size_t nb = 1; nb < sz; nb++) {
         if (!((blobs[nb - 1] < blobs[nb]) ||
@@ -235,8 +253,8 @@ static bool blobverify( std::vector<blobtype> & blobs, std::vector<blobtype> & o
 
 template <typename blobtype>
 static bool blobverify( std::vector<blobtype> & blobs, std::vector<blobtype> & orig, std::vector<hidx_t> & idxs ) {
-    bool passed     = true;
-    const size_t sz = blobs.size();
+    bool         passed = true;
+    const size_t sz     = blobs.size();
 
     for (size_t nb = 0; nb < sz; nb++) {
         if (blobs[nb] != orig[idxs[nb]]) {
@@ -251,14 +269,15 @@ static bool blobverify( std::vector<blobtype> & blobs, std::vector<blobtype> & o
 
 //-----------------------------------------------------------------------------
 
-static const uint32_t BASELINE_TEST_ITER = 4000000;
-double baseline_timing[6][9] = {
-    { 37.0,  34.3, 44.8, 41.8,  8.1,  34.3,  8.4, 42.8 },
-    { 76.3,  76.2, 85.1, 83.9, 11.7,  76.3, 11.6, 84.2 },
-    { 22.2, 136.0, 25.0, 35.4, 13.1, 136.1, 13.1, 41.1 },
-    { 23.1, 144.5, 27.7, 39.0, 15.2, 144.6, 15.2, 43.9 },
-    { 26.2, 201.9, 33.8, 30.1, 16.9, 202.0, 16.9, 48.5 },
-    { 29.4, 194.7, 30.9, 32.8, 18.0, 194.9, 18.0, 49.5 },
+static const uint32_t BASELINE_TEST_SIZE = 4000000;
+static const uint32_t BASELINE_TEST_ITER = 100;
+double baseline_timing[6][10] = {
+    { 25.3,  22.6, 45.1, 41.5,  8.2,  16.7,  16.7,  22.6,  9.0, 42.1 },
+    { 51.5,  51.5, 85.6, 83.4, 11.8,  31.4,  31.5,  51.6, 11.7, 83.6 },
+    { 22.5, 120.7, 25.3, 26.4, 13.0,  96.7, 120.8, 121.2, 13.0, 42.2 },
+    { 23.7, 145.3, 32.6, 27.1, 15.4, 198.3, 145.1, 147.2, 15.4, 44.0 },
+    { 27.9, 202.0, 32.0, 31.5, 16.5, 322.4, 201.9, 203.8, 16.5, 48.5 },
+    { 28.9, 186.6, 31.2, 40.7, 16.9, 385.3, 186.1, 188.0, 16.9, 48.1 },
 };
 // Converts number of 32-bit words in the hash to the row of
 // baseline_timing. Row 0 is 32-bits, row 1 is 64, etc.
@@ -268,26 +287,28 @@ const static int baseline_idx1[] = {
 // Converts test number to the columns of baseline_timing. Column 0 is
 // "Random numbers, sorted", column 1 is "Random numbers, scrambled", etc.
 const static int baseline_idx2[SORT_TESTS] = {
-    -1, -1, -1, -1, +0, -1, +1, -1, +2, +3,
-    +4, -1, -1, -1, -1, +5, +6, -1, -1, +7
+    -1, -1, -1, -1, +0, -1, +1, -1, +2, +3, +4,
+    -1, -1, -1, -1, +5, +6, +7, +8, -1, -1, +9
 };
 
 template <uint32_t TEST_SIZE, uint32_t TEST_ITER, typename blobtype, bool track_idxs>
 bool test_blobsort_type_idx( void ) {
     std::vector<blobtype> blobs( TEST_SIZE ), orig( TEST_SIZE );
-    std::vector<hidx_t> idxs;
-    std::vector<size_t> testnums;
+    std::vector<hidx_t>   idxs;
+    std::vector<size_t>   testnums;
     uint64_t timetotal = 0;
     double   basesum   = 0.0;
     bool     passed    = true;
 
     if (TEST_ITER > 1) {
-        testnums = { 4, 6, 8, 9, 10, 15, 16, 19 };
+        testnums = { 4, 6, 8, 9, 10, 15, 16, 17, 18, 21 };
     } else {
         for (size_t i = 0; i < SORT_TESTS; i++) {
             testnums.push_back(i);
         }
     }
+
+    printf("%s\n", track_idxs ? "Testing sorting plus index tracking" : "Testing raw sorting");
 
     for (size_t i: testnums) {
         bool     thispassed = true;
@@ -323,29 +344,30 @@ bool test_blobsort_type_idx( void ) {
         }
         if (TEST_ITER > 1) {
             double thistime = (double)mintime / (double)(NSEC_PER_SEC / 1000);
-            if ((TEST_ITER != BASELINE_TEST_ITER) || (baseline_idx1[blobtype::len / 4] < 0) || (baseline_idx2[i] < 0)) {
-                printf("\t %7.1f ms               %s\n", thistime, thispassed ? "ok" : "NO");
+            if ((TEST_ITER != BASELINE_TEST_ITER) || (TEST_SIZE != BASELINE_TEST_SIZE) ||
+                    (baseline_idx1[blobtype::len / 4] < 0) || (baseline_idx2[i] < 0)) {
+                printf("\t %7.1f ms              %s\n", thistime, thispassed ? "ok" : "NO");
             } else {
                 double basetime = baseline_timing[baseline_idx1[blobtype::len / 4]][baseline_idx2[i]];
-                double delta    = thistime - basetime;
+                double delta    = (thistime - basetime) / basetime * 100.0;
                 if ((delta >= -0.05) && (delta <= 0.05)) {
                     delta = 0.0;
                 }
                 basesum += basetime;
-                printf("\t %7.1f ms ( %+6.1f ms ) %s\n", thistime, delta, thispassed ? "ok" : "NO");
+                printf("\t %7.1f ms ( %+6.1f %% ) %s\n", thistime, delta, thispassed ? "ok" : "NO");
             }
         }
         timetotal += mintime;
-        passed &= thispassed;
+        passed    &= thispassed;
     }
 
     if (TEST_ITER > 1) {
         double thistime = (double)timetotal / (double)(NSEC_PER_SEC / 1000);
-        double delta    = thistime - basesum;
+        double delta    = (thistime - basesum) / basesum * 100.0;
         if ((delta >= -0.05) && (delta <= 0.05)) {
             delta = 0.0;
         }
-        printf("%3zu bits, %-60s                \t%8.1f ms ( %+6.1f ms )\n\n",
+        printf("%3zu bits, %-60s                \t%8.1f ms ( %+6.1f %% )\n\n",
                 blobtype::bitlen, "SUM TOTAL", thistime, delta);
     }
 
@@ -357,7 +379,7 @@ bool test_blobsort_type( void ) {
     bool passed = true;
 
     passed &= test_blobsort_type_idx<TEST_SIZE, TEST_ITER, blobtype, false>();
-    passed &= test_blobsort_type_idx<TEST_SIZE, TEST_ITER, blobtype, true>();
+    passed &= test_blobsort_type_idx<TEST_SIZE, TEST_ITER, blobtype, true >();
 
     return passed;
 }
@@ -376,8 +398,8 @@ std::vector<SortTestFn> PACKEXPANDER() {
     return { &test_blobsort_type<TEST_SIZE, TEST_ITER, T>... };
 }
 
-auto SortTestFns  = PACKEXPANDER<   16000,  1, HASHTYPELIST>();
-auto SortBenchFns = PACKEXPANDER< 4000000,100, HASHTYPELIST>();
+auto SortTestFns  = PACKEXPANDER<  16000,   1, HASHTYPELIST>();
+auto SortBenchFns = PACKEXPANDER<4000000, 100, HASHTYPELIST>();
 
 void BlobsortTest( void ) {
     bool result = true;

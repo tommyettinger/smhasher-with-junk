@@ -12,14 +12,14 @@ set(LIKELY_VARIANTS
   "likely() / unlikely()"
   "expect"
   "\n"
-  2
+  3
 )
 findVariant(LIKELY)
 
 set(EXPECTP_VARIANTS
   "expectp()"
   "expectp"
-  "@EXPECT_IMPL@\n"
+  "@LIKELY_IMPL@\n"
   3
 )
 # If we don't have useful likely()/unlikely() macros, then don't

@@ -75,10 +75,11 @@ typedef phmap::flat_hash_map<std::string, int,
 static double HashMapSpeedTest( const HashInfo * hinfo, std::vector<std::string> words,
         const int trials, const flags_t flags ) {
     Rand r( 358512 );
+
     unused(flags);
 
-    const HashFn hash     = hinfo->hashFn(g_hashEndian);
-    const seed_t seed     = hinfo->Seed(g_seed ^ r.rand_u64());
+    const HashFn hash = hinfo->hashFn(g_hashEndian);
+    const seed_t seed = hinfo->Seed(g_seed ^ r.rand_u64());
 
     std_hashmap hashmap( words.size(), [=]( const std::string & key ) {
             // 256 needed for hasshe2, but only size_t used
@@ -111,7 +112,7 @@ static double HashMapSpeedTest( const HashInfo * hinfo, std::vector<std::string>
         // hash inserts plus 1% deletes
         volatile int64_t begin, end;
         int i = 0;
-        begin = timer_start();
+        begin = cycle_timer_start();
         for (it = words.begin(); it != words.end(); it++, i++) {
             std::string line = *it;
             hashmap[line] = 1;
@@ -119,7 +120,7 @@ static double HashMapSpeedTest( const HashInfo * hinfo, std::vector<std::string>
                 hashmap.erase(line);
             }
         }
-        end = timer_end();
+        end = cycle_timer_end();
         t1  = (double)(end - begin) / (double)words.size();
     }
 
@@ -130,14 +131,14 @@ static double HashMapSpeedTest( const HashInfo * hinfo, std::vector<std::string>
         volatile int64_t begin, end;
         int    i = 0, found = 0;
         double t;
-        begin = timer_start();
+        begin = cycle_timer_start();
         for (it = words.begin(); it != words.end(); it++, i++) {
             std::string line = *it;
             if (hashmap[line]) {
                 found++;
             }
         }
-        end = timer_end();
+        end = cycle_timer_end();
         t   = (double)(end - begin) / (double)words.size();
         if ((found > 0) && (t > 0)) { times.push_back(t); }
     }
@@ -158,7 +159,7 @@ static double HashMapSpeedTest( const HashInfo * hinfo, std::vector<std::string>
     { // hash inserts and 1% deletes
         volatile int64_t begin, end;
         int i = 0;
-        begin = timer_start();
+        begin = cycle_timer_start();
         for (it = words.begin(); it != words.end(); it++, i++) {
             std::string line = *it;
             phashmap[line] = 1;
@@ -166,7 +167,7 @@ static double HashMapSpeedTest( const HashInfo * hinfo, std::vector<std::string>
                 phashmap.erase(line);
             }
         }
-        end = timer_end();
+        end = cycle_timer_end();
         t1  = (double)(end - begin) / (double)words.size();
     }
 
@@ -177,14 +178,14 @@ static double HashMapSpeedTest( const HashInfo * hinfo, std::vector<std::string>
         volatile int64_t begin, end;
         int    i = 0, found = 0;
         double t;
-        begin = timer_start();
+        begin = cycle_timer_start();
         for (it = words.begin(); it != words.end(); it++, i++) {
             std::string line = *it;
             if (phashmap[line]) {
                 found++;
             }
         }
-        end = timer_end();
+        end = cycle_timer_end();
         t   = (double)(end - begin) / (double)words.size();
         if ((found > 0) && (t > 0)) { times.push_back(t); }
     }
@@ -202,7 +203,6 @@ static double HashMapSpeedTest( const HashInfo * hinfo, std::vector<std::string>
 
 static bool HashMapImpl( const HashInfo * hinfo, std::vector<std::string> words,
         const int trials, const flags_t flags ) {
-
     try {
         HashMapSpeedTest(hinfo, words, trials, flags);
     } catch (...) {
@@ -214,8 +214,8 @@ static bool HashMapImpl( const HashInfo * hinfo, std::vector<std::string> words,
 //-----------------------------------------------------------------------------
 
 bool HashMapTest( const HashInfo * hinfo, bool extra, flags_t flags ) {
-    const int    trials = (hinfo->isVerySlow() || !extra) ? 5 : 50;
-    bool         result = true;
+    const int trials = (hinfo->isVerySlow() || !extra) ? 5 : 50;
+    bool      result = true;
 
     printf("[[[ 'Hashmap' Speed Tests ]]]\n\n");
 
