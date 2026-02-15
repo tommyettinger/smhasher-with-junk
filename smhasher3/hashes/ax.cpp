@@ -1208,7 +1208,7 @@ static void ax_trunc(const void* in, const size_t len, const seed_t seed, void* 
 //    Verification value is 0x00000001 - Testing took 300.700213 seconds
 
 
-
+static const uint32_t B32 = UINT32_C(0xD3D0783B);
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -1221,6 +1221,18 @@ static const uint32_t Q32 = UINT32_C(0x89A4EF89);
 static const uint32_t R32 = UINT32_C(0x9196714F);
 static const uint32_t S32 = UINT32_C(0xD72D0CC9);
 static const uint32_t T32 = UINT32_C(0x9B05C645);
+
+//static const uint32_t Q32 = UINT32_C(0xD1B92B09);
+//static const uint32_t R32 = UINT32_C(0x9995988B);
+//static const uint32_t S32 = UINT32_C(0x8FADF5E3);
+//static const uint32_t T32 = UINT32_C(0xFCF8B405);
+
+
+
+
+
+
+
 
 static inline uint32_t mix32(uint32_t h) {
     h = h ^ h >> 17;
@@ -1254,14 +1266,17 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
 }
 
 //, uint32_t* q, uint32_t* r, uint32_t* s, uint32_t* t
-static inline uint32_t mix_stream_bulk32(uint32_t h, uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+    constexpr int Q2 = 15;
     constexpr int R2 = 19;
-    return (ROTL32(a, R2) - c) * Q32
-        + (ROTL32(b, R2) - d) * R32
-        + (ROTL32(c, R2) - b) * S32
-        + (ROTL32(d, R2) - a) * T32
-        + h + C32;
-
+    constexpr int S2 = 18;
+    constexpr int T2 = 12;
+    return 
+          (ROTL32(a, Q2) - b) * Q32
+        + (ROTL32(b, R2) - c) * R32
+        + (ROTL32(c, S2) - d) * S32
+        + (ROTL32(d, T2) - a) * T32
+        ;
     //h += *q += (ROTL32(a, R2) - c) * Q32;
     //h += *r += (ROTL32(b, R2) - d) * R32;
     //h += *s += (ROTL32(c, R2) - b) * S32;
@@ -1273,16 +1288,16 @@ template <bool bswap>
 static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
     constexpr int Q1 = 14;
     constexpr int Q2 = 23;
-    constexpr int R1 = 17;
+    constexpr int R1 = 19;
 
     uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
     //    uint32_t q = ROTL32(h, 7), r = ROTL32(h, 13), s = ROTL32(h, 20), t = ROTL32(h, 26);
 
     while (len >= 32) {
         len -= 32;
-        h = mix_stream_bulk32(h * C32, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
+        h = h * C32 + mix_stream_bulk32(GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
             GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
-        h = mix_stream_bulk32(ROTL32(h, R1), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
+        h = ROTL32(h, R1) + mix_stream_bulk32(GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
             GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
         buf += 32;
     }
