@@ -33,6 +33,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef _MSC_VER
+
 #include "Platform.h"
 #include "Hashlib.h"
 
@@ -187,4 +189,6 @@ REGISTER_HASH(aesnihash_peterrk,
    $.hashfn_native   = aesnihash_peterrk,
    $.hashfn_bswap    = aesnihash_peterrk
  );
+#endif
+
 #endif

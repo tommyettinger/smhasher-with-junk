@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef _MSC_VER
+
 #include "Platform.h"
 #include "Hashlib.h"
 
@@ -506,3 +508,5 @@ REGISTER_HASH(HighwayHash_256,
    $.hashfn_bswap    = HighwayHash<true, 4>,
    $.seedfn          = HighwayHashReseed
  );
+
+#endif

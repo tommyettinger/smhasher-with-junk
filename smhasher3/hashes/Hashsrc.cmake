@@ -22,7 +22,7 @@ set(HASH_SRC_FILES
   hashes/abseil.cpp
   hashes/metrohash.cpp
   hashes/rust-ahash.cpp
-  hashes/highwayhash.cpp
+#  hashes/highwayhash.cpp
   hashes/clhash.cpp
   hashes/discohash.cpp
   hashes/chaskey.cpp
@@ -50,7 +50,7 @@ set(HASH_SRC_FILES
   hashes/rainbow.cpp
   hashes/wyhash.cpp
   hashes/aquahash.cpp
-  hashes/aesnihash-peterrk.cpp
+#  hashes/aesnihash-peterrk.cpp
   hashes/md5.cpp
   hashes/murmurhash3.cpp
   hashes/mx3.cpp
