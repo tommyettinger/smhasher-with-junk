@@ -1239,6 +1239,29 @@ static void ax_trunc(const void* in, const size_t len, const seed_t seed, void* 
 //----------------------------------------------------------------------------------------------
 //Verification value is 0x00000001 - Testing took 520.478474 seconds
 
+// Using 7-item bulk hash, twice per loop, seems to do better. It only fails on two types of test.
+
+//----------------------------------------------------------------------------------------------
+//-log2(p-value) summary:
+//
+//          0     1     2     3     4     5     6     7     8     9    10    11    12
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//         1773   460   221   125    68    27    19     9     4     4     1     1     0
+//
+//         13    14    15    16    17    18    19    20    21    22    23    24    25+
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//            0     0     1     0     0     0     0     1     1     2     0     0    36
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result: FAIL            ( 175 / 188 passed)
+//Failures:
+//    Sparse              : [3/64, 3/96]
+//    Permutation         : [4-bytes [3 high bits; LE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+//
+//----------------------------------------------------------------------------------------------
+//Verification value is 0x00000001 - Testing took 264.494646 seconds
+
 static const uint32_t B32 = UINT32_C(0xBEA225F9);
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
