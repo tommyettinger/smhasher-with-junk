@@ -1207,8 +1207,39 @@ static void ax_trunc(const void* in, const size_t len, const seed_t seed, void* 
 //    ----------------------------------------------------------------------------------------------
 //    Verification value is 0x00000001 - Testing took 300.700213 seconds
 
+// Trying to remove the bulk step entirely, and switching to the faster stream hash:
 
-static const uint32_t B32 = UINT32_C(0xD3D0783B);
+//----------------------------------------------------------------------------------------------
+//-log2(p-value) summary:
+//
+//          0     1     2     3     4     5     6     7     8     9    10    11    12
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//         1559   327   194   111    61    46    35    32    28    11    19    16    11
+//
+//         13    14    15    16    17    18    19    20    21    22    23    24    25+
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//           10     7     9     8     8     8     7     6     8     5     3     1   223
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: ax32
+//Overall result: FAIL            ( 137 / 188 passed)
+//Failures:
+//    Zeroes              : []
+//    Cyclic              : [4 cycles of 4 bytes, 4 cycles of 8 bytes, 8 cycles of 3 bytes, 8 cycles of 4 bytes, 8 cycles of 5 bytes, 8 cycles of 8 bytes, 12 cycles of 4 bytes, 12 cycles of 8 bytes, 16 cycles of 3 bytes, 16 cycles of 4 bytes, 16 cycles of 5 bytes, 16 cycles of 8 bytes]
+//    Sparse              : [3/64, 3/96, 2/256, 2/512, 2/1024, 2/1280]
+//    Permutation         : [4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+//    Text                : [FooBarXXXX, FooooXXXXBaaar, FooooBaaarXXXX, FooooooBaaaaarXXXX, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, FooooooooooBaaaaaaaaarXXXX]
+//    TwoBytes            : [20, 32, 48]
+//    PerlinNoise         : [2]
+//    Bitflip             : [8]
+//    SeedZeroes          : [8448]
+//    SeedBlockOffset     : [1, 2, 4, 5]
+//    SeedBitflip         : [3, 4, 8]
+//
+//----------------------------------------------------------------------------------------------
+//Verification value is 0x00000001 - Testing took 520.478474 seconds
+
+//static const uint32_t C32 = UINT32_C(0xBEA225F9);
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -1221,6 +1252,8 @@ static const uint32_t Q32 = UINT32_C(0x89A4EF89);
 static const uint32_t R32 = UINT32_C(0x9196714F);
 static const uint32_t S32 = UINT32_C(0xD72D0CC9);
 static const uint32_t T32 = UINT32_C(0x9B05C645);
+static const uint32_t U32 = UINT32_C(0xD3D0783B);
+//static const uint32_t V32 = UINT32_C(0xFCF8B405);
 
 //static const uint32_t Q32 = UINT32_C(0xD1B92B09);
 //static const uint32_t R32 = UINT32_C(0x9995988B);
@@ -1245,37 +1278,39 @@ static inline uint32_t mix32(uint32_t h) {
     return h;
 }
 
-//static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-//    constexpr uint32_t R1 = 7;
-//    x *= C32;
-//    x ^= (x >> R1);
-//    h += x * C32;
-//    h *= C32;
-//    return h;
-//}
-
 static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-    h = h ^ h >> 17;
-    h = h * 0xED5AD4BBu + x;
-    h = h ^ h >> 11;
-    h = h * 0xAC4C1B51u;
-    h = h ^ h >> 15;
-    h = h * 0x31848BABu - x;
-    h = h ^ h >> 14;
+    constexpr uint32_t R1 = 19;
+    x *= C32;
+    x ^= (x >> R1);
+    h += x * C32;
+    h *= C32;
     return h;
 }
 
+//static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+//    h = h ^ h >> 17;
+//    h = h * 0xED5AD4BBu + x;
+//    h = h ^ h >> 11;
+//    h = h * 0xAC4C1B51u - x;
+//    h = h ^ h >> 15;
+//    h = h * 0x31848BABu + x;
+//    h = h ^ h >> 14;
+//    return h;
+//}
+
 //, uint32_t* q, uint32_t* r, uint32_t* s, uint32_t* t
-static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e) {
     constexpr int Q2 = 15;
     constexpr int R2 = 19;
     constexpr int S2 = 18;
     constexpr int T2 = 12;
+    constexpr int U2 = 16;
     return 
           (ROTL32(a, Q2) - b) * Q32
         + (ROTL32(b, R2) - c) * R32
         + (ROTL32(c, S2) - d) * S32
-        + (ROTL32(d, T2) - a) * T32
+        + (ROTL32(d, T2) - e) * T32
+        + (ROTL32(e, U2) - a) * U32
         ;
     //h += *q += (ROTL32(a, R2) - c) * Q32;
     //h += *r += (ROTL32(b, R2) - d) * R32;
@@ -1291,17 +1326,15 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
     constexpr int R1 = 19;
 
     uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
-    //    uint32_t q = ROTL32(h, 7), r = ROTL32(h, 13), s = ROTL32(h, 20), t = ROTL32(h, 26);
 
-    while (len >= 32) {
-        len -= 32;
-        h = h * C32 + mix_stream_bulk32(GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
-            GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12));
-        h = ROTL32(h, R1) + mix_stream_bulk32(GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20),
-            GET_U32<bswap>(buf, 24), GET_U32<bswap>(buf, 28));
-        buf += 32;
-    }
-    //    h ^= q ^ r ^ s ^ t;
+    //while (len >= 40) {
+    //    len -= 40;
+    //    h = h * C32 + mix_stream_bulk32(GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
+    //        GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12), GET_U32<bswap>(buf, 16));
+    //    h = ROTL32(h, R1) + mix_stream_bulk32(GET_U32<bswap>(buf, 20), GET_U32<bswap>(buf, 24),
+    //        GET_U32<bswap>(buf, 28), GET_U32<bswap>(buf, 32), GET_U32<bswap>(buf, 36));
+    //    buf += 40;
+    //}
 
     while (len >= 4) {
         len -= 4;
