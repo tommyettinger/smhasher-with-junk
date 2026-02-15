@@ -966,8 +966,8 @@ REGISTER_HASH(adze7b,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0,
-    $.verification_BE = 0,
+    $.verification_LE = 0x40309497,
+    $.verification_BE = 0x15530E19,
     $.hashfn_native = adze7b<false>,
     $.hashfn_bswap = adze7b<true>
 );
