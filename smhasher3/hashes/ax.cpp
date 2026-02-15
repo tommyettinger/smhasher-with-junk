@@ -1239,7 +1239,7 @@ static void ax_trunc(const void* in, const size_t len, const seed_t seed, void* 
 //----------------------------------------------------------------------------------------------
 //Verification value is 0x00000001 - Testing took 520.478474 seconds
 
-//static const uint32_t C32 = UINT32_C(0xBEA225F9);
+static const uint32_t B32 = UINT32_C(0xBEA225F9);
 static const uint32_t C32 = UINT32_C(0xB89A8925);
 
 // truncated 64-bit, low 32 bits
@@ -1253,7 +1253,8 @@ static const uint32_t R32 = UINT32_C(0x9196714F);
 static const uint32_t S32 = UINT32_C(0xD72D0CC9);
 static const uint32_t T32 = UINT32_C(0x9B05C645);
 static const uint32_t U32 = UINT32_C(0xD3D0783B);
-//static const uint32_t V32 = UINT32_C(0xFCF8B405);
+static const uint32_t V32 = UINT32_C(0xFCF8B405);
+static const uint32_t W32 = UINT32_C(0x86E31587);
 
 //static const uint32_t Q32 = UINT32_C(0xD1B92B09);
 //static const uint32_t R32 = UINT32_C(0x9995988B);
@@ -1278,27 +1279,66 @@ static inline uint32_t mix32(uint32_t h) {
     return h;
 }
 
-static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-    constexpr uint32_t R1 = 19;
-    x *= C32;
-    x ^= (x >> R1);
-    h += x * C32;
-    h *= C32;
-    return h;
-}
-
 //static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-//    h = h ^ h >> 17;
-//    h = h * 0xED5AD4BBu + x;
-//    h = h ^ h >> 11;
-//    h = h * 0xAC4C1B51u - x;
-//    h = h ^ h >> 15;
-//    h = h * 0x31848BABu + x;
-//    h = h ^ h >> 14;
+//    constexpr uint32_t R1 = 19;
+//    x *= C32;
+//    x ^= (x >> R1);
+//    h += x * C32;
+//    h *= C32;
 //    return h;
 //}
 
+static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+    // Cantor pairing function
+    //x += h;
+    //h += (x | 1u) * (x + 1u >> 1);
+    
+    // Rosenberg-Stromg pairing function
+    //uint32_t m = std::max(h, x);
+    //h += m * m + m - x;
+    
+    // 3-round unary hash
+    h = h ^ h >> 17;
+    h = h * 0xED5AD4BBu + x;
+    h = h ^ h >> 11;
+    h = h * 0xAC4C1B51u;
+    h = h ^ h >> 15;
+    h = h * 0x31848BABu - x;
+    h = h ^ h >> 14;
+    return h;
+}
+
+static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c) {
+    constexpr int Q2 = 15;
+    constexpr int R2 = 19;
+    constexpr int S2 = 18;
+    return 
+          (ROTL32(a, Q2) - b) * Q32
+        + (ROTL32(b, R2) - c) * R32
+        + (ROTL32(c, S2) - a) * S32
+        ;
+}
+
 //, uint32_t* q, uint32_t* r, uint32_t* s, uint32_t* t
+static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e, uint32_t f, uint32_t g) {
+    constexpr int Q2 = 15;
+    constexpr int R2 = 19;
+    constexpr int S2 = 18;
+    constexpr int T2 = 12;
+    constexpr int U2 = 16;
+    constexpr int V2 = 11;
+    constexpr int W2 = 20;
+
+    return 
+          (ROTL32(a, Q2) - b) * Q32
+        + (ROTL32(b, R2) - c) * R32
+        + (ROTL32(c, S2) - d) * S32
+        + (ROTL32(d, T2) - e) * T32
+        + (ROTL32(e, U2) - f) * U32
+        + (ROTL32(f, V2) - g) * V32
+        + (ROTL32(g, W2) - a) * W32
+        ;
+}
 static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e) {
     constexpr int Q2 = 15;
     constexpr int R2 = 19;
@@ -1312,11 +1352,6 @@ static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uin
         + (ROTL32(d, T2) - e) * T32
         + (ROTL32(e, U2) - a) * U32
         ;
-    //h += *q += (ROTL32(a, R2) - c) * Q32;
-    //h += *r += (ROTL32(b, R2) - d) * R32;
-    //h += *s += (ROTL32(c, R2) - b) * S32;
-    //h += *t += (ROTL32(d, R2) - a) * T32;
-    //return h;
 }
 
 template <bool bswap>
@@ -1327,15 +1362,24 @@ static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
 
     uint32_t h = len ^ seed ^ ROTL32(seed, Q1) ^ ROTL32(seed, Q2);
 
-    //while (len >= 40) {
-    //    len -= 40;
-    //    h = h * C32 + mix_stream_bulk32(GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4),
-    //        GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12), GET_U32<bswap>(buf, 16));
-    //    h = ROTL32(h, R1) + mix_stream_bulk32(GET_U32<bswap>(buf, 20), GET_U32<bswap>(buf, 24),
-    //        GET_U32<bswap>(buf, 28), GET_U32<bswap>(buf, 32), GET_U32<bswap>(buf, 36));
-    //    buf += 40;
+    //while (len >= 24) {
+    //    len -= 24;
+    //    h = h * C32 + mix_stream_bulk32(GET_U32<bswap>(buf,  0), GET_U32<bswap>(buf,  4), GET_U32<bswap>(buf,  8));
+    //    h = ROTL32(h, R1) + mix_stream_bulk32(GET_U32<bswap>(buf, 12), GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20));
+    //    h = mix32(h + B32);
+    //    buf += 24;
     //}
 
+    while (len >= 56) {
+        len -= 56;
+        h = ROTL32(h, Q1) * B32 + mix_stream_bulk32(
+            GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 4), GET_U32<bswap>(buf, 8), GET_U32<bswap>(buf, 12),
+            GET_U32<bswap>(buf, 16), GET_U32<bswap>(buf, 20), GET_U32<bswap>(buf, 24));
+        h = ROTL32(h, R1) * C32 + mix_stream_bulk32(
+            GET_U32<bswap>(buf, 28), GET_U32<bswap>(buf, 32), GET_U32<bswap>(buf, 36), GET_U32<bswap>(buf, 40), 
+            GET_U32<bswap>(buf, 44), GET_U32<bswap>(buf, 48), GET_U32<bswap>(buf, 52));
+        buf += 56;
+    }
     while (len >= 4) {
         len -= 4;
         h = mix_stream32(h, GET_U32<bswap>(buf, 0));
