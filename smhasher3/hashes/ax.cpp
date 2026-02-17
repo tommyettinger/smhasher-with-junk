@@ -1366,6 +1366,8 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
 //    //uint32_t m = std::max(h, x);
 //    //h += m * m + m - x;
 //    
+
+
     // 3-round unary hash
     //h = h ^ h >> 17;
     //h = h * 0xED5AD4BBu + x;
@@ -1376,15 +1378,25 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
     //h = h ^ h >> 14;
     //return h;
 
-    h = h ^ ROTR32(h, 17) ^ ROTR32(h, 7);
-    h = h * 0xED5AD4BBu + x;
-    h = h ^ ROTR32(h, 11) ^ ROTR32(h, 21);
-    h = h * 0xAC4C1B51u + x;
-    h = h ^ ROTR32(h, 15) ^ ROTR32(h, 5);
-    h = h * 0x31848BABu + x;
-    h = h ^ ROTR32(h, 14) ^ ROTR32(h, 24);
+    //h = h ^ ROTR32(h, 17) ^ ROTR32(h, 7);
+    //h = h * 0xED5AD4BBu + x;
+    //h = h ^ ROTR32(h, 11) ^ ROTR32(h, 21);
+    //h = h * 0xAC4C1B51u + x;
+    //h = h ^ ROTR32(h, 15) ^ ROTR32(h, 5);
+    //h = h * 0x31848BABu + x;
+    //h = h ^ ROTR32(h, 14) ^ ROTR32(h, 24);
+    //return h;
+    for (int i = 0; i < 10; i++) {
+        x = (ROTR32(x, 8) + h ^ Q32);
+        h = (ROTL32(h, 3) ^ x);
+        x = (ROTR32(x, 8) + h ^ R32);
+        h = (ROTL32(h, 3) ^ x);
+        x = (ROTR32(x, 8) + h ^ S32);
+        h = (ROTL32(h, 3) ^ x);
+        x = (ROTR32(x, 8) + h ^ T32);
+        h = (ROTL32(h, 3) ^ x);
+    }
     return h;
-
 }
 
 static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c) {
