@@ -1332,21 +1332,37 @@ static inline uint32_t mix32(uint32_t h) {
     return h;
 }
 
-static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
-    constexpr uint32_t R1 = 19;
-    x *= C32;
-    x ^= (x >> R1);
-    h += x * C32;
-    h *= C32;
-    return h;
-}
-
 //static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+//    constexpr uint32_t R1 = 19;
+//    x *= C32;
+//    x ^= (x >> R1);
+//    h += x * C32;
+//    h *= C32;
+//    return h;
+//}
+
+static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+    h = (x ^ h ^ ROTL32(h, 27) ^ ROTL32(h, 8)) * C32;
+    h = (h ^ x ^ ROTL32(x, 5) ^ ROTL32(x, 24)) * B32;
+    h = (x ^ h ^ ROTL32(h, 21) ^ ROTL32(h, 11)) * C32;
+    h ^= ROTL32(h, 12) ^ ROTL32(h, 19);
+    return h;
+
+    // 3-round unary hash
+    //h = h ^ h >> 17;
+    //h = h * 0xED5AD4BBu;
+    //h = h ^ h >> 11;
+    //h = h * 0xAC4C1B51u;
+    //h = h ^ h >> 15;
+    //h = h * 0x31848BABu;
+    //h = h ^ h >> 14;
+    //return h;
+
 //    // Cantor pairing function
 //    //x += h;
 //    //h += (x | 1u) * (x + 1u >> 1);
 //    
-//    // Rosenberg-Stromg pairing function
+//    // Rosenberg-Strong pairing function
 //    //uint32_t m = std::max(h, x);
 //    //h += m * m + m - x;
 //    
@@ -1359,7 +1375,7 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
 //    h = h * 0x31848BABu - x;
 //    h = h ^ h >> 14;
 //    return h;
-//}
+}
 
 static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c) {
     constexpr int Q2 = 15;
