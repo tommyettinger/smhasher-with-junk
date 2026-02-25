@@ -375,6 +375,8 @@ static FORCE_INLINE uint32_t a5hash16( const void * const Msg0, size_t MsgLen, c
     }
     _fin:
 
+    a5hash_umul32(a ^ Seed1, b ^ Seed2, &Seed1, &Seed2);
+
     a5hash_umul32(c + Seed3, d + Seed4, &Seed3, &Seed4);
 
     a5hash_umul32(a + Seed1, b + Seed2, &Seed1, &Seed2);
@@ -382,10 +384,10 @@ static FORCE_INLINE uint32_t a5hash16( const void * const Msg0, size_t MsgLen, c
 
     a5hash_umul32(val01 ^ Seed1, Seed2, &a, &b);
     a5hash_umul32(val10 ^ Seed3, Seed4, &c, &d);
-    const uint32_t m = a ^ c;
-    const uint32_t n = b ^ d;
+    const uint32_t m = (a ^ c) * 0x9E3779B9u;
+    const uint32_t n = (b ^ d) * 0x7F4A7C15u;
 
-    return m ^ (n << 16);
+    return m ^ ROTL32(n, 16);
 }
 
 //------------------------------------------------------------
