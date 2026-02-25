@@ -249,6 +249,44 @@ static FORCE_INLINE uint32_t a5hash32( const void * const Msg0, size_t MsgLen, c
 }
 
 // 16-bit-input 32-bit-output hash function
+// Fails almost every test!
+
+//----------------------------------------------------------------------------------------------
+//-log2(p-value) summary:
+//
+//          0     1     2     3     4     5     6     7     8     9    10    11    12
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//            9     6     5     4     2     2     2     0     4     1     2     1     1
+//
+//         13    14    15    16    17    18    19    20    21    22    23    24    25+
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//            0     0     1     1     2     0     0     0     1     4     1     2  2702
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: a5hash-16
+//Overall result: FAIL            ( 7 / 188 passed)
+//Failures:
+//    Avalanche           : [3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 64, 128]
+//    BIC                 : [3, 8, 11, 15]
+//    Zeroes              : []
+//    Cyclic              : [4 cycles of 3 bytes, 4 cycles of 4 bytes, 4 cycles of 5 bytes, 4 cycles of 8 bytes, 8 cycles of 3 bytes, 8 cycles of 4 bytes, 8 cycles of 5 bytes, 8 cycles of 8 bytes, 12 cycles of 3 bytes, 12 cycles of 4 bytes, 12 cycles of 5 bytes, 12 cycles of 8 bytes, 16 cycles of 3 bytes, 16 cycles of 4 bytes, 16 cycles of 5 bytes, 16 cycles of 8 bytes]
+//    Sparse              : [6/2, 4/3, 4/4, 4/5, 3/6, 3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 10/2, 20/3, 9/4, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+//    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+//    Text                : [dictionary, numbers without commas, numbers with commas, FXXXXB, FBXXXX, XXXXFB, FooXXXXBar, FooBarXXXX, XXXXFooBar, FooooXXXXBaaar, FooooBaaarXXXX, XXXXFooooBaaar, FooooooXXXXBaaaaar, FooooooBaaaaarXXXX, XXXXFooooooBaaaaar, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, XXXXFooooooooBaaaaaaar, FooooooooooXXXXBaaaaaaaaar, FooooooooooBaaaaaaaaarXXXX, XXXXFooooooooooBaaaaaaaaar, Words alnum 1-4, Words alnum 5-8, Words alnum 1-16, Words alnum 1-32, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+//    TwoBytes            : [20, 32, 48, 1024, 2048, 4096]
+//    PerlinNoise         : [2]
+//    Bitflip             : [3, 4, 8]
+//    SeedZeroes          : [1280, 8448]
+//    SeedSparse          : [2, 3, 6, 15, 18, 31, 52, 80, 200, 1025]
+//    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+//    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+//    Seed                : [2, 3, 6, 15, 18, 31, 52, 80, 200, 1025]
+//    SeedAvalanche       : [4, 8, 16, 24, 32, 64, 128]
+//    SeedBIC             : [3, 8, 11, 15]
+//    SeedBitflip         : [3, 4, 8]
+//
+//----------------------------------------------------------------------------------------------
+//Verification value is 0x00000001 - Testing took 619.612618 seconds
 template <bool bswap>
 static FORCE_INLINE uint32_t a5hash16( const void * const Msg0, size_t MsgLen, const uint32_t UseSeed ) {
     const uint8_t * Msg = (const uint8_t *)Msg0;
