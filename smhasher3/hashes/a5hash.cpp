@@ -33,6 +33,11 @@
 #define A5HASH_VAL01 UINT64_C(0x5555555555555555) ///< `01` bit-pairs.
 
 template <bool bswap>
+static FORCE_INLINE uint16_t a5hash_lu16( const uint8_t * const p ) {
+    return GET_U16<bswap>(p, 0);
+}
+
+template <bool bswap>
 static FORCE_INLINE uint32_t a5hash_lu32( const uint8_t * const p ) {
     return GET_U32<bswap>(p, 0);
 }
@@ -40,6 +45,13 @@ static FORCE_INLINE uint32_t a5hash_lu32( const uint8_t * const p ) {
 template <bool bswap>
 static FORCE_INLINE uint64_t a5hash_lu64( const uint8_t * const p ) {
     return GET_U64<bswap>(p, 0);
+}
+
+static FORCE_INLINE void a5hash_umul32( const uint16_t u, const uint16_t v, uint16_t * const rl, uint16_t * const rh ) {
+    const uint32_t r = (uint32_t)u * v;
+
+    *rl = (uint16_t)r;
+    *rh = (uint16_t)(r >> 16);
 }
 
 static FORCE_INLINE void a5hash_umul64( const uint32_t u, const uint32_t v, uint32_t * const rl, uint32_t * const rh ) {
@@ -234,6 +246,108 @@ static FORCE_INLINE uint32_t a5hash32( const void * const Msg0, size_t MsgLen, c
     a5hash_umul64(val01 ^ Seed1, Seed2, &a, &b);
 
     return a ^ b;
+}
+
+// 16-bit-input 32-bit-output hash function
+template <bool bswap>
+static FORCE_INLINE uint32_t a5hash16( const void * const Msg0, size_t MsgLen, const uint32_t UseSeed ) {
+    const uint8_t * Msg = (const uint8_t *)Msg0;
+
+    uint16_t val01      = (uint16_t)A5HASH_VAL01;
+    uint16_t val10      = (uint16_t)A5HASH_VAL10;
+    uint16_t loSeed     = (uint16_t)UseSeed;
+    uint16_t hiSeed     = (uint16_t)(UseSeed >> 16);
+
+    uint16_t Seed1 = 0x243E ^ (uint16_t)MsgLen;
+    uint16_t Seed2 = 0x85A3 ^ (uint16_t)MsgLen;
+    uint16_t Seed3 = 0x4528 ^ (uint16_t)(MsgLen >> 16);
+    uint16_t Seed4 = 0x58D1 ^ (uint16_t)(MsgLen >> 16);
+    uint16_t a, b, c, d;
+    a5hash_umul32(Seed2 ^ (loSeed & val10), Seed1 ^ (loSeed & val01), &Seed1, &Seed2);
+    a5hash_umul32(Seed4 ^ (hiSeed & val10), Seed3 ^ (hiSeed & val01), &Seed3, &Seed4);
+
+    if (MsgLen < 9) {
+        if (MsgLen > 3) {
+            const uint8_t * const Msg2 = Msg + MsgLen - 2;
+            size_t mo;
+
+            a =  a5hash_lu16<bswap>(Msg );
+            b =  a5hash_lu16<bswap>(Msg2);
+
+            if (MsgLen < 5) {
+                c = b;
+                d = a;
+                goto _fin;
+            }
+
+            mo = MsgLen >> 2;
+
+            c  = a5hash_lu16<bswap>(Msg  + mo * 2);
+            d  = a5hash_lu16<bswap>(Msg2 - mo * 2);
+        } else {
+            a = 0;
+            b = 0;
+            c = 0;
+            d = val01;
+
+            if (MsgLen != 0) {
+                a = Msg[0];
+
+                if (MsgLen != 1) {
+                    b = Msg[1];
+
+                    if (MsgLen != 2) {
+                        c = Msg[2];
+                    }
+                }
+            }
+        }
+    } else {
+        val01 ^= Seed3;
+        val10 ^= Seed2;
+
+        do {
+            const uint16_t s1 = Seed1;
+            const uint16_t s4 = Seed4;
+
+            a5hash_umul32(a5hash_lu16<bswap>(Msg)     + Seed1, a5hash_lu16<bswap>(Msg +  2) + Seed2, &Seed1, &Seed2);
+
+            a5hash_umul32(a5hash_lu16<bswap>(Msg + 4) + Seed3, a5hash_lu16<bswap>(Msg + 6) + Seed4, &Seed3, &Seed4);
+
+            MsgLen -= 8;
+            Msg    += 8;
+
+            Seed1  += val01;
+            Seed2  += s4;
+            Seed3  += s1;
+            Seed4  += val10;
+        } while (MsgLen > 8);
+
+        a = a5hash_lu16<bswap>(Msg + MsgLen -  4);
+        b = a5hash_lu16<bswap>(Msg + MsgLen -  2);
+
+        if (MsgLen < 5) {
+            c = a;
+            d = b;
+            goto _fin;
+        }
+
+        c = a5hash_lu16<bswap>(Msg + MsgLen - 8);
+        d = a5hash_lu16<bswap>(Msg + MsgLen - 6);
+    }
+    _fin:
+
+    a5hash_umul32(c + Seed3, d + Seed4, &Seed3, &Seed4);
+
+    a5hash_umul32(a + Seed1, b + Seed2, &Seed1, &Seed2);
+    a5hash_umul32( d ^ Seed3, c ^ Seed4, &Seed3, &Seed4);
+
+    a5hash_umul32(val01 ^ Seed1, Seed2, &a, &b);
+    a5hash_umul32(val10 ^ Seed3, Seed4, &c, &d);
+    const uint32_t m = a ^ c;
+    const uint32_t n = b ^ d;
+
+    return m ^ (n << 16);
 }
 
 //------------------------------------------------------------
@@ -435,6 +549,13 @@ static void a5hash_32( const void * in, const size_t len, const seed_t seed, voi
 }
 
 template <bool bswap>
+static void a5hash_16( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint32_t hash = a5hash16<bswap>(in, len, (uint32_t)seed);
+
+    PUT_U32<bswap>(hash, (uint8_t *)out, 0);
+}
+
+template <bool bswap>
 static void a5hash_128( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint64_t hashH;
     uint64_t hashL = a5hash128<bswap, false>(in, len, (uint64_t)seed, &hashH);
@@ -485,6 +606,22 @@ REGISTER_HASH(a5hash_32,
    $.verification_BE = 0x9C6196A0,
    $.hashfn_native   = a5hash_32<false>,
    $.hashfn_bswap    = a5hash_32<true>
+);
+
+REGISTER_HASH(a5hash_16,
+   $.desc       = "a5hash v5.21, 16-to-32-bit version",
+   $.hash_flags =
+         FLAG_HASH_SMALL_SEED        |
+         FLAG_HASH_ENDIAN_INDEPENDENT,
+   $.impl_flags =
+         FLAG_IMPL_CANONICAL_LE      |
+         FLAG_IMPL_MULTIPLY          |
+         FLAG_IMPL_LICENSE_MIT,
+   $.bits = 32,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = a5hash_16<false>,
+   $.hashfn_bswap    = a5hash_16<true>
 );
 
 REGISTER_HASH(a5hash_128,

@@ -22,3 +22,4 @@ SMHasher3
 misc/exactcoll
 
 .gdbinit
+.idea/**

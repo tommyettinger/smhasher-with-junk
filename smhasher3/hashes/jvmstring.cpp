@@ -802,11 +802,6 @@ static uint32_t jvmstring2_impl(const uint8_t* data, size_t len, uint32_t h) {
 }
 
 template <bool bswap>
-static uint32_t jvmstring3_impl(const uint8_t* data, size_t len, uint32_t h) {
-}
-
-
-template <bool bswap>
 static void jvmstring( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint32_t h = jvmstring_impl<bswap>((const uint8_t *)in, len, (uint32_t)(seed + len));
 
