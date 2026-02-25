@@ -187,7 +187,16 @@ Verification value is 0x00000001 - Testing took 345.398971 seconds
 
 // Something changed when I updated to VS 2026, and now adze7b is somewhat slower.
 // adze7c is faster, about as fast as ax in bulk and as fast as adze7b for small keys.
+// When compiled with clang++, this performs better than with MSVC.
+// This wasn't compiling with Clang for a while because TestEndianness.c.in was present
+// on Windows with CMake 4.2.3, but TestEndianess.c.in (with one 'n') was not.
 /*
+Small key speed test - [1, 31]-byte keys
+Average        -    18.33 cycles/hash
+Bulk speed test - 262144-byte keys
+Average       - 11.11 bytes/cycle - 36.22 GiB/sec @ 3.5 ghz
+Bulk speed test - [262017, 262144]-byte keys
+Average       - 11.01 bytes/cycle - 35.89 GiB/sec @ 3.5 ghz
 ----------------------------------------------------------------------------------------------
 -log2(p-value) summary:
 
