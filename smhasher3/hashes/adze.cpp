@@ -185,6 +185,28 @@ Overall result: pass            ( 188 / 188 passed)
 Verification value is 0x00000001 - Testing took 345.398971 seconds
 */
 
+// Something changed when I updated to VS 2026, and now adze7b is somewhat slower.
+// adze7c is faster, about as fast as ax in bulk and as fast as adze7b for small keys.
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4384  1297   589   315   155    67    33    27     8     4     4     0     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7c
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 353.981997 seconds
+*/
+
 //------------------------------------------------------------
 // MX3 multiplier
 static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
@@ -908,30 +930,24 @@ static inline uint64_t adze7chash(const uint8_t* buf, size_t len, uint64_t seed)
     // This strengthens the hash against tests that mainly use the seed.
     uint64_t s = (len ^ seed ^ ROTL64(seed, S1) ^ ROTL64(seed, S2));
 
-    while (len >= 112) {
-        len -= 112;
+    while (len >= 64) {
+        len -= 64;
         s = mix_bulk(s * C,
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
-                GET_U64<bswap>(buf, 24),
-                GET_U64<bswap>(buf, 32),
-                GET_U64<bswap>(buf, 40),
-                GET_U64<bswap>(buf, 48));
+                GET_U64<bswap>(buf, 24));
         s = mix_bulk(ROTL64(s, R1),
-                GET_U64<bswap>(buf, 56),
-                GET_U64<bswap>(buf, 64),
-                GET_U64<bswap>(buf, 72),
-                GET_U64<bswap>(buf, 80),
-                GET_U64<bswap>(buf, 88),
-                GET_U64<bswap>(buf, 96),
-                GET_U64<bswap>(buf, 104));
-        buf += 112;
+            GET_U64<bswap>(buf, 32),
+            GET_U64<bswap>(buf, 40),
+            GET_U64<bswap>(buf, 48),
+            GET_U64<bswap>(buf, 56));
+        buf += 64;
     }
 
     while (len >= 32) {
         len -= 32;
-        s = mix_bulk(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
@@ -1100,8 +1116,8 @@ REGISTER_HASH(adze7c,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0,
-    $.verification_BE = 0,
+    $.verification_LE = 0x886836D5,
+    $.verification_BE = 0xCC3E8F54,
     $.hashfn_native = adze7c<false>,
     $.hashfn_bswap = adze7c<true>
 );
