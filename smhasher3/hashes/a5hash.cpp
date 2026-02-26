@@ -251,6 +251,26 @@ static FORCE_INLINE uint32_t a5hash32( const void * const Msg0, size_t MsgLen, c
 
 //------------------------------------------------------------
 // 32-bit hash function with 64-bit seed
+// Surprisingly, this fails some seed-related tests.
+//-log2(p-value) summary:
+//
+//          0     1     2     3     4     5     6     7     8     9    10    11    12
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//         2342   585   255   134    71    32    17    13     4     2     0     2     0
+//
+//         13    14    15    16    17    18    19    20    21    22    23    24    25+
+//        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+//            0     0     1     0     0     0     0     0     0     0     0     0    47
+//
+//----------------------------------------------------------------------------------------------
+//Summary for: a5hash-32-large
+//Overall result: FAIL            ( 180 / 188 passed)
+//Failures:
+//    SeedZeroes          : [1280, 8448]
+//    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+//
+//----------------------------------------------------------------------------------------------
+//Verification value is 0x00000001 - Testing took 313.360903 seconds
 template <bool bswap>
 static FORCE_INLINE uint32_t a5hash32_large( const void * const Msg0, size_t MsgLen, const uint64_t UseSeed ) {
     const uint8_t * Msg = (const uint8_t *)Msg0;
@@ -763,8 +783,8 @@ REGISTER_HASH(a5hash_32_large,
          FLAG_IMPL_MULTIPLY          |
          FLAG_IMPL_LICENSE_MIT,
    $.bits = 32,
-   $.verification_LE = 0xA948D11B,
-   $.verification_BE = 0x9C6196A0,
+   $.verification_LE = 0x43421E92,
+   $.verification_BE = 0x98EC7801,
    $.hashfn_native   = a5hash_32_large<false>,
    $.hashfn_bswap    = a5hash_32_large<true>
 );
