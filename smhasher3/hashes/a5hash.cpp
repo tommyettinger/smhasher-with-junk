@@ -287,6 +287,7 @@ static FORCE_INLINE uint32_t a5hash32_large( const void * const Msg0, size_t Msg
 
     uint32_t a, b, c, d;
     a5hash_umul64(Seed2 ^ (uint32_t)UseSeed, Seed1 ^ (uint32_t)(UseSeed >> 32), &Seed1, &Seed2);
+    a5hash_umul64(Seed3 ^ (uint32_t)UseSeed, Seed4 ^ (uint32_t)(UseSeed >> 32), &Seed3, &Seed4);
 
     if (MsgLen < 17) {
         if (MsgLen > 3) {
@@ -783,8 +784,8 @@ REGISTER_HASH(a5hash_32_large,
          FLAG_IMPL_MULTIPLY          |
          FLAG_IMPL_LICENSE_MIT,
    $.bits = 32,
-   $.verification_LE = 0x43421E92,
-   $.verification_BE = 0x98EC7801,
+   $.verification_LE = 0xEDC33F7B,
+   $.verification_BE = 0x3BF21F23,
    $.hashfn_native   = a5hash_32_large<false>,
    $.hashfn_bswap    = a5hash_32_large<true>
 );
