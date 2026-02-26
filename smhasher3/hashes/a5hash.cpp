@@ -251,26 +251,24 @@ static FORCE_INLINE uint32_t a5hash32( const void * const Msg0, size_t MsgLen, c
 
 //------------------------------------------------------------
 // 32-bit hash function with 64-bit seed
-// Surprisingly, this fails some seed-related tests.
+// This passes all tests, needing only one additional line to mix UseSeed into Seed3 and Seed4.
+//----------------------------------------------------------------------------------------------
 //-log2(p-value) summary:
 //
 //          0     1     2     3     4     5     6     7     8     9    10    11    12
 //        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-//         2342   585   255   134    71    32    17    13     4     2     0     2     0
+//         2363   573   296   119    70    39    17    12     7     5     2     2     0
 //
 //         13    14    15    16    17    18    19    20    21    22    23    24    25+
 //        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-//            0     0     1     0     0     0     0     0     0     0     0     0    47
+//            0     0     0     0     0     0     0     0     0     0     0     0     0
 //
 //----------------------------------------------------------------------------------------------
 //Summary for: a5hash-32-large
-//Overall result: FAIL            ( 180 / 188 passed)
-//Failures:
-//    SeedZeroes          : [1280, 8448]
-//    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+//Overall result: pass            ( 188 / 188 passed)
 //
 //----------------------------------------------------------------------------------------------
-//Verification value is 0x00000001 - Testing took 313.360903 seconds
+//Verification value is 0x00000001 - Testing took 313.109400 seconds
 template <bool bswap>
 static FORCE_INLINE uint32_t a5hash32_large( const void * const Msg0, size_t MsgLen, const uint64_t UseSeed ) {
     const uint8_t * Msg = (const uint8_t *)Msg0;
@@ -287,7 +285,7 @@ static FORCE_INLINE uint32_t a5hash32_large( const void * const Msg0, size_t Msg
 
     uint32_t a, b, c, d;
     a5hash_umul64(Seed2 ^ (uint32_t)UseSeed, Seed1 ^ (uint32_t)(UseSeed >> 32), &Seed1, &Seed2);
-    a5hash_umul64(Seed3 ^ (uint32_t)UseSeed, Seed4 ^ (uint32_t)(UseSeed >> 32), &Seed3, &Seed4);
+    a5hash_umul64(Seed3 + (uint32_t)UseSeed, Seed4 + (uint32_t)(UseSeed >> 32), &Seed3, &Seed4);
 
     if (MsgLen < 17) {
         if (MsgLen > 3) {
@@ -784,8 +782,8 @@ REGISTER_HASH(a5hash_32_large,
          FLAG_IMPL_MULTIPLY          |
          FLAG_IMPL_LICENSE_MIT,
    $.bits = 32,
-   $.verification_LE = 0xEDC33F7B,
-   $.verification_BE = 0x3BF21F23,
+   $.verification_LE = 0xDD034147,
+   $.verification_BE = 0x9299F0D1,
    $.hashfn_native   = a5hash_32_large<false>,
    $.hashfn_bswap    = a5hash_32_large<true>
 );
