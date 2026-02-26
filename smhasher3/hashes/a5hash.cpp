@@ -248,6 +248,105 @@ static FORCE_INLINE uint32_t a5hash32( const void * const Msg0, size_t MsgLen, c
     return a ^ b;
 }
 
+
+//------------------------------------------------------------
+// 32-bit hash function with 64-bit seed
+template <bool bswap>
+static FORCE_INLINE uint32_t a5hash32_large( const void * const Msg0, size_t MsgLen, const uint64_t UseSeed ) {
+    const uint8_t * Msg = (const uint8_t *)Msg0;
+
+    uint32_t val01      = (uint32_t)A5HASH_VAL01;
+    uint32_t val10      = (uint32_t)A5HASH_VAL10;
+
+    // The seeds are initialized to mantissa bits of PI.
+
+    uint32_t Seed1 = 0x243F6A88 ^ (uint32_t)MsgLen;
+    uint32_t Seed2 = 0x85A308D3 ^ (uint32_t)MsgLen;
+    uint32_t Seed3 = 0xFB0BD3EA;
+    uint32_t Seed4 = 0x0F58FD47;
+
+    uint32_t a, b, c, d;
+    a5hash_umul64(Seed2 ^ (uint32_t)UseSeed, Seed1 ^ (uint32_t)(UseSeed >> 32), &Seed1, &Seed2);
+
+    if (MsgLen < 17) {
+        if (MsgLen > 3) {
+            const uint8_t * const Msg4 = Msg + MsgLen - 4;
+            size_t mo;
+
+            a =  a5hash_lu32<bswap>(Msg );
+            b =  a5hash_lu32<bswap>(Msg4);
+
+            if (MsgLen < 9) {
+                goto _fin;
+            }
+
+            mo = MsgLen >> 3;
+
+            c  = a5hash_lu32<bswap>(Msg  + mo * 4);
+            d  = a5hash_lu32<bswap>(Msg4 - mo * 4);
+        } else {
+            a = 0;
+            b = 0;
+
+            if (MsgLen != 0) {
+                a = Msg[0];
+
+                if (MsgLen != 1) {
+                    a |= (uint32_t)Msg[1] << 8;
+
+                    if (MsgLen != 2) {
+                        a |= (uint32_t)Msg[2] << 16;
+                    }
+                }
+            }
+
+            goto _fin;
+        }
+    } else {
+        val01 ^= Seed1;
+        val10 ^= Seed2;
+
+        do {
+            const uint32_t s1 = Seed1;
+            const uint32_t s4 = Seed4;
+
+            a5hash_umul64(a5hash_lu32<bswap>(Msg)     + Seed1, a5hash_lu32<bswap>(Msg +  4) + Seed2, &Seed1, &Seed2);
+
+            a5hash_umul64(a5hash_lu32<bswap>(Msg + 8) + Seed3, a5hash_lu32<bswap>(Msg + 12) + Seed4, &Seed3, &Seed4);
+
+            MsgLen -= 16;
+            Msg    += 16;
+
+            Seed1  += val01;
+            Seed2  += s4;
+            Seed3  += s1;
+            Seed4  += val10;
+        } while (MsgLen > 16);
+
+        a = a5hash_lu32<bswap>(Msg + MsgLen -  8);
+        b = a5hash_lu32<bswap>(Msg + MsgLen -  4);
+
+        if (MsgLen < 9) {
+            goto _fin;
+        }
+
+        c = a5hash_lu32<bswap>(Msg + MsgLen - 16);
+        d = a5hash_lu32<bswap>(Msg + MsgLen - 12);
+    }
+
+    a5hash_umul64(c + Seed3, d + Seed4, &Seed3, &Seed4);
+
+  _fin:
+    Seed1 ^= Seed3;
+    Seed2 ^= Seed4;
+
+    a5hash_umul64(a + Seed1, b + Seed2, &Seed1, &Seed2);
+
+    a5hash_umul64(val01 ^ Seed1, Seed2, &a, &b);
+
+    return a ^ b;
+}
+
 // 16-bit-input 32-bit-output hash function
 // Fails almost every test!
 
@@ -589,6 +688,13 @@ static void a5hash_32( const void * in, const size_t len, const seed_t seed, voi
 }
 
 template <bool bswap>
+static void a5hash_32_large( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint32_t hash = a5hash32_large<bswap>(in, len, (uint64_t)seed);
+
+    PUT_U32<bswap>(hash, (uint8_t *)out, 0);
+}
+
+template <bool bswap>
 static void a5hash_16( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint32_t hash = a5hash16<bswap>(in, len, (uint32_t)seed);
 
@@ -646,6 +752,21 @@ REGISTER_HASH(a5hash_32,
    $.verification_BE = 0x9C6196A0,
    $.hashfn_native   = a5hash_32<false>,
    $.hashfn_bswap    = a5hash_32<true>
+);
+
+REGISTER_HASH(a5hash_32_large,
+   $.desc       = "a5hash v5.21, 32-bit version with 64-bit seed",
+   $.hash_flags =
+         FLAG_HASH_ENDIAN_INDEPENDENT,
+   $.impl_flags =
+         FLAG_IMPL_CANONICAL_LE      |
+         FLAG_IMPL_MULTIPLY          |
+         FLAG_IMPL_LICENSE_MIT,
+   $.bits = 32,
+   $.verification_LE = 0xA948D11B,
+   $.verification_BE = 0x9C6196A0,
+   $.hashfn_native   = a5hash_32_large<false>,
+   $.hashfn_bswap    = a5hash_32_large<true>
 );
 
 REGISTER_HASH(a5hash_16,
