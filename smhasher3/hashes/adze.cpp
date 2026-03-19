@@ -210,7 +210,7 @@ static FORCE_INLINE uint64_t adze_mix(uint64_t x) {
     return x;
 }
 
-static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b) {
+static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     return
@@ -218,7 +218,7 @@ static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b) {
         + (ROTL64(b, R2) + a) * R;
 }
 
-static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c) {
+static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -228,7 +228,7 @@ static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(c, S2) + a) * S;
 }
 
-static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
+static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -240,7 +240,7 @@ static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(d, T2) + a) * T;
 }
 
-static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e) {
+static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -254,7 +254,7 @@ static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(e, U2) + a) * U;
 }
 
-static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f) {
+static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -270,7 +270,7 @@ static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(f, V2) + a) * V;
 }
 
-static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
+static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -288,7 +288,7 @@ static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(g, W2) + a) * W;
 }
 
-static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g, const uint64_t h) {
+static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g, const uint64_t h) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -309,7 +309,7 @@ static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
 }
 
 
-static FORCE_INLINE uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
+static NEVER_INLINE uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -321,7 +321,7 @@ static FORCE_INLINE uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, c
         + (ROTL64(d, T2) + a) * T;
 }
 
-static FORCE_INLINE uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
+static NEVER_INLINE uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -503,7 +503,7 @@ static void adze7c(const void* in, const size_t len, const seed_t seed, void* ou
 
 
 template <bool bswap>
-static FORCE_INLINE uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) {
+static NEVER_INLINE uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S1 = 23;
     constexpr int S2 = 56;
 
