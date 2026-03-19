@@ -162,6 +162,27 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 339.993276 seconds
+
+// adze7d now acts much more like adze7b, except it operates on fewer inputs sometimes at the end.
+// It draws overlapping uint16_t, uint32_t or uint64_t in some cases to avoid drawing a uint16_t and a uint8_t.
+// It seems to perform just about the same as adze7b, though. It may be better in other environments.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4363  1294   607   311   162    67    34    27     9     5     3     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7d
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 339.580709 seconds
 */
 
 //------------------------------------------------------------
@@ -178,7 +199,7 @@ static constexpr uint64_t V = UINT64_C(0xE60E2B722B53AEF3);
 static constexpr uint64_t W = UINT64_C(0xE95E1DD17D35802B);
 static constexpr uint64_t X = UINT64_C(0xEBEDEED9D803C871);
 
-static inline uint64_t adze_mix(uint64_t x) {
+static FORCE_INLINE uint64_t adze_mix(uint64_t x) {
     constexpr int R0 = 23;
     constexpr int R1 = 43;
     constexpr int R2 = 11;
@@ -189,7 +210,7 @@ static inline uint64_t adze_mix(uint64_t x) {
     return x;
 }
 
-static inline uint64_t adze_mix(const uint64_t a, const uint64_t b) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     return
@@ -197,7 +218,7 @@ static inline uint64_t adze_mix(const uint64_t a, const uint64_t b) {
         + (ROTL64(b, R2) + a) * R;
 }
 
-static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -207,7 +228,7 @@ static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64
         + (ROTL64(c, S2) + a) * S;
 }
 
-static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -219,7 +240,7 @@ static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64
         + (ROTL64(d, T2) + a) * T;
 }
 
-static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -233,7 +254,7 @@ static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64
         + (ROTL64(e, U2) + a) * U;
 }
 
-static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -249,7 +270,7 @@ static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64
         + (ROTL64(f, V2) + a) * V;
 }
 
-static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -267,7 +288,7 @@ static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64
         + (ROTL64(g, W2) + a) * W;
 }
 
-static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g, const uint64_t h) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g, const uint64_t h) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -288,7 +309,7 @@ static inline uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64
 }
 
 
-static inline uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
+static FORCE_INLINE uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -300,7 +321,7 @@ static inline uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const u
         + (ROTL64(d, T2) + a) * T;
 }
 
-static inline uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
+static FORCE_INLINE uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -482,7 +503,7 @@ static void adze7c(const void* in, const size_t len, const seed_t seed, void* ou
 
 
 template <bool bswap>
-static uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) {
+static FORCE_INLINE uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S1 = 23;
     constexpr int S2 = 56;
 
@@ -515,7 +536,7 @@ static uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) 
 
     while (len >= 32) {
         len -= 32;
-        s = s * U + adze_mix(GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
@@ -525,32 +546,32 @@ static uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) 
         case 3:  s = adze_mix(s, GET_U16<bswap>(buf, 0), buf[2]); break;
         case 4:  s = adze_mix(s, GET_U32<bswap>(buf, 0)); break;
         case 5:  s = adze_mix(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-        case 6:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-        case 7:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+        case 6:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 2)); break;
+        case 7:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 3)); break;
         case 8:  s = adze_mix(s, GET_U64<bswap>(buf, 0)); break;
         case 9:  s = adze_mix(s, GET_U64<bswap>(buf, 0), buf[8]); break;
         case 10: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-        case 11: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+        case 11: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 7)); break;
         case 12: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-        case 13: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-        case 14: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-        case 15: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+        case 13: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 5)); break;
+        case 14: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 6)); break;
+        case 15: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 7)); break;
         case 16: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
         case 17: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
         case 18: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-        case 19: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+        case 19: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 15)); break;
         case 20: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-        case 21: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-        case 22: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-        case 23: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+        case 21: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 13)); break;
+        case 22: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 14)); break;
+        case 23: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 15)); break;
         case 24: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
         case 25: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
         case 26: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-        case 27: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+        case 27: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 23)); break;
         case 28: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-        case 29: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-        case 30: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
-        case 31: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+        case 29: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 21)); break;
+        case 30: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 22)); break;
+        case 31: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 23)); break;
         default:;
     }
     
@@ -611,8 +632,8 @@ REGISTER_HASH(adze7d,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0,
-    $.verification_BE = 0,
+    $.verification_LE = 0x4E060E51,
+    $.verification_BE = 0x9B1A80AC,
     $.hashfn_native = adze7d<false>,
     $.hashfn_bswap = adze7d<true>
 );
