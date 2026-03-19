@@ -202,6 +202,13 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 342.672933 seconds
+
+Small key speed test - [1, 31]-byte keys
+Average        -    13.64 cycles/hash
+Bulk speed test - 262144-byte keys
+Average       - 12.74 bytes/cycle - 41.53 GiB/sec @ 3.5 ghz
+Bulk speed test - [262017, 262144]-byte keys
+Average       - 12.72 bytes/cycle - 41.47 GiB/sec @ 3.5 ghz
 */
 
 //------------------------------------------------------------
@@ -229,7 +236,7 @@ static FORCE_INLINE uint64_t adze_mix(uint64_t x) {
     return x;
 }
 
-static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b) {
+static uint64_t adze_mix(const uint64_t a, const uint64_t b) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     return
@@ -237,7 +244,7 @@ static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b) {
         + (ROTL64(b, R2) + a) * R;
 }
 
-static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c) {
+static uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -247,7 +254,7 @@ static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(c, S2) + a) * S;
 }
 
-static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
+static uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -259,7 +266,7 @@ static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(d, T2) + a) * T;
 }
 
-static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e) {
+static uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -273,7 +280,7 @@ static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(e, U2) + a) * U;
 }
 
-static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f) {
+static uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
