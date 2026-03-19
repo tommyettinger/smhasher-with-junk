@@ -218,19 +218,19 @@ Verification value is 0x00000001 - Testing took 353.981997 seconds
 
 //------------------------------------------------------------
 // MX3 multiplier
-static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
+static constexpr uint64_t C = UINT64_C(0xBEA225F9EB34556D);
 
 // Primes just greater than harmonious numbers
-static const uint64_t Q = UINT64_C(0x9E3779B97F4A7C55);
-static const uint64_t R = UINT64_C(0xC13FA9A902A63293);
-static const uint64_t S = UINT64_C(0xD1B54A32D192ED2D);
-static const uint64_t T = UINT64_C(0xDB4F0B9175AE2169);
-static const uint64_t U = UINT64_C(0xE19B01AA9D42C66D);
-static const uint64_t V = UINT64_C(0xE60E2B722B53AEF3);
-static const uint64_t W = UINT64_C(0xE95E1DD17D35802B);
-static const uint64_t X = UINT64_C(0xEBEDEED9D803C871);
+static constexpr uint64_t Q = UINT64_C(0x9E3779B97F4A7C55);
+static constexpr uint64_t R = UINT64_C(0xC13FA9A902A63293);
+static constexpr uint64_t S = UINT64_C(0xD1B54A32D192ED2D);
+static constexpr uint64_t T = UINT64_C(0xDB4F0B9175AE2169);
+static constexpr uint64_t U = UINT64_C(0xE19B01AA9D42C66D);
+static constexpr uint64_t V = UINT64_C(0xE60E2B722B53AEF3);
+static constexpr uint64_t W = UINT64_C(0xE95E1DD17D35802B);
+static constexpr uint64_t X = UINT64_C(0xEBEDEED9D803C871);
 
-static inline uint64_t mix(uint64_t x) {
+static inline uint64_t adze_mix(uint64_t x) {
     constexpr int R0 = 23;
     constexpr int R1 = 43;
     constexpr int R2 = 11;
@@ -241,7 +241,7 @@ static inline uint64_t mix(uint64_t x) {
     return x;
 }
 
-static inline uint64_t mix_multiple(uint64_t a, uint64_t b) {
+static inline uint64_t adze_mix_multiple(const uint64_t a, const uint64_t b) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     return
@@ -249,35 +249,35 @@ static inline uint64_t mix_multiple(uint64_t a, uint64_t b) {
         + (ROTL64(b, R2) + a) * R;
 }
 
-static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c) {
+static inline uint64_t adze_mix_multiple(const uint64_t a, const uint64_t b, const uint64_t c) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
-    return 
+    return
           (ROTL64(a, Q2) + b) * Q
         + (ROTL64(b, R2) + c) * R
         + (ROTL64(c, S2) + a) * S;
 }
 
-static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
+static inline uint64_t adze_mix_multiple(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
     constexpr int T2 = 25;
-    return 
+    return
           (ROTL64(a, Q2) + b) * Q
         + (ROTL64(b, R2) + c) * R
         + (ROTL64(c, S2) + d) * S
         + (ROTL64(d, T2) + a) * T;
 }
 
-static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e) {
+static inline uint64_t adze_mix_multiple(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
     constexpr int T2 = 25;
     constexpr int U2 = 26;
-    return 
+    return
           (ROTL64(a, Q2) + b) * Q
         + (ROTL64(b, R2) + c) * R
         + (ROTL64(c, S2) + d) * S
@@ -285,14 +285,14 @@ static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t
         + (ROTL64(e, U2) + a) * U;
 }
 
-static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f) {
+static inline uint64_t adze_mix_multiple(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
     constexpr int T2 = 25;
     constexpr int U2 = 26;
     constexpr int V2 = 30;
-    return 
+    return
           (ROTL64(a, Q2) + b) * Q
         + (ROTL64(b, R2) + c) * R
         + (ROTL64(c, S2) + d) * S
@@ -301,7 +301,7 @@ static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t
         + (ROTL64(f, V2) + a) * V;
 }
 
-static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t g) {
+static inline uint64_t adze_mix_multiple(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -309,7 +309,7 @@ static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t
     constexpr int U2 = 26;
     constexpr int V2 = 30;
     constexpr int W2 = 23;
-    return 
+    return
           (ROTL64(a, Q2) + b) * Q
         + (ROTL64(b, R2) + c) * R
         + (ROTL64(c, S2) + d) * S
@@ -319,7 +319,7 @@ static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t
         + (ROTL64(g, W2) + a) * W;
 }
 
-static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t g, uint64_t h) {
+static inline uint64_t adze_mix_multiple(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g, const uint64_t h) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -328,7 +328,7 @@ static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t
     constexpr int V2 = 30;
     constexpr int W2 = 23;
     constexpr int X2 = 31;
-    return 
+    return
           (ROTL64(a, Q2) + b) * Q
         + (ROTL64(b, R2) + c) * R
         + (ROTL64(c, S2) + d) * S
@@ -340,7 +340,7 @@ static inline uint64_t mix_multiple(uint64_t a, uint64_t b, uint64_t c, uint64_t
 }
 
 
-static inline uint64_t mix_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
+static inline uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -352,7 +352,7 @@ static inline uint64_t mix_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, 
         + (ROTL64(d, T2) + a) * T;
 }
 
-static inline uint64_t mix_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t g) {
+static inline uint64_t adze_mix_bulk(const uint64_t h, const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -374,7 +374,7 @@ static inline uint64_t mix_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, 
 
 
 template <bool bswap>
-static inline uint64_t adzehash(const uint8_t* buf, size_t len, uint64_t seed) {
+static inline uint64_t adzehash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S = 25;
 
     // This strengthens the hash against tests that mainly use the seed.
@@ -383,13 +383,13 @@ static inline uint64_t adzehash(const uint8_t* buf, size_t len, uint64_t seed) {
     while (len >= 64) {
         len -= 64;
         s = s * C +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
                 GET_U64<bswap>(buf, 24));
         s = (s ^ s >> S) +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 32),
                 GET_U64<bswap>(buf, 40),
                 GET_U64<bswap>(buf, 48),
@@ -399,44 +399,44 @@ static inline uint64_t adzehash(const uint8_t* buf, size_t len, uint64_t seed) {
 
     while (len > 30) {
         len -= 8;
-        s = mix_multiple(s, GET_U64<bswap>(buf, 0));
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0));
         buf += 8;
     }
 
     switch (len) {
-    case 1:  s = mix_multiple(s, buf[0]); break;
-    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
-    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
-    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
-    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
-    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
-    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+    case 1:  s = adze_mix_multiple(s, buf[0]); break;
+    case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+    case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+    case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+    case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+    case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+    case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+    case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+    case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+    case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+    case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+    case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+    case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+    case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+    case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+    case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+    case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+    case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+    case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+    case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+    case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+    case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+    case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+    case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
     }
 
-    return mix(s);
+    return adze_mix(s);
 }
 
 //------------------------------------------------------------
@@ -449,7 +449,7 @@ static void adze(const void* in, const size_t len, const seed_t seed, void* out)
 
 
 template <bool bswap>
-static inline uint64_t adze5hash(const uint8_t* buf, size_t len, uint64_t seed) {
+static inline uint64_t adze5hash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S = 25;
 
     // This strengthens the hash against tests that mainly use the seed.
@@ -458,14 +458,14 @@ static inline uint64_t adze5hash(const uint8_t* buf, size_t len, uint64_t seed) 
     while (len >= 80) {
         len -= 80;
         s = s * C +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
                 GET_U64<bswap>(buf, 24),
                 GET_U64<bswap>(buf, 32));
         s = (s ^ s >> S) +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 40),
                 GET_U64<bswap>(buf, 48),
                 GET_U64<bswap>(buf, 56),
@@ -476,44 +476,44 @@ static inline uint64_t adze5hash(const uint8_t* buf, size_t len, uint64_t seed) 
 
     while (len > 30) {
         len -= 8;
-        s = mix_multiple(s, GET_U64<bswap>(buf, 0));
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0));
         buf += 8;
     }
 
     switch (len) {
-    case 1:  s = mix_multiple(s, buf[0]); break;
-    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
-    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
-    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
-    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
-    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
-    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+    case 1:  s = adze_mix_multiple(s, buf[0]); break;
+    case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+    case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+    case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+    case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+    case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+    case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+    case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+    case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+    case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+    case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+    case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+    case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+    case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+    case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+    case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+    case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+    case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+    case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+    case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+    case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+    case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+    case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+    case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
     }
 
-    return mix(s);
+    return adze_mix(s);
 }
 
 //------------------------------------------------------------
@@ -525,7 +525,7 @@ static void adze5(const void* in, const size_t len, const seed_t seed, void* out
 }
 
 template <bool bswap>
-static inline uint64_t adze6hash(const uint8_t* buf, size_t len, uint64_t seed) {
+static inline uint64_t adze6hash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S = 25;
 
     // This strengthens the hash against tests that mainly use the seed.
@@ -534,7 +534,7 @@ static inline uint64_t adze6hash(const uint8_t* buf, size_t len, uint64_t seed) 
     while (len >= 96) {
         len -= 96;
         s = s * C +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
@@ -542,7 +542,7 @@ static inline uint64_t adze6hash(const uint8_t* buf, size_t len, uint64_t seed) 
                 GET_U64<bswap>(buf, 32),
                 GET_U64<bswap>(buf, 40));
         s = (s ^ s >> S) +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 48),
                 GET_U64<bswap>(buf, 56),
                 GET_U64<bswap>(buf, 64),
@@ -554,44 +554,44 @@ static inline uint64_t adze6hash(const uint8_t* buf, size_t len, uint64_t seed) 
 
     while (len > 30) {
         len -= 8;
-        s = mix_multiple(s, GET_U64<bswap>(buf, 0));
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0));
         buf += 8;
     }
 
     switch (len) {
-    case 1:  s = mix_multiple(s, buf[0]); break;
-    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
-    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
-    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
-    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
-    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
-    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+    case 1:  s = adze_mix_multiple(s, buf[0]); break;
+    case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+    case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+    case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+    case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+    case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+    case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+    case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+    case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+    case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+    case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+    case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+    case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+    case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+    case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+    case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+    case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+    case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+    case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+    case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+    case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+    case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+    case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+    case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
     }
 
-    return mix(s);
+    return adze_mix(s);
 }
 
 //------------------------------------------------------------
@@ -603,7 +603,7 @@ static void adze6(const void* in, const size_t len, const seed_t seed, void* out
 }
 
 template <bool bswap>
-static inline uint64_t adze7hash(const uint8_t* buf, size_t len, uint64_t seed) {
+static inline uint64_t adze7hash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S = 25;
 
     // This strengthens the hash against tests that mainly use the seed.
@@ -612,7 +612,7 @@ static inline uint64_t adze7hash(const uint8_t* buf, size_t len, uint64_t seed) 
     while (len >= 112) {
         len -= 112;
         s = s * C +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
@@ -621,7 +621,7 @@ static inline uint64_t adze7hash(const uint8_t* buf, size_t len, uint64_t seed) 
                 GET_U64<bswap>(buf, 40),
                 GET_U64<bswap>(buf, 48));
         s = (s ^ s >> S) +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 56),
                 GET_U64<bswap>(buf, 64),
                 GET_U64<bswap>(buf, 72),
@@ -634,45 +634,45 @@ static inline uint64_t adze7hash(const uint8_t* buf, size_t len, uint64_t seed) 
 
     while (len >= 32) {
         len -= 32;
-        s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
     switch (len) {
-    case 1:  s = mix_multiple(s, buf[0]); break;
-    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
-    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
-    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
-    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
-    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
-    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
-    case 31: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+    case 1:  s = adze_mix_multiple(s, buf[0]); break;
+    case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+    case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+    case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+    case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+    case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+    case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+    case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+    case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+    case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+    case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+    case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+    case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+    case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+    case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+    case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+    case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+    case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+    case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+    case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+    case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+    case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+    case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+    case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+    case 31: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
     }
 
-    return mix(s);
+    return adze_mix(s);
 }
 
 //------------------------------------------------------------
@@ -684,7 +684,7 @@ static void adze7(const void* in, const size_t len, const seed_t seed, void* out
 }
 
 template <bool bswap>
-static inline uint64_t adze8hash(const uint8_t* buf, size_t len, uint64_t seed) {
+static inline uint64_t adze8hash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S = 25;
 
     // This strengthens the hash against tests that mainly use the seed.
@@ -693,7 +693,7 @@ static inline uint64_t adze8hash(const uint8_t* buf, size_t len, uint64_t seed) 
     while (len >= 128) {
         len -= 128;
         s = s * C +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
@@ -703,7 +703,7 @@ static inline uint64_t adze8hash(const uint8_t* buf, size_t len, uint64_t seed) 
                 GET_U64<bswap>(buf, 48),
                 GET_U64<bswap>(buf, 56));
         s = (s ^ s >> S) +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 64),
                 GET_U64<bswap>(buf, 72),
                 GET_U64<bswap>(buf, 80),
@@ -717,45 +717,45 @@ static inline uint64_t adze8hash(const uint8_t* buf, size_t len, uint64_t seed) 
 
     while (len >= 32) {
         len -= 32;
-        s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
     switch (len) {
-    case 1:  s = mix_multiple(s, buf[0]); break;
-    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
-    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
-    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
-    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
-    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
-    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
-    case 31: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+    case 1:  s = adze_mix_multiple(s, buf[0]); break;
+    case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+    case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+    case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+    case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+    case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+    case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+    case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+    case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+    case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+    case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+    case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+    case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+    case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+    case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+    case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+    case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+    case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+    case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+    case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+    case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+    case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+    case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+    case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+    case 31: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
     }
 
-    return mix(s);
+    return adze_mix(s);
 }
 
 //------------------------------------------------------------
@@ -768,15 +768,13 @@ static void adze8(const void* in, const size_t len, const seed_t seed, void* out
 
 
 template <bool bswap>
-static inline uint64_t adze7ahash(const uint8_t* buf, size_t len, uint64_t seed) {
-    constexpr int S = 25;
-
+static inline uint64_t adze7ahash(const uint8_t* buf, size_t len, const uint64_t seed) {
     // This strengthens the hash against tests that mainly use the seed.
     uint64_t s = (len ^ seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56));
 
     while (len >= 112) {
         len -= 112;
-        s = mix_multiple(s,
+        s = adze_mix_multiple(s,
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
@@ -784,7 +782,7 @@ static inline uint64_t adze7ahash(const uint8_t* buf, size_t len, uint64_t seed)
                 GET_U64<bswap>(buf, 32),
                 GET_U64<bswap>(buf, 40),
                 GET_U64<bswap>(buf, 48));
-        s = mix_multiple(s,
+        s = adze_mix_multiple(s,
                 GET_U64<bswap>(buf, 56),
                 GET_U64<bswap>(buf, 64),
                 GET_U64<bswap>(buf, 72),
@@ -797,45 +795,45 @@ static inline uint64_t adze7ahash(const uint8_t* buf, size_t len, uint64_t seed)
 
     while (len >= 32) {
         len -= 32;
-        s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
     switch (len) {
-    case 1:  s = mix_multiple(s, buf[0]); break;
-    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
-    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
-    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
-    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
-    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
-    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
-    case 31: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+    case 1:  s = adze_mix_multiple(s, buf[0]); break;
+    case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+    case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+    case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+    case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+    case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+    case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+    case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+    case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+    case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+    case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+    case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+    case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+    case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+    case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+    case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+    case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+    case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+    case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+    case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+    case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+    case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+    case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+    case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+    case 31: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
     }
 
-    return mix(s);
+    return adze_mix(s);
 }
 
 //------------------------------------------------------------
@@ -847,18 +845,18 @@ static void adze7a(const void* in, const size_t len, const seed_t seed, void* ou
 }
 
 template <bool bswap>
-static inline uint64_t adze7bhash(const uint8_t* buf, size_t len, uint64_t seed) {
+static uint64_t adze7bhash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S1 = 23;
     constexpr int S2 = 56;
-    constexpr int R1 = 39;
 
     // This strengthens the hash against tests that mainly use the seed.
     uint64_t s = (len ^ seed ^ ROTL64(seed, S1) ^ ROTL64(seed, S2));
 
     while (len >= 112) {
+        constexpr int R1 = 39;
         len -= 112;
         s = s * C +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
@@ -867,7 +865,7 @@ static inline uint64_t adze7bhash(const uint8_t* buf, size_t len, uint64_t seed)
                 GET_U64<bswap>(buf, 40),
                 GET_U64<bswap>(buf, 48));
         s = ROTL64(s, R1) +
-            mix_multiple(
+            adze_mix_multiple(
                 GET_U64<bswap>(buf, 56),
                 GET_U64<bswap>(buf, 64),
                 GET_U64<bswap>(buf, 72),
@@ -880,45 +878,46 @@ static inline uint64_t adze7bhash(const uint8_t* buf, size_t len, uint64_t seed)
 
     while (len >= 32) {
         len -= 32;
-        s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
     switch (len) {
-    case 1:  s = mix_multiple(s, buf[0]); break;
-    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
-    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
-    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
-    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
-    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
-    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
-    case 31: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+        case 1:  s = adze_mix_multiple(s, buf[0]); break;
+        case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+        case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+        case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+        case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+        case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+        case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+        case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+        case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+        case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+        case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+        case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+        case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+        case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+        case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+        case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+        case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+        case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+        case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+        case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+        case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+        case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+        case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+        case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+        case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+        case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+        case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+        case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+        case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+        case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+        case 31: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+        default:;
     }
 
-    return mix(s);
+    return adze_mix(s);
 }
 
 //------------------------------------------------------------
@@ -931,7 +930,7 @@ static void adze7b(const void* in, const size_t len, const seed_t seed, void* ou
 
 
 template <bool bswap>
-static inline uint64_t adze7chash(const uint8_t* buf, size_t len, uint64_t seed) {
+static inline uint64_t adze7chash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S1 = 23;
     constexpr int S2 = 56;
     constexpr int R1 = 39;
@@ -941,12 +940,12 @@ static inline uint64_t adze7chash(const uint8_t* buf, size_t len, uint64_t seed)
 
     while (len >= 64) {
         len -= 64;
-        s = mix_bulk(s * C,
+        s = adze_mix_bulk(s * C,
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
                 GET_U64<bswap>(buf, 24));
-        s = mix_bulk(ROTL64(s, R1),
+        s = adze_mix_bulk(ROTL64(s, R1),
             GET_U64<bswap>(buf, 32),
             GET_U64<bswap>(buf, 40),
             GET_U64<bswap>(buf, 48),
@@ -956,45 +955,45 @@ static inline uint64_t adze7chash(const uint8_t* buf, size_t len, uint64_t seed)
 
     while (len >= 32) {
         len -= 32;
-        s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
     switch (len) {
-    case 1:  s = mix_multiple(s, buf[0]); break;
-    case 2:  s = mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
-    case 3:  s = mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
-    case 4:  s = mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
-    case 5:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-    case 6:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-    case 7:  s = mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-    case 8:  s = mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
-    case 9:  s = mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
-    case 10: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-    case 11: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-    case 12: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-    case 13: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-    case 14: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-    case 15: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-    case 16: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-    case 17: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-    case 18: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-    case 19: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-    case 20: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-    case 21: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-    case 22: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-    case 23: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-    case 24: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-    case 25: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-    case 26: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-    case 27: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-    case 28: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-    case 29: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-    case 30: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
-    case 31: s = mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+    case 1:  s = adze_mix_multiple(s, buf[0]); break;
+    case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+    case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+    case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+    case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+    case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+    case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+    case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+    case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+    case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+    case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+    case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+    case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+    case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+    case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+    case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+    case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+    case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+    case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+    case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+    case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+    case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+    case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+    case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+    case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+    case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+    case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+    case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+    case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+    case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+    case 31: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
     }
 
-    return mix(s);
+    return adze_mix(s);
 }
 
 //------------------------------------------------------------

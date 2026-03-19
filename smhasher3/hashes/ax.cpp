@@ -161,20 +161,20 @@ static FORCE_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) {
     return h;
 }
 
-static FORCE_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
+static FORCE_INLINE uint64_t ax_mix_stream_bulk(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d) {
     constexpr int Q2 = 28u;
     constexpr int R2 = 29u;
     constexpr int S2 = 27u;
     constexpr int T2 = 25u;
-    return h
-        + (ROTL64(a, Q2) + b) * Q
+    return
+          (ROTL64(a, Q2) + b) * Q
         + (ROTL64(b, R2) + c) * R
         + (ROTL64(c, S2) + d) * S
         + (ROTL64(d, T2) + a) * T;
 }
 
 template <bool bswap>
-static FORCE_INLINE uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
+static FORCE_INLINE uint64_t axhash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int Q1 = 29;
     constexpr int Q2 = 47;
 
@@ -183,9 +183,9 @@ static FORCE_INLINE uint64_t axhash(const uint8_t* buf, size_t len, uint64_t see
     while (len >= 64) {
         constexpr int R1 = 37;
         len -= 64;
-        h = ax_mix_stream_bulk(h * C, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+        h = h * C + ax_mix_stream_bulk(GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
             GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
-        h = ax_mix_stream_bulk(ROTL64(h, R1), GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+        h = ROTL64(h, R1) + ax_mix_stream_bulk(GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
             GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
         buf += 64;
     }
@@ -212,19 +212,6 @@ static FORCE_INLINE uint64_t axhash(const uint8_t* buf, size_t len, uint64_t see
 NO_MORE:
     h = ax_mix(h);
     return h;
-
-    //const uint8_t* const tail8 = buf;
-    //switch (len) {
-    //case 1: h = mix_stream_bulk(h, h, tail8[0], Q, R);                                               break;
-    //case 2: h = mix_stream_bulk(h, h, GET_U16<bswap>(tail8, 0), Q, R);                               break;
-    //case 3: h = mix_stream_bulk(h, h, GET_U16<bswap>(tail8, 0), tail8[2], Q);                        break;
-    //case 4: h = mix_stream_bulk(h, h, GET_U32<bswap>(tail8, 0), Q, R);                               break;
-    //case 5: h = mix_stream_bulk(h, h, GET_U32<bswap>(tail8, 0), tail8[4], Q);                        break;
-    //case 6: h = mix_stream_bulk(h, h, GET_U32<bswap>(tail8, 0), GET_U16<bswap>(tail8, 4), Q);        break;
-    //case 7: h = mix_stream_bulk(h, h, GET_U32<bswap>(tail8, 0), GET_U16<bswap>(tail8, 4), tail8[6]); break;
-    //default:;
-    //}
-    //return mix(h);
 }
 
 //------------------------------------------------------------
@@ -1431,7 +1418,7 @@ static uint32_t mix_stream32(uint32_t h, uint32_t x) {
     return h;
 }
 
-static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c) {
+static inline uint32_t mix_stream_bulk32(const uint32_t a, const uint32_t b, const uint32_t c) {
     constexpr int Q2 = 15;
     constexpr int R2 = 19;
     constexpr int S2 = 18;
@@ -1443,7 +1430,7 @@ static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c) {
 }
 
 //, uint32_t* q, uint32_t* r, uint32_t* s, uint32_t* t
-static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e, uint32_t f, uint32_t g) {
+static inline uint32_t mix_stream_bulk32(const uint32_t a, const uint32_t b, const uint32_t c, const uint32_t d, const uint32_t e, const uint32_t f, const uint32_t g) {
     constexpr int Q2 = 15;
     constexpr int R2 = 19;
     constexpr int S2 = 18;
@@ -1462,7 +1449,7 @@ static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uin
         + (ROTL32(g, W2) - a) * W32
         ;
 }
-static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e) {
+static inline uint32_t mix_stream_bulk32(const uint32_t a, const uint32_t b, const uint32_t c, const uint32_t d, const uint32_t e) {
     constexpr int Q2 = 15;
     constexpr int R2 = 19;
     constexpr int S2 = 18;
@@ -1478,7 +1465,7 @@ static inline uint32_t mix_stream_bulk32(uint32_t a, uint32_t b, uint32_t c, uin
 }
 
 template <bool bswap>
-static inline uint32_t axhash32(const uint8_t* buf, size_t len, uint32_t seed) {
+static inline uint32_t axhash32(const uint8_t* buf, size_t len, const uint32_t seed) {
     constexpr int Q1 = 14;
     constexpr int Q2 = 23;
     constexpr int R1 = 19;
