@@ -214,6 +214,22 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 353.981997 seconds
+
+// OK, now adze7b seems faster than it was... This uses const a lot more, and compiles with MinGW.
+Small key speed test - [1, 31]-byte keys
+Average        -    17.43 cycles/hash
+Bulk speed test - 262144-byte keys
+Average       - 12.74 bytes/cycle - 41.53 GiB/sec @ 3.5 ghz
+Bulk speed test - [262017, 262144]-byte keys
+Average       - 12.73 bytes/cycle - 41.49 GiB/sec @ 3.5 ghz
+
+// And adze7c seems slower than adze7b now. Huh. Also, MinGW with more const.
+Small key speed test - [1, 31]-byte keys
+Average        -    17.49 cycles/hash
+Bulk speed test - 262144-byte keys
+Average       - 12.14 bytes/cycle - 39.56 GiB/sec @ 3.5 ghz
+Bulk speed test - [262017, 262144]-byte keys
+Average       - 12.13 bytes/cycle - 39.53 GiB/sec @ 3.5 ghz
 */
 
 //------------------------------------------------------------
