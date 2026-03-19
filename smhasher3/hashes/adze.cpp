@@ -183,6 +183,25 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 339.580709 seconds
+
+// adze7e uses the bulk section of adze7b, but the last 31 bytes use the same algorithm as ChibiHashV2.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4406  1227   618   321   153    82    34    25     8     7     1     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7e
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 342.672933 seconds
 */
 
 //------------------------------------------------------------
@@ -270,7 +289,7 @@ static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(f, V2) + a) * V;
 }
 
-static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -288,7 +307,7 @@ static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const 
         + (ROTL64(g, W2) + a) * W;
 }
 
-static NEVER_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g, const uint64_t h) {
+static FORCE_INLINE uint64_t adze_mix(const uint64_t a, const uint64_t b, const uint64_t c, const uint64_t d, const uint64_t e, const uint64_t f, const uint64_t g, const uint64_t h) {
     constexpr int Q2 = 28;
     constexpr int R2 = 29;
     constexpr int S2 = 27;
@@ -501,7 +520,6 @@ static void adze7c(const void* in, const size_t len, const seed_t seed, void* ou
     PUT_U64<bswap>(h, (uint8_t*)out, 0);
 }
 
-
 template <bool bswap>
 static NEVER_INLINE uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) {
     constexpr int S1 = 23;
@@ -587,6 +605,81 @@ static void adze7d(const void* in, const size_t len, const seed_t seed, void* ou
     PUT_U64<bswap>(h, (uint8_t*)out, 0);
 }
 
+template <bool bswap>
+static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const uint64_t seed) {
+    constexpr int S1 = 23;
+    constexpr int S2 = 56;
+
+    // This strengthens the hash against tests that mainly use the seed.
+    uint64_t s = (len ^ seed ^ ROTL64(seed, S1) ^ ROTL64(seed, S2));
+
+    while (len >= 112) {
+        constexpr int R1 = 39;
+        len -= 112;
+        s = s * C +
+            adze_mix(
+                GET_U64<bswap>(buf, 0),
+                GET_U64<bswap>(buf, 8),
+                GET_U64<bswap>(buf, 16),
+                GET_U64<bswap>(buf, 24),
+                GET_U64<bswap>(buf, 32),
+                GET_U64<bswap>(buf, 40),
+                GET_U64<bswap>(buf, 48));
+        s = ROTL64(s, R1) +
+            adze_mix(
+                GET_U64<bswap>(buf, 56),
+                GET_U64<bswap>(buf, 64),
+                GET_U64<bswap>(buf, 72),
+                GET_U64<bswap>(buf, 80),
+                GET_U64<bswap>(buf, 88),
+                GET_U64<bswap>(buf, 96),
+                GET_U64<bswap>(buf, 104));
+        buf += 112;
+    }
+
+    while (len >= 32) {
+        len -= 32;
+        s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        buf += 32;
+    }
+
+    uint64_t h0 = s, h1 = s + W, h2 = ROTL64(s, 19), h3 = ROTL64(s, 51) - V;
+
+    for (; len >= 8; len -= 8, buf += 8) {
+        h0 ^= GET_U32<bswap>(buf, 0); h0 *= C;
+        h1 ^= GET_U32<bswap>(buf, 4); h1 *= C;
+    }
+
+    if (len >= 4) {
+        h2 ^= GET_U32<bswap>(buf, 0);
+        h3 ^= GET_U32<bswap>(buf, len - 4);
+    } else if (len > 0) {
+        h2 ^= buf[0];
+        h3 ^= buf[len / 2] | ((uint64_t)buf[len - 1] << 8);
+    }
+
+    h0 += ROTL64(h2 * C, 31) ^ (h2 >> 31);
+    h1 += ROTL64(h3 * C, 31) ^ (h3 >> 31);
+    h0 *= C; h0 ^= h0 >> 31;
+    h1 += h0;
+
+    uint64_t x = len * C;
+    x ^= ROTL64(x, 29);
+    x += s;
+    x ^= h1;
+
+    x = adze_mix(x);
+    return x;
+}
+
+//------------------------------------------------------------
+template <bool bswap>
+static void adze7e(const void* in, const size_t len, const seed_t seed, void* out) {
+    uint64_t h = adze7ehash<bswap>((const uint8_t*)in, len, (uint64_t)seed);
+
+    PUT_U64<bswap>(h, (uint8_t*)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(adzehash,
     $.src_url = "https://github.com/tommyettinger/",
@@ -636,4 +729,19 @@ REGISTER_HASH(adze7d,
     $.verification_BE = 0x9B1A80AC,
     $.hashfn_native = adze7d<false>,
     $.hashfn_bswap = adze7d<true>
+);
+
+REGISTER_HASH(adze7e,
+    $.desc = "adze7e hash 64-bit",
+    $.hash_flags =
+    0,
+    $.impl_flags =
+    FLAG_IMPL_MULTIPLY_64_64 |
+    FLAG_IMPL_ROTATE |
+    FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
+    $.bits = 64,
+    $.verification_LE = 0xCE148F89,
+    $.verification_BE = 0x591AADBA,
+    $.hashfn_native = adze7e<false>,
+    $.hashfn_bswap = adze7e<true>
 );
