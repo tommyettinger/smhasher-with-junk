@@ -8,157 +8,6 @@
 #include "Platform.h"
 #include "Hashlib.h"
 
-// adze
-/*
-Average        -    20.48 cycles/hash
-Average       - 12.15 bytes/cycle - 39.61 GiB/sec @ 3.5 ghz
-Average       - 12.13 bytes/cycle - 39.53 GiB/sec @ 3.5 ghz
-
-----------------------------------------------------------------------------------------------
--log2(p-value) summary:
-
-          0     1     2     3     4     5     6     7     8     9    10    11    12
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4397  1268   615   281   163    80    36    22     8     8     3     2     0
-
-         13    14    15    16    17    18    19    20    21    22    23    24    25+
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            0     0     0     0     0     0     0     0     0     0     0     0     0
-
-----------------------------------------------------------------------------------------------
-Summary for: adze
-Overall result: pass            ( 188 / 188 passed)
-
-----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 391.748336 seconds
-*/
-
-// adze5, slightly better bulk speed
-/*
-Average        -    20.46 cycles/hash
-Average       - 12.42 bytes/cycle - 40.49 GiB/sec @ 3.5 ghz
-Average       - 12.39 bytes/cycle - 40.40 GiB/sec @ 3.5 ghz
-
-----------------------------------------------------------------------------------------------
--log2(p-value) summary:
-
-          0     1     2     3     4     5     6     7     8     9    10    11    12
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4399  1275   607   279   172    79    34    21     6     7     2     2     0
-
-         13    14    15    16    17    18    19    20    21    22    23    24    25+
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            0     0     0     0     0     0     0     0     0     0     0     0     0
-
-----------------------------------------------------------------------------------------------
-Summary for: adze5
-Overall result: pass            ( 188 / 188 passed)
-
-----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 350.710457 seconds
-*/
-
-// adze6, even better bulk speed
-/*
-Average        -    20.54 cycles/hash
-Average       - 12.62 bytes/cycle - 41.12 GiB/sec @ 3.5 ghz
-Average       - 12.58 bytes/cycle - 41.02 GiB/sec @ 3.5 ghz
-
-----------------------------------------------------------------------------------------------
--log2(p-value) summary:
-
-          0     1     2     3     4     5     6     7     8     9    10    11    12
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4390  1273   619   283   167    76    36    22     6     7     2     2     0
-
-         13    14    15    16    17    18    19    20    21    22    23    24    25+
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            0     0     0     0     0     0     0     0     0     0     0     0     0
-
-----------------------------------------------------------------------------------------------
-Summary for: adze6
-Overall result: pass            ( 188 / 188 passed)
-
-----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 346.351209 seconds
-*/
-
-// adze7, small gains...
-/*
-Average        -    20.36 cycles/hash
-Average       - 12.74 bytes/cycle - 41.54 GiB/sec @ 3.5 ghz
-Average       - 12.68 bytes/cycle - 41.33 GiB/sec @ 3.5 ghz
-
-----------------------------------------------------------------------------------------------
--log2(p-value) summary:
-
-          0     1     2     3     4     5     6     7     8     9    10    11    12
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4369  1283   617   284   173    81    35    22     6     7     3     3     0
-
-         13    14    15    16    17    18    19    20    21    22    23    24    25+
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            0     0     0     0     0     0     0     0     0     0     0     0     0
-
-----------------------------------------------------------------------------------------------
-Summary for: adze7
-Overall result: pass            ( 188 / 188 passed)
-
-----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 346.568612 seconds
-*/
-
-
-// adze8, slower in bulk unless aligned just right.
-/*
-Average        -    20.45 cycles/hash
-Average       - 10.98 bytes/cycle - 35.79 GiB/sec @ 3.5 ghz
-Average       - 10.76 bytes/cycle - 35.08 GiB/sec @ 3.5 ghz
-
-----------------------------------------------------------------------------------------------
--log2(p-value) summary:
-
-          0     1     2     3     4     5     6     7     8     9    10    11    12
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4370  1292   613   282   167    84    33    23     6     7     3     3     0
-
-         13    14    15    16    17    18    19    20    21    22    23    24    25+
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            0     0     0     0     0     0     0     0     0     0     0     0     0
-
-----------------------------------------------------------------------------------------------
-Summary for: adze8
-Overall result: pass            ( 188 / 188 passed)
-
-----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 356.936920 seconds
-*/
-
-// adze7a, no faster at anything, slower at bulk...
-/*
-Average        -    20.53 cycles/hash
-Average       -  8.27 bytes/cycle - 26.97 GiB/sec @ 3.5 ghz
-Average       -  8.19 bytes/cycle - 26.71 GiB/sec @ 3.5 ghz
-
-----------------------------------------------------------------------------------------------
--log2(p-value) summary:
-
-          0     1     2     3     4     5     6     7     8     9    10    11    12
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4382  1276   610   289   167    82    34    24     5     7     3     4     0
-
-         13    14    15    16    17    18    19    20    21    22    23    24    25+
-        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            0     0     0     0     0     0     0     0     0     0     0     0     0
-
-----------------------------------------------------------------------------------------------
-Summary for: adze7a
-Overall result: pass            ( 188 / 188 passed)
-
-----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 371.547761 seconds
-*/
-
 // adze7b is much more faithful to adze7; it only changes a xorshift to a rotation.
 // FASTEST SO FAR (in bulk)!
 /*
@@ -292,6 +141,27 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 340.245441 seconds
 
+// Bringing it closer back to adze7b, but with a slightly lighter 32-byte loop, has just one failure.
+// This version is very slightly faster in bulk, but very slightly slower for small keys.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4379  1290   605   314   154    66    34    24     8     4     4     0     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     1
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7d
+Overall result: FAIL            ( 187 / 188 passed)
+Failures:
+    Sparse              : [3/96]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 339.993276 seconds
 */
 
 //------------------------------------------------------------
@@ -645,42 +515,42 @@ static uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) 
 
     while (len >= 32) {
         len -= 32;
-        s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = s * U + adze_mix(GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
     switch (len) {
-        case 1:  s += adze_mix( buf[0]); break;
-        case 2:  s += adze_mix( GET_U16<bswap>(buf, 0)); break;
-        case 3:  s += adze_mix( GET_U16<bswap>(buf, 0), buf[2]); break;
-        case 4:  s += adze_mix( GET_U32<bswap>(buf, 0)); break;
-        case 5:  s += adze_mix( GET_U32<bswap>(buf, 0), buf[4]); break;
-        case 6:  s += adze_mix( GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
-        case 7:  s += adze_mix( GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
-        case 8:  s += adze_mix( GET_U64<bswap>(buf, 0)); break;
-        case 9:  s += adze_mix( GET_U64<bswap>(buf, 0), buf[8]); break;
-        case 10: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
-        case 11: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
-        case 12: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
-        case 13: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
-        case 14: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
-        case 15: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
-        case 16: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
-        case 17: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
-        case 18: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
-        case 19: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
-        case 20: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
-        case 21: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
-        case 22: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
-        case 23: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
-        case 24: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
-        case 25: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
-        case 26: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
-        case 27: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
-        case 28: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
-        case 29: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
-        case 30: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
-        case 31: s += adze_mix( GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+        case 1:  s = adze_mix(s, buf[0]); break;
+        case 2:  s = adze_mix(s, GET_U16<bswap>(buf, 0)); break;
+        case 3:  s = adze_mix(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+        case 4:  s = adze_mix(s, GET_U32<bswap>(buf, 0)); break;
+        case 5:  s = adze_mix(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+        case 6:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+        case 7:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+        case 8:  s = adze_mix(s, GET_U64<bswap>(buf, 0)); break;
+        case 9:  s = adze_mix(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+        case 10: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+        case 11: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+        case 12: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+        case 13: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+        case 14: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+        case 15: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+        case 16: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+        case 17: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+        case 18: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+        case 19: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+        case 20: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+        case 21: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+        case 22: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+        case 23: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+        case 24: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+        case 25: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+        case 26: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+        case 27: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+        case 28: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+        case 29: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+        case 30: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+        case 31: s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
         default:;
     }
     
@@ -741,8 +611,8 @@ REGISTER_HASH(adze7d,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x2323EFB6,
-    $.verification_BE = 0xFF958637,
+    $.verification_LE = 0,
+    $.verification_BE = 0,
     $.hashfn_native = adze7d<false>,
     $.hashfn_bswap = adze7d<true>
 );
