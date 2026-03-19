@@ -209,6 +209,25 @@ Bulk speed test - 262144-byte keys
 Average       - 12.74 bytes/cycle - 41.53 GiB/sec @ 3.5 ghz
 Bulk speed test - [262017, 262144]-byte keys
 Average       - 12.72 bytes/cycle - 41.47 GiB/sec @ 3.5 ghz
+
+//We don't need to do the last steps in adze7e if we've hashed a full multiple of 32 bytes.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4405  1235   625   313   153    77    34    24     8     7     1     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7e
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 343.124247 seconds
 */
 
 //------------------------------------------------------------
@@ -650,33 +669,34 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
         buf += 32;
     }
 
-    uint64_t h0 = s, h1 = s + W, h2 = ROTL64(s, 19), h3 = ROTL64(s, 51) - V;
+    if (len != 0) {
+        uint64_t h0 = s, h1 = s + W, h2 = ROTL64(s, 19), h3 = ROTL64(s, 51) - V;
 
-    for (; len >= 8; len -= 8, buf += 8) {
-        h0 ^= GET_U32<bswap>(buf, 0); h0 *= C;
-        h1 ^= GET_U32<bswap>(buf, 4); h1 *= C;
+        for (; len >= 8; len -= 8, buf += 8) {
+            h0 ^= GET_U32<bswap>(buf, 0); h0 *= C;
+            h1 ^= GET_U32<bswap>(buf, 4); h1 *= C;
+        }
+
+        if (len >= 4) {
+            h2 ^= GET_U32<bswap>(buf, 0);
+            h3 ^= GET_U32<bswap>(buf, len - 4);
+        } else if (len > 0) {
+            h2 ^= buf[0];
+            h3 ^= buf[len / 2] | ((uint64_t)buf[len - 1] << 8);
+        }
+
+        h0 += ROTL64(h2 * C, 31) ^ (h2 >> 31);
+        h1 += ROTL64(h3 * C, 31) ^ (h3 >> 31);
+        h0 *= C; h0 ^= h0 >> 31;
+        h1 += h0;
+
+        uint64_t x = len * C;
+        x ^= ROTL64(x, 29);
+        s += x;
+        s ^= h1;
     }
-
-    if (len >= 4) {
-        h2 ^= GET_U32<bswap>(buf, 0);
-        h3 ^= GET_U32<bswap>(buf, len - 4);
-    } else if (len > 0) {
-        h2 ^= buf[0];
-        h3 ^= buf[len / 2] | ((uint64_t)buf[len - 1] << 8);
-    }
-
-    h0 += ROTL64(h2 * C, 31) ^ (h2 >> 31);
-    h1 += ROTL64(h3 * C, 31) ^ (h3 >> 31);
-    h0 *= C; h0 ^= h0 >> 31;
-    h1 += h0;
-
-    uint64_t x = len * C;
-    x ^= ROTL64(x, 29);
-    x += s;
-    x ^= h1;
-
-    x = adze_mix(x);
-    return x;
+    s = adze_mix(s);
+    return s;
 }
 
 //------------------------------------------------------------
@@ -747,8 +767,8 @@ REGISTER_HASH(adze7e,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0xCE148F89,
-    $.verification_BE = 0x591AADBA,
+    $.verification_LE = 0x4D86C2B7,
+    $.verification_BE = 0x8AA076B4,
     $.hashfn_native = adze7e<false>,
     $.hashfn_bswap = adze7e<true>
 );
