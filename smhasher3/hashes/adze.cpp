@@ -230,6 +230,34 @@ Bulk speed test - 262144-byte keys
 Average       - 12.14 bytes/cycle - 39.56 GiB/sec @ 3.5 ghz
 Bulk speed test - [262017, 262144]-byte keys
 Average       - 12.13 bytes/cycle - 39.53 GiB/sec @ 3.5 ghz
+
+// Tried to remove one xor-rotate-xor-rotate operation from near the end of adze7b, making adze7d.
+// It did not go well at all.
+----------------------------------------------------------------------------------------------
+Summary for: adze7d
+Overall result: FAIL            ( 42 / 188 passed)
+Failures:
+    Avalanche           : [3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 64, 128]
+    BIC                 : [3, 8, 11, 15]
+    Sparse              : [6/2, 4/3, 4/4, 4/5, 3/6, 3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 10/2, 20/3, 9/4, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [numbers without commas, numbers with commas, FXXXXB, FBXXXX, XXXXFB, FooXXXXBar, FooBarXXXX, XXXXFooBar, FooooXXXXBaaar, FooooBaaarXXXX, XXXXFooooBaaar, FooooooXXXXBaaaaar, FooooooBaaaaarXXXX, XXXXFooooooBaaaaar, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, XXXXFooooooooBaaaaaaar, FooooooooooXXXXBaaaaaaaaar, FooooooooooBaaaaaaaaarXXXX, XXXXFooooooooooBaaaaaaaaar, Long alnum last 1968-2128, Long alnum last 4016-4176, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32, 48, 1024, 2048, 4096]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 4, 8]
+    SeedZeroes          : [1280, 8448]
+    SeedSparse          : [2, 3, 6, 15, 18, 31, 52, 80, 200]
+    SeedBlockLen        : [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [3]
+    Seed                : [2, 3, 6, 15, 18, 31, 52, 80, 200, 1025]
+    SeedAvalanche       : [4, 8, 16, 24, 32, 64, 128]
+    SeedBIC             : [3, 8, 11, 15]
+    SeedBitflip         : [3, 4, 8]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 345.798031 seconds
+
+
 */
 
 //------------------------------------------------------------
@@ -1020,6 +1048,94 @@ static void adze7c(const void* in, const size_t len, const seed_t seed, void* ou
     PUT_U64<bswap>(h, (uint8_t*)out, 0);
 }
 
+
+template <bool bswap>
+static uint64_t adze7dhash(const uint8_t* buf, size_t len, const uint64_t seed) {
+    constexpr int S1 = 23;
+    constexpr int S2 = 56;
+
+    // This strengthens the hash against tests that mainly use the seed.
+    uint64_t s = (len ^ seed ^ ROTL64(seed, S1) ^ ROTL64(seed, S2));
+
+    while (len >= 112) {
+        constexpr int R1 = 39;
+        len -= 112;
+        s = s * C +
+            adze_mix_multiple(
+                GET_U64<bswap>(buf, 0),
+                GET_U64<bswap>(buf, 8),
+                GET_U64<bswap>(buf, 16),
+                GET_U64<bswap>(buf, 24),
+                GET_U64<bswap>(buf, 32),
+                GET_U64<bswap>(buf, 40),
+                GET_U64<bswap>(buf, 48));
+        s = ROTL64(s, R1) +
+            adze_mix_multiple(
+                GET_U64<bswap>(buf, 56),
+                GET_U64<bswap>(buf, 64),
+                GET_U64<bswap>(buf, 72),
+                GET_U64<bswap>(buf, 80),
+                GET_U64<bswap>(buf, 88),
+                GET_U64<bswap>(buf, 96),
+                GET_U64<bswap>(buf, 104));
+        buf += 112;
+    }
+
+    while (len >= 32) {
+        len -= 32;
+        s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        buf += 32;
+    }
+
+    switch (len) {
+        case 1:  s = adze_mix_multiple(s, buf[0]); break;
+        case 2:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0)); break;
+        case 3:  s = adze_mix_multiple(s, GET_U16<bswap>(buf, 0), buf[2]); break;
+        case 4:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0)); break;
+        case 5:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), buf[4]); break;
+        case 6:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
+        case 7:  s = adze_mix_multiple(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4), buf[6]); break;
+        case 8:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0)); break;
+        case 9:  s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), buf[8]); break;
+        case 10: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8)); break;
+        case 11: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U16<bswap>(buf, 8), buf[10]); break;
+        case 12: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8)); break;
+        case 13: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), buf[12]); break;
+        case 14: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12)); break;
+        case 15: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U32<bswap>(buf, 8), GET_U16<bswap>(buf, 12), buf[14]); break;
+        case 16: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8)); break;
+        case 17: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), buf[16]); break;
+        case 18: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16)); break;
+        case 19: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U16<bswap>(buf, 16), buf[18]); break;
+        case 20: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16)); break;
+        case 21: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), buf[20]); break;
+        case 22: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20)); break;
+        case 23: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U32<bswap>(buf, 16), GET_U16<bswap>(buf, 20), buf[22]); break;
+        case 24: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16)); break;
+        case 25: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), buf[24]); break;
+        case 26: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24)); break;
+        case 27: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U16<bswap>(buf, 24), buf[26]); break;
+        case 28: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24)); break;
+        case 29: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), buf[28]); break;
+        case 30: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28)); break;
+        case 31: s = adze_mix_multiple(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U32<bswap>(buf, 24), GET_U16<bswap>(buf, 28), buf[30]); break;
+        default:;
+    }
+    constexpr int R2 = 11;
+    constexpr int R3 = 50;
+    s *= C;
+    s = (s ^ ROTL64(s, R2) ^ ROTL64(s, R3));
+    return s;
+}
+
+//------------------------------------------------------------
+template <bool bswap>
+static void adze7d(const void* in, const size_t len, const seed_t seed, void* out) {
+    uint64_t h = adze7dhash<bswap>((const uint8_t*)in, len, (uint64_t)seed);
+
+    PUT_U64<bswap>(h, (uint8_t*)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(adzehash,
     $.src_url = "https://github.com/tommyettinger/",
@@ -1144,4 +1260,19 @@ REGISTER_HASH(adze7c,
     $.verification_BE = 0xCC3E8F54,
     $.hashfn_native = adze7c<false>,
     $.hashfn_bswap = adze7c<true>
+);
+
+REGISTER_HASH(adze7d,
+    $.desc = "adze7d hash 64-bit",
+    $.hash_flags =
+    0,
+    $.impl_flags =
+    FLAG_IMPL_MULTIPLY_64_64 |
+    FLAG_IMPL_ROTATE |
+    FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
+    $.bits = 64,
+    $.verification_LE = 0x7F18204B,
+    $.verification_BE = 0x8D60B904,
+    $.hashfn_native = adze7d<false>,
+    $.hashfn_bswap = adze7d<true>
 );
