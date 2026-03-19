@@ -658,51 +658,44 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
     // This strengthens the hash against tests that mainly use the seed.
     uint64_t s = (len ^ seed ^ ROTL64(seed, S1) ^ ROTL64(seed, S2));
 
-    uint64_t h0 = s, h1 = ROTL64(s, 51) - W;
-
-    while (len >= 128) {
+    while (len >= 112) {
         constexpr int R1 = 39;
-        len -= 128;
-        h0 = h0 * C +
+        len -= 112;
+        s = s * C +
             adze_mix(
                 GET_U64<bswap>(buf, 0),
                 GET_U64<bswap>(buf, 8),
                 GET_U64<bswap>(buf, 16),
-                GET_U64<bswap>(buf, 24));
-        h0 = ROTL64(h0, R1) +
-            adze_mix(
+                GET_U64<bswap>(buf, 24),
                 GET_U64<bswap>(buf, 32),
                 GET_U64<bswap>(buf, 40),
-                GET_U64<bswap>(buf, 48),
-                GET_U64<bswap>(buf, 56));
-        h1 = h1 * C +
+                GET_U64<bswap>(buf, 48));
+        s = ROTL64(s, R1) +
             adze_mix(
+                GET_U64<bswap>(buf, 56),
                 GET_U64<bswap>(buf, 64),
                 GET_U64<bswap>(buf, 72),
                 GET_U64<bswap>(buf, 80),
-                GET_U64<bswap>(buf, 88));
-        h1 = ROTL64(h1, R1) +
-            adze_mix(
+                GET_U64<bswap>(buf, 88),
                 GET_U64<bswap>(buf, 96),
-                GET_U64<bswap>(buf, 104),
-                GET_U64<bswap>(buf, 112),
-                GET_U64<bswap>(buf, 120));
-        buf += 128;
+                GET_U64<bswap>(buf, 104));
+        buf += 112;
     }
 
     while (len >= 32) {
         len -= 32;
-        h1 = adze_mix(h1, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
+        s = adze_mix(s, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8), GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
         buf += 32;
     }
 
-    for (; len >= 8; len -= 8, buf += 8) {
-        h0 ^= GET_U32<bswap>(buf, 0); h0 *= C;
-        h1 ^= GET_U32<bswap>(buf, 4); h1 *= C;
-    }
+    if (len != 0) {
+        uint64_t h0 = s, h1 = s + W, h2 = ROTL64(s, 19), h3 = ROTL64(s, 51) - V;
 
-    if (len > 0) {
-        uint64_t h2 = s - V, h3 = s + W;
+        for (; len >= 8; len -= 8, buf += 8) {
+            h0 ^= GET_U32<bswap>(buf, 0); h0 *= C;
+            h1 ^= GET_U32<bswap>(buf, 4); h1 *= C;
+        }
+
         if (len >= 4) {
             h2 ^= GET_U32<bswap>(buf, 0);
             h3 ^= GET_U32<bswap>(buf, len - 4);
@@ -710,15 +703,17 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
             h2 ^= buf[0];
             h3 ^= buf[len / 2] | ((uint64_t)buf[len - 1] << 8);
         }
+
         h0 += ROTL64(h2 * C, 31) ^ (h2 >> 31);
         h1 += ROTL64(h3 * C, 31) ^ (h3 >> 31);
+        h0 *= C; h0 ^= h0 >> 31;
+        h1 += h0;
+
+        // uint64_t x = len * C;
+        // x ^= ROTL64(x, 29);
+        // s += x;
+        s ^= h1;
     }
-
-    h0 *= C;
-    h0 ^= h0 >> 31;
-    h1 += h0;
-
-    s ^= h1;
     s = adze_mix(s);
     return s;
 }
@@ -791,8 +786,8 @@ REGISTER_HASH(adze7e,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0,
-    $.verification_BE = 0,
+    $.verification_LE = 0xC82497CB,
+    $.verification_BE = 0xD748BEE7,
     $.hashfn_native = adze7e<false>,
     $.hashfn_bswap = adze7e<true>
 );
