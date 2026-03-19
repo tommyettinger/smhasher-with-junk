@@ -247,6 +247,25 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 342.037974 seconds
+
+// Trying adze_mix() with 4 args to mix h0, h1, h2, and h3... It works! Speed is about the same, too.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4369  1324   593   303   148    75    39     9    17     4     1     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7e
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 342.322876 seconds
 */
 
 //------------------------------------------------------------
@@ -692,8 +711,8 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
         uint64_t h0 = s, h1 = s + W, h2 = ROTL64(s, 19), h3 = ROTL64(s, 51) - V;
 
         for (; len >= 8; len -= 8, buf += 8) {
-            h0 ^= GET_U32<bswap>(buf, 0); h0 *= C;
-            h1 ^= GET_U32<bswap>(buf, 4); h1 *= C;
+            h0 ^= GET_U32<bswap>(buf, 0); h0 *= Q;
+            h1 ^= GET_U32<bswap>(buf, 4); h1 *= R;
         }
 
         if (len >= 4) {
@@ -704,15 +723,20 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
             h3 ^= buf[len / 2] | ((uint64_t)buf[len - 1] << 8);
         }
 
-        h0 += ROTL64(h2 * C, 31) ^ (h2 >> 31);
-        h1 += ROTL64(h3 * C, 31) ^ (h3 >> 31);
-        h0 *= C; h0 ^= h0 >> 31;
-        h1 += h0;
+        // h0 ^= (h2 >> 31);
+        // h2 *= Q;
+        // h0 += ROTL64(h2, 31);
+        // h1 ^= (h3 >> 31);
+        // h3 *= R;
+        // h1 += ROTL64(h3, 31);
+        // h0 *= C;
+        // h1 += (h0 ^ h0 >> 31);
 
         // uint64_t x = len * C;
         // x ^= ROTL64(x, 29);
         // s += x;
-        s ^= h1;
+        // s ^= h1;
+        s = adze_mix(h0, h1, h2, h3);
     }
     s = adze_mix(s);
     return s;
@@ -786,8 +810,8 @@ REGISTER_HASH(adze7e,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0xC82497CB,
-    $.verification_BE = 0xD748BEE7,
+    $.verification_LE = 0,
+    $.verification_BE = 0,
     $.hashfn_native = adze7e<false>,
     $.hashfn_bswap = adze7e<true>
 );
