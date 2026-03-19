@@ -291,34 +291,27 @@ static FORCE_INLINE uint32_t a5hash32_large( const void * const Msg0, size_t Msg
         if (MsgLen > 3) {
             const uint8_t * const Msg4 = Msg + MsgLen - 4;
             size_t mo;
-
             a =  a5hash_lu32<bswap>(Msg );
             b =  a5hash_lu32<bswap>(Msg4);
 
             if (MsgLen < 9) {
                 goto _fin;
             }
-
             mo = MsgLen >> 3;
-
             c  = a5hash_lu32<bswap>(Msg  + mo * 4);
             d  = a5hash_lu32<bswap>(Msg4 - mo * 4);
         } else {
             a = 0;
             b = 0;
-
             if (MsgLen != 0) {
                 a = Msg[0];
-
                 if (MsgLen != 1) {
                     a |= (uint32_t)Msg[1] << 8;
-
                     if (MsgLen != 2) {
                         a |= (uint32_t)Msg[2] << 16;
                     }
                 }
             }
-
             goto _fin;
         }
     } else {
@@ -330,7 +323,6 @@ static FORCE_INLINE uint32_t a5hash32_large( const void * const Msg0, size_t Msg
             const uint32_t s4 = Seed4;
 
             a5hash_umul64(a5hash_lu32<bswap>(Msg)     + Seed1, a5hash_lu32<bswap>(Msg +  4) + Seed2, &Seed1, &Seed2);
-
             a5hash_umul64(a5hash_lu32<bswap>(Msg + 8) + Seed3, a5hash_lu32<bswap>(Msg + 12) + Seed4, &Seed3, &Seed4);
 
             MsgLen -= 16;
@@ -348,21 +340,16 @@ static FORCE_INLINE uint32_t a5hash32_large( const void * const Msg0, size_t Msg
         if (MsgLen < 9) {
             goto _fin;
         }
-
         c = a5hash_lu32<bswap>(Msg + MsgLen - 16);
         d = a5hash_lu32<bswap>(Msg + MsgLen - 12);
     }
-
     a5hash_umul64(c + Seed3, d + Seed4, &Seed3, &Seed4);
 
   _fin:
     Seed1 ^= Seed3;
     Seed2 ^= Seed4;
-
     a5hash_umul64(a + Seed1, b + Seed2, &Seed1, &Seed2);
-
     a5hash_umul64(val01 ^ Seed1, Seed2, &a, &b);
-
     return a ^ b;
 }
 

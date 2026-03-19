@@ -70,31 +70,14 @@ Verification value is 0x00000001 - Testing took 387.866363 seconds
 
  //------------------------------------------------------------
 // MX3 multiplier
-static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
+static constexpr uint64_t C = UINT64_C(0xBEA225F9EB34556D);
 // Random 64-bit probable primes, as given by Java's BigInteger class.
-static const uint64_t Q = UINT64_C(0xD1B92B09B92266DD);
-static const uint64_t R = UINT64_C(0x9995988B72E0D285);
-static const uint64_t S = UINT64_C(0x8FADF5E286E31587);
-static const uint64_t T = UINT64_C(0xFCF8B405D3D0783B);
+static constexpr uint64_t Q = UINT64_C(0xD1B92B09B92266DD);
+static constexpr uint64_t R = UINT64_C(0x9995988B72E0D285);
+static constexpr uint64_t S = UINT64_C(0x8FADF5E286E31587);
+static constexpr uint64_t T = UINT64_C(0xFCF8B405D3D0783B);
 
-//// Moremur multipliers
-//static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
-//static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
-//// Moremur unary hash, by Pelle Evensen
-//// https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
-//static inline uint64_t mix(uint64_t x) {
-//    constexpr int R0 = 27;
-//    constexpr int R1 = 33;
-//    constexpr int R2 = 27;
-//    x ^= x >> R0;
-//    x *= A;
-//    x ^= x >> R1;
-//    x *= B;
-//    x ^= x >> R2;
-//    return x;
-//}
-
-static inline uint64_t mix(uint64_t x) {
+static FORCE_INLINE uint64_t ax_mix(uint64_t x) {
     constexpr int R0 = 23;
     constexpr int R1 = 43;
     constexpr int R2 = 11;
@@ -105,8 +88,8 @@ static inline uint64_t mix(uint64_t x) {
     return x;
 }
 
-static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
-    constexpr uint32_t R1 = 39;
+static FORCE_INLINE uint64_t ax_mix_stream(uint64_t h, uint64_t x) {
+    constexpr int R1 = 39;
     x *= C;
     x ^= (x >> R1);
     h += x * C;
@@ -114,11 +97,11 @@ static inline uint64_t mix_stream(uint64_t h, uint64_t x) {
     return h;
 }
 
-static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
-    constexpr unsigned int Q2 = 28u;
-    constexpr unsigned int R2 = 29u;
-    constexpr unsigned int S2 = 27u;
-    constexpr unsigned int T2 = 25u;
+static FORCE_INLINE uint64_t ax_mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint64_t c, uint64_t d) {
+    constexpr int Q2 = 28u;
+    constexpr int R2 = 29u;
+    constexpr int S2 = 27u;
+    constexpr int T2 = 25u;
     return h
         + (ROTL64(a, Q2) + b) * Q
         + (ROTL64(b, R2) + c) * R
@@ -127,59 +110,44 @@ static inline uint64_t mix_stream_bulk(uint64_t h, uint64_t a, uint64_t b, uint6
 }
 
 template <bool bswap>
-static inline uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
+static FORCE_INLINE uint64_t axhash(const uint8_t* buf, size_t len, uint64_t seed) {
     constexpr int Q1 = 29;
     constexpr int Q2 = 47;
-    constexpr int R1 = 37;
 
     uint64_t h = len ^ seed ^ ROTL64(seed, Q1) ^ ROTL64(seed, Q2);
-    //uint64_t h = ((len ^ ROTL64(len, 3) ^ ROTL64(len, 47)) + (seed ^ ROTL64(seed, 23) ^ ROTL64(seed, 56)));
 
     while (len >= 64) {
+        constexpr int R1 = 37;
         len -= 64;
-        h = mix_stream_bulk(h * C, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
+        h = ax_mix_stream_bulk(h * C, GET_U64<bswap>(buf, 0), GET_U64<bswap>(buf, 8),
             GET_U64<bswap>(buf, 16), GET_U64<bswap>(buf, 24));
-        h = mix_stream_bulk(ROTL64(h, R1), GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
+        h = ax_mix_stream_bulk(ROTL64(h, R1), GET_U64<bswap>(buf, 32), GET_U64<bswap>(buf, 40),
             GET_U64<bswap>(buf, 48), GET_U64<bswap>(buf, 56));
         buf += 64;
     }
 
     while (len >= 8) {
         len -= 8;
-        h = mix_stream(h, GET_U64<bswap>(buf, 0));
+        h = ax_mix_stream(h, GET_U64<bswap>(buf, 0));
         buf += 8;
     }
-    
-    // This format is behaviorally equivalent to the uncommented one below it.
-    // I don't know if having multiple return statements might have a negative performance impact.
-    // The code for this commented block is probably slightly larger.
-    //const uint8_t* const tail8 = buf;
-    //switch (len) {
-    //case 0: return mix(h);
-    //case 1: return mix(mix_stream(h, tail8[0]));
-    //case 2: return mix(mix_stream(h, GET_U16<bswap>(tail8, 0)));
-    //case 3: return mix(mix_stream(h, GET_U16<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16));
-    //case 4: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0)));
-    //case 5: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32));
-    //case 6: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32));
-    //case 7: return mix(mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48));
-    //default:;
-    //}
-    //return mix(h);
 
-    // This returns once at the end, and may emit smaller code...
     const uint8_t* const tail8 = buf;
+    uint64_t x;
     switch (len) {
-    case 1: h = (mix_stream(h, tail8[0]));                                                                                                                 break;
-    case 2: h = (mix_stream(h, GET_U16<bswap>(tail8, 0)));                                                                                                 break;
-    case 3: h = (mix_stream(h, GET_U16<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16));                                                         break;
-    case 4: h = (mix_stream(h, GET_U32<bswap>(tail8, 0)));                                                                                                 break;
-    case 5: h = (mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32));                                                         break;
-    case 6: h = (mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32));                                         break;
-    case 7: h = (mix_stream(h, GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48)); break;
-    default:;
+    case 1: x = tail8[0];                                                                                                                     break;
+    case 2: x = GET_U16<bswap>(tail8, 0);                                                                                                   break;
+    case 3: x = GET_U16<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[2]) << 16;                                                           break;
+    case 4: x = GET_U32<bswap>(tail8, 0);                                                                                                   break;
+    case 5: x = GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(tail8[4]) << 32;                                                           break;
+    case 6: x = GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32;                                         break;
+    case 7: x = GET_U32<bswap>(tail8, 0) | static_cast<uint64_t>(GET_U16<bswap>(tail8, 4)) << 32 | static_cast<uint64_t>(tail8[6]) << 48; break;
+    default: goto NO_MORE;
     }
-    return mix(h);
+    h = ax_mix_stream(h, x);
+NO_MORE:
+    h = ax_mix(h);
+    return h;
 
     //const uint8_t* const tail8 = buf;
     //switch (len) {
@@ -250,9 +218,9 @@ static void ax(const void* in, const size_t len, const seed_t seed, void* out) {
 
 template <bool bswap>
 static void ax_trunc(const void* in, const size_t len, const seed_t seed, void* out) {
-    uint32_t h = (uint32_t)axhash<bswap>((const uint8_t*)in, len, (uint32_t)seed);
+    uint32_t h = static_cast<uint32_t>(axhash<bswap>((const uint8_t *) in, len, (uint32_t) seed));
 
-    PUT_U32<bswap>(h, (uint8_t*)out, 0);
+    PUT_U32<bswap>(h, static_cast<uint8_t *>(out), 0);
 }
 
 
@@ -1321,7 +1289,7 @@ static const uint32_t W32 = UINT32_C(0x86E31587);
 
 
 
-static inline uint32_t mix32(uint32_t h) {
+static uint32_t mix32(uint32_t h) {
     h = h ^ h >> 17;
     h = h * 0xED5AD4BBu;
     h = h ^ h >> 11;
@@ -1341,7 +1309,7 @@ static inline uint32_t mix32(uint32_t h) {
 //    return h;
 //}
 
-static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
+static uint32_t mix_stream32(uint32_t h, uint32_t x) {
     //h = (x ^ h ^ ROTL32(h, 27) ^ ROTL32(h, 8)) * C32;
     //h = (h ^ x ^ ROTL32(x, 5) ^ ROTL32(x, 24)) * B32;
     //h = (x ^ h ^ ROTL32(h, 21) ^ ROTL32(h, 11)) * C32;
@@ -1387,13 +1355,13 @@ static inline uint32_t mix_stream32(uint32_t h, uint32_t x) {
     //h = h ^ ROTR32(h, 14) ^ ROTR32(h, 24);
     //return h;
     for (int i = 0; i < 10; i++) {
-        x = (ROTR32(x, 8) + h ^ Q32);
+        x = (ROTR32(x, 8) + h) ^ Q32;
         h = (ROTL32(h, 3) ^ x);
-        x = (ROTR32(x, 8) + h ^ R32);
+        x = (ROTR32(x, 8) + h) ^ R32;
         h = (ROTL32(h, 3) ^ x);
-        x = (ROTR32(x, 8) + h ^ S32);
+        x = (ROTR32(x, 8) + h) ^ S32;
         h = (ROTL32(h, 3) ^ x);
-        x = (ROTR32(x, 8) + h ^ T32);
+        x = (ROTR32(x, 8) + h) ^ T32;
         h = (ROTL32(h, 3) ^ x);
     }
     return h;
