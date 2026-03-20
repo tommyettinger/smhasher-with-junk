@@ -266,6 +266,31 @@ Overall result: pass            ( 188 / 188 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 342.322876 seconds
+
+Trying to remove h2 and h3; no such luck... A tiny bit faster on short hashes, but 10 failures.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4378  1260   597   300   149    65    26    20     9     6     5     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     1     0     0     1     1     0     0     0     0     0    64
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7e
+Overall result: FAIL            ( 178 / 188 passed)
+Failures:
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 high+low bits; LE]]
+    Text                : [dictionary, numbers without commas, numbers with commas, Words alnum 1-4, Words alnum 1-16, Words alnum 1-32]
+    TwoBytes            : [20]
+    SeedBlockOffset     : [0]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 345.355030 seconds
+
 */
 
 //------------------------------------------------------------
@@ -671,14 +696,14 @@ static void adze7d(const void* in, const size_t len, const seed_t seed, void* ou
 
 template <bool bswap>
 static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const uint64_t seed) {
-    constexpr int S1 = 23;
-    constexpr int S2 = 56;
+    constexpr int ROT1 = 23;
+    constexpr int ROT2 = 56;
 
     // This strengthens the hash against tests that mainly use the seed.
-    uint64_t s = (len ^ seed ^ ROTL64(seed, S1) ^ ROTL64(seed, S2));
+    uint64_t s = len ^ seed ^ ROTL64(seed, ROT1) ^ ROTL64(seed, ROT2);
 
     while (len >= 112) {
-        constexpr int R1 = 39;
+        constexpr int ROT3 = 39;
         len -= 112;
         s = s * C +
             adze_mix(
@@ -689,7 +714,7 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
                 GET_U64<bswap>(buf, 32),
                 GET_U64<bswap>(buf, 40),
                 GET_U64<bswap>(buf, 48));
-        s = ROTL64(s, R1) +
+        s = ROTL64(s, ROT3) +
             adze_mix(
                 GET_U64<bswap>(buf, 56),
                 GET_U64<bswap>(buf, 64),
@@ -708,19 +733,19 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
     }
 
     if (len != 0) {
-        uint64_t h0 = s, h1 = s + W, h2 = ROTL64(s, 19), h3 = ROTL64(s, 51) - V;
+        uint64_t h0 = s, h1 = s + W;
 
         for (; len >= 8; len -= 8, buf += 8) {
-            h0 ^= GET_U32<bswap>(buf, 0); h0 *= Q;
-            h1 ^= GET_U32<bswap>(buf, 4); h1 *= R;
+            h0 += GET_U32<bswap>(buf, 0); h0 *= Q;
+            h1 += GET_U32<bswap>(buf, 4); h1 *= R;
         }
 
         if (len >= 4) {
-            h2 ^= GET_U32<bswap>(buf, 0);
-            h3 ^= GET_U32<bswap>(buf, len - 4);
+            h0 += GET_U32<bswap>(buf, 0);
+            h1 += GET_U32<bswap>(buf, len - 4);
         } else if (len > 0) {
-            h2 ^= buf[0];
-            h3 ^= buf[len / 2] | ((uint64_t)buf[len - 1] << 8);
+            h0 += buf[0];
+            h1 += buf[len >> 1] | ((uint64_t)buf[len - 1] << 8);
         }
 
         // h0 ^= (h2 >> 31);
@@ -736,7 +761,7 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
         // x ^= ROTL64(x, 29);
         // s += x;
         // s ^= h1;
-        s = adze_mix(h0, h1, h2, h3);
+        s = adze_mix(h0, h1);
     }
     s = adze_mix(s);
     return s;
