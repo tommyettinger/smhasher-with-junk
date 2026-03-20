@@ -310,6 +310,25 @@ Overall result: pass            ( 188 / 188 passed)
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 345.067265 seconds
 
+// Well, the code that is much faster for small keys in C++ is much slower for small keys in Java.
+// Using adze7d's approach works better! Testing adze7d with one small change to match the Java code:
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4373  1304   592   310   163    64    33    26     9     5     3     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7d
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 342.176782 seconds
 */
 
 //------------------------------------------------------------
@@ -672,7 +691,7 @@ static NEVER_INLINE uint64_t adze7dhash(const uint8_t* buf, size_t len, const ui
         case 3:  s = adze_mix(s, GET_U16<bswap>(buf, 0), buf[2]); break;
         case 4:  s = adze_mix(s, GET_U32<bswap>(buf, 0)); break;
         case 5:  s = adze_mix(s, GET_U32<bswap>(buf, 0), buf[4]); break;
-        case 6:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 2)); break;
+        case 6:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U16<bswap>(buf, 4)); break;
         case 7:  s = adze_mix(s, GET_U32<bswap>(buf, 0), GET_U32<bswap>(buf, 3)); break;
         case 8:  s = adze_mix(s, GET_U64<bswap>(buf, 0)); break;
         case 9:  s = adze_mix(s, GET_U64<bswap>(buf, 0), buf[8]); break;
@@ -764,20 +783,6 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
         } else if (len > 0) {
             h2 += buf[0] | ((uint64_t)buf[len >> 1] << 8) | ((uint64_t)buf[len - 1] << 16);
         }
-
-        // h0 ^= (h2 >> 31);
-        // h2 *= Q;
-        // h0 += ROTL64(h2, 31);
-        // h1 ^= (h3 >> 31);
-        // h3 *= R;
-        // h1 += ROTL64(h3, 31);
-        // h0 *= C;
-        // h1 += (h0 ^ h0 >> 31);
-
-        // uint64_t x = len * C;
-        // x ^= ROTL64(x, 29);
-        // s += x;
-        // s ^= h1;
         s = adze_mix(h0, h1, h2);
     }
     s = adze_mix(s);
@@ -837,8 +842,8 @@ REGISTER_HASH(adze7d,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0x4E060E51,
-    $.verification_BE = 0x9B1A80AC,
+    $.verification_LE = 0x36B9AE7D,
+    $.verification_BE = 0xFBF5914E,
     $.hashfn_native = adze7d<false>,
     $.hashfn_bswap = adze7d<true>
 );
