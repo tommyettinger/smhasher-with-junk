@@ -267,7 +267,7 @@ Overall result: pass            ( 188 / 188 passed)
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 342.322876 seconds
 
-Trying to remove h2 and h3; no such luck... A tiny bit faster on short hashes, but 10 failures.
+//Trying to remove h2 and h3; no such luck... A tiny bit faster on short hashes, but 10 failures.
 ----------------------------------------------------------------------------------------------
 -log2(p-value) summary:
 
@@ -290,6 +290,25 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 345.355030 seconds
+
+//We can't remove both h2 and h3, but we can remove h3! It's a pinch faster and still passes all tests.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4398  1315   574   295   155    66    39    20     6     7     3     0     5
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: adze7e
+Overall result: pass            ( 188 / 188 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 345.067265 seconds
 
 */
 
@@ -733,7 +752,7 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
     }
 
     if (len != 0) {
-        uint64_t h0 = s, h1 = s + W;
+        uint64_t h0 = s, h1 = s + V, h2 = s + W;
 
         for (; len >= 8; len -= 8, buf += 8) {
             h0 += GET_U32<bswap>(buf, 0); h0 *= Q;
@@ -741,11 +760,9 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
         }
 
         if (len >= 4) {
-            h0 += GET_U32<bswap>(buf, 0);
-            h1 += GET_U32<bswap>(buf, len - 4);
+            h2 += GET_U32<bswap>(buf, 0) | ((uint64_t)GET_U32<bswap>(buf, len - 4) << 32);
         } else if (len > 0) {
-            h0 += buf[0];
-            h1 += buf[len >> 1] | ((uint64_t)buf[len - 1] << 8);
+            h2 += buf[0] | ((uint64_t)buf[len >> 1] << 8) | ((uint64_t)buf[len - 1] << 16);
         }
 
         // h0 ^= (h2 >> 31);
@@ -761,7 +778,7 @@ static NEVER_INLINE uint64_t adze7ehash(const uint8_t* buf, size_t len, const ui
         // x ^= ROTL64(x, 29);
         // s += x;
         // s ^= h1;
-        s = adze_mix(h0, h1);
+        s = adze_mix(h0, h1, h2);
     }
     s = adze_mix(s);
     return s;
@@ -835,8 +852,8 @@ REGISTER_HASH(adze7e,
     FLAG_IMPL_ROTATE |
     FLAG_IMPL_LICENSE_PUBLIC_DOMAIN,
     $.bits = 64,
-    $.verification_LE = 0,
-    $.verification_BE = 0,
+    $.verification_LE = 0x0BFA2AF5,
+    $.verification_BE = 0x0FEF06F6,
     $.hashfn_native = adze7e<false>,
     $.hashfn_bswap = adze7e<true>
 );
