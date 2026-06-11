@@ -71,14 +71,43 @@ static uint32_t PairAAT_impl( const uint8_t * str, size_t len, uint32_t seed ) {
     }
 
     h1 ^= h2 ^ h2 >> 13;
-    /*
-     * now h1 passes all collision checks,
-     * so it is suitable for hash-tables with prime numbers.
-     */
+
     h1 += ROTL32(h2, 14);
     h2 ^= h1; h2 += ROTL32(h1, 26);
     h1 ^= h2; h1 += ROTL32(h2, 5);
     h2 ^= h1; h2 += ROTL32(h1, 24);
+
+    return h2;
+}
+
+template <bool bswap>
+static uint64_t PairAAT64_impl( const uint8_t * str, size_t len, uint64_t seed ) {
+    const uint8_t * const end = str + len - 1;
+    uint64_t h1 = seed + 0xD1B92B09B92266DDUL;
+    uint64_t h2 = seed ^ ROTL64(seed, 22) ^ ROTL64(seed, 47);
+
+    for (; str < end; str+= 2) {
+        h1 += GET_U16<bswap>(str, 0);
+        h1 *= 0xBEA225F9EB34556DUL;
+        h2 += h1;
+        h2  = ROTL64(h2, 13);
+        h2 *= 0x3C79AC492BA7B653UL;
+    }
+
+    if ((len & 1) == 1) {
+        h1 += end[0] + 0x9E3779B97F4A7C55UL;
+        h1 *= 0xBEA225F9EB34556DUL;
+        h2 += h1;
+        h2  = ROTL64(h2, 13);
+        h2 *= 0x3C79AC492BA7B653UL;
+    }
+
+    h1 ^= h2 ^ h2 >> 27;
+
+    h1 += ROTL64(h2, 25);
+    h2 ^= h1; h2 += ROTL64(h1, 53);
+    h1 ^= h2; h1 += ROTL64(h2, 11);
+    h2 ^= h1; h2 += ROTL64(h1, 46);
 
     return h2;
 }
@@ -90,10 +119,16 @@ static void PairAAT( const void * in, const size_t len, const seed_t seed, void 
 
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
+template <bool bswap>
+static void PairAAT64( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint64_t h = PairAAT64_impl<bswap>((const uint8_t *)in, len, (uint64_t)seed);
+
+    PUT_U64<bswap>(h, (uint8_t *)out, 0);
+}
 
 //------------------------------------------------------------
 REGISTER_FAMILY(pairaat,
-   $.src_url    = "https://github.com/rurban/smhasher/commit/3931fd6f723f4fb2afab6ef9a628912220e90ce7",
+   $.src_url    = "https://github.com/tommyettinger/smhasher-with-junk/blob/0996fd9d2d1aed3de42633f4f7553d4f9a3a4e03/smhasher3/hashes/pairaat.cpp",
    $.src_status = HashFamilyInfo::SRC_ACTIVE
  );
 
@@ -110,4 +145,19 @@ REGISTER_HASH(PairAAT,
    $.verification_BE = 0xF884A602,
    $.hashfn_native   = PairAAT<false>,
    $.hashfn_bswap    = PairAAT<true>
+ );
+
+REGISTER_HASH(PairAAT64,
+   $.desc       = "PairAAT64 (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
+   $.hash_flags = 0,
+   $.impl_flags =
+         FLAG_IMPL_ROTATE       |
+         FLAG_IMPL_MULTIPLY_64_64 |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_VERY_SLOW,
+   $.bits = 64,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = PairAAT64<false>,
+   $.hashfn_bswap    = PairAAT64<true>
  );
