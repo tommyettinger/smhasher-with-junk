@@ -30,22 +30,22 @@
 template <bool bswap>
 static uint32_t PairAAT_impl( const uint8_t * str, size_t len, uint32_t seed ) {
     const uint8_t * const end = str + len - 1;
-    uint32_t h1 = seed ^ 0x3b00;
+    uint32_t h1 = seed ^ 0x3b5db7f9u;
     uint32_t h2 = ROTL32(seed, 15);
 
     for (; str < end; str+= 2) {
         h1 += GET_U16<bswap>(str, 0);
         h1 += h1 << 3; // h1 *= 9
         h2 += h1;
-        h1  = ROTL32(h1, 7);
+        h2  = ROTL32(h2, 7);
         h2 += h2 << 2; // h2 *= 5
     }
 
     if ((len & 1) == 1) {
-        h1 += str[0];
+        h1 += end[0] + 0x3b5db7f9u;
         h1 += h1 << 3; // h1 *= 9
         h2 += h1;
-        h1  = ROTL32(h1, 7);
+        h2  = ROTL32(h2, 7);
         h2 += h2 << 2; // h2 *= 5
     }
 
@@ -64,7 +64,7 @@ static uint32_t PairAAT_impl( const uint8_t * str, size_t len, uint32_t seed ) {
 
 //------------------------------------------------------------
 template <bool bswap>
-static void PairOAAT( const void * in, const size_t len, const seed_t seed, void * out ) {
+static void PairAAT( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint32_t h = PairAAT_impl<bswap>((const uint8_t *)in, len, (uint32_t)seed);
 
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
@@ -76,7 +76,7 @@ REGISTER_FAMILY(pairaat,
    $.src_status = HashFamilyInfo::SRC_ACTIVE
  );
 
-REGISTER_HASH(PairOAAT,
+REGISTER_HASH(PairAAT,
    $.desc       = "PairAAT (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
    $.hash_flags =
          FLAG_HASH_SMALL_SEED,
@@ -87,6 +87,6 @@ REGISTER_HASH(PairOAAT,
    $.bits = 32,
    $.verification_LE = 0,
    $.verification_BE = 0,
-   $.hashfn_native   = PairOAAT<false>,
-   $.hashfn_bswap    = PairOAAT<true>
+   $.hashfn_native   = PairAAT<false>,
+   $.hashfn_bswap    = PairAAT<true>
  );
