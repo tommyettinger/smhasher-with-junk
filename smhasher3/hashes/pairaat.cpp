@@ -86,18 +86,18 @@ static uint32_t PairAAT_impl( const uint8_t * str, size_t len, uint32_t seed ) {
 
           0     1     2     3     4     5     6     7     8     9    10    11    12
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4413  1289   625   282   143    67    31    15    10    10     0     1     1
+         4424  1266   598   300   144    78    45    21     5     4     2     2     0
 
          13    14    15    16    17    18    19    20    21    22    23    24    25+
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            2     0     0     0     0     0     0     0     0     0     0     0     0
+            0     0     0     0     0     0     0     0     0     0     0     0     0
 
 ----------------------------------------------------------------------------------------------
 Summary for: PairAAT64
 Overall result: pass            ( 186 / 186 passed)
 
 ----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 388.271365 seconds
+Verification value is 0x00000001 - Testing took 386.091023 seconds
 */
 template <bool bswap>
 static uint64_t PairAAT64_impl( const uint8_t * str, size_t len, uint64_t seed ) {
@@ -107,18 +107,18 @@ static uint64_t PairAAT64_impl( const uint8_t * str, size_t len, uint64_t seed )
 
     for (; str < end; str+= 2) {
         h1 += GET_U16<bswap>(str, 0);
-        h1 *= 0xBEA225F9EB34556DUL;
+        h1 += 0xBEA225F9EB34556DUL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
         h2 += h1;
         h2  = ROTL64(h2, 13);
-        h2 *= 0x3C79AC492BA7B653UL;
+        h2 *= 0x3C79AC492BA7B653UL;//h2 += h2 << 17;
     }
 
     if ((len & 1) == 1) {
-        h1 += end[0] + 0x9E3779B97F4A7C55UL;
-        h1 *= 0xBEA225F9EB34556DUL;
+        h1 += end[0];
+        h1 += 0x9E3779B97F4A7C55UL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
         h2 += h1;
         h2  = ROTL64(h2, 13);
-        h2 *= 0x3C79AC492BA7B653UL;
+        h2 *= 0x3C79AC492BA7B653UL;//h2 += h2 << 17;
     }
 
     h1 ^= h2 ^ h2 >> 27;
