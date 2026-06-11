@@ -80,6 +80,24 @@ static uint32_t PairAAT_impl( const uint8_t * str, size_t len, uint32_t seed ) {
     return h2;
 }
 
+static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
+static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
+static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
+static const uint64_t PHI = UINT64_C(0x9E3779B97F4A7C15);
+// Moremur unary hash, by Pelle Evensen
+// https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
+static uint64_t moremur(uint64_t x) {
+    constexpr int R0 = 27;
+    constexpr int R1 = 33;
+    constexpr int R2 = 27;
+    x ^= x >> R0;
+    x *= A;
+    x ^= x >> R1;
+    x *= B;
+    x ^= x >> R2;
+    return x;
+}
+
 /*
 ----------------------------------------------------------------------------------------------
 -log2(p-value) summary:
@@ -106,19 +124,27 @@ static uint64_t PairAAT64_impl( const uint8_t * str, size_t len, uint64_t seed )
     uint64_t h2 = seed ^ ROTL64(seed, 22) ^ ROTL64(seed, 47);
 
     for (; str < end; str+= 2) {
-        h1 += GET_U16<bswap>(str, 0);
-        h1 += 0xBEA225F9EB34556DUL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
-        h2 += h1;
-        h2  = ROTL64(h2, 13);
-        h2 *= 0x3C79AC492BA7B653UL;//h2 += h2 << 17;
+        // h1 += GET_U16<bswap>(str, 0) + 0xBEA225F9EB34556DUL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
+        // h2 += h1;
+        // h2 ^= ROTL64(h2, 13) ^ ROTL64(h2, 43);
+        // h2 -= h2 << 31;
+        // h2  = ROTL64(h2, 13);
+        h2 += (h1 += GET_U16<bswap>(str, 0) + 0xBEA225F9EB34556DUL);
+        h2  = ROTL64(h2, 13) * 0x3C79AC492BA7B653UL;
+        // h2 *= 0xF9B25D65UL;
+        // h2 *= 0x3C79AC492BA7B653UL;
     }
 
     if ((len & 1) == 1) {
-        h1 += end[0];
-        h1 += 0x9E3779B97F4A7C55UL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
-        h2 += h1;
-        h2  = ROTL64(h2, 13);
-        h2 *= 0x3C79AC492BA7B653UL;//h2 += h2 << 17;
+        // h1 += end[0] + 0x9E3779B97F4A7C55UL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
+        // h2 += h1;
+        // h2 ^= ROTL64(h2, 13) ^ ROTL64(h2, 43);
+        // h2 -= h2 << 31;
+        // h2  = ROTL64(h2, 13);
+        // h2 *= 0xF9B25D65UL;
+        // h2 *= 0x3C79AC492BA7B653UL;
+        h2 += (h1 += end[0] + 0x9E3779B97F4A7C55UL);
+        h2  = ROTL64(h2, 13) * 0x3C79AC492BA7B653UL;
     }
 
     h1 ^= h2 ^ h2 >> 27;
@@ -131,6 +157,68 @@ static uint64_t PairAAT64_impl( const uint8_t * str, size_t len, uint64_t seed )
     return h2;
 }
 
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4386  1309   605   298   151    71    33    21     8     6     0     1     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: PairAAT64-B
+Overall result: pass            ( 186 / 186 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 382.012772 seconds
+ */
+template <bool bswap>
+static uint64_t PairAAT64_impl_B( const uint8_t * str, size_t len, uint64_t seed ) {
+    constexpr int M0 = 27;
+    constexpr int M1 = 33;
+    constexpr int M2 = 27;
+    constexpr int R0 = 22;
+    constexpr int R1 = 47;
+    constexpr int R2 = 13;
+
+    const uint8_t * const end = str + len - 1;
+    uint64_t x = seed ^ ROTL64(seed, R0) ^ ROTL64(seed, R1) ^ len;
+
+    for (; str < end; str+= 2) {
+        // h1 += GET_U16<bswap>(str, 0) + 0xBEA225F9EB34556DUL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
+        // h2 += h1;
+        // h2 ^= ROTL64(h2, 13) ^ ROTL64(h2, 43);
+        // h2 -= h2 << 31;
+        // h2  = ROTL64(h2, 13);
+        x += GET_U16<bswap>(str, 0) + C;
+        x  = ROTL64(x, R2) * A;
+        // h2 *= 0xF9B25D65UL;
+        // h2 *= 0x3C79AC492BA7B653UL;
+    }
+
+    if ((len & 1) == 1) {
+        // h1 += end[0] + 0x9E3779B97F4A7C55UL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
+        // h2 += h1;
+        // h2 ^= ROTL64(h2, 13) ^ ROTL64(h2, 43);
+        // h2 -= h2 << 31;
+        // h2  = ROTL64(h2, 13);
+        // h2 *= 0xF9B25D65UL;
+        // h2 *= 0x3C79AC492BA7B653UL;
+        x += end[0] + PHI;
+        x  = ROTL64(x, R2) * A;
+    }
+    x ^= x >> M0;
+    x *= A;
+    x ^= x >> M1;
+    x *= B;
+    x ^= x >> M2;
+    return x;
+}
+
 //------------------------------------------------------------
 template <bool bswap>
 static void PairAAT( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -141,6 +229,12 @@ static void PairAAT( const void * in, const size_t len, const seed_t seed, void 
 template <bool bswap>
 static void PairAAT64( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint64_t h = PairAAT64_impl<bswap>((const uint8_t *)in, len, (uint64_t)seed);
+
+    PUT_U64<bswap>(h, (uint8_t *)out, 0);
+}
+template <bool bswap>
+static void PairAAT64_B( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint64_t h = PairAAT64_impl_B<bswap>((const uint8_t *)in, len, (uint64_t)seed);
 
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
 }
@@ -179,4 +273,19 @@ REGISTER_HASH(PairAAT64,
    $.verification_BE = 0,
    $.hashfn_native   = PairAAT64<false>,
    $.hashfn_bswap    = PairAAT64<true>
+ );
+
+REGISTER_HASH(PairAAT64_B,
+   $.desc       = "PairAAT64 B (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
+   $.hash_flags = 0,
+   $.impl_flags =
+         FLAG_IMPL_ROTATE       |
+         FLAG_IMPL_MULTIPLY_64_64 |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_VERY_SLOW,
+   $.bits = 64,
+   $.verification_LE = 0x01F2824F,
+   $.verification_BE = 0x904572ED,
+   $.hashfn_native   = PairAAT64_B<false>,
+   $.hashfn_bswap    = PairAAT64_B<true>
  );
