@@ -80,6 +80,40 @@ static uint32_t PairAAT_impl( const uint8_t * str, size_t len, uint32_t seed ) {
     return h2;
 }
 
+
+template <bool bswap>
+static uint32_t PairAAT_impl_B( const uint8_t * str, size_t len, uint64_t seed ) {
+    const uint8_t * const end = str + len - 1;
+    uint32_t h1 = (uint32_t)seed + 0x3b5db7f9u;
+    uint32_t h2 = (uint32_t)(seed>>32);
+    h2 ^= ROTL32(h2, 10) ^ ROTL32(h2, 23);
+
+    for (; str < end; str+= 2) {
+        h1 += GET_U16<bswap>(str, 0);
+        h1 += h1 << 3; // h1 *= 9
+        h2 += h1;
+        h2  = ROTL32(h2, 7);
+        h2 += h2 << 2; // h2 *= 5
+    }
+
+    if ((len & 1) == 1) {
+        h1 += end[0] + 0x9e3779b9u;
+        h1 += h1 << 3; // h1 *= 9
+        h2 += h1;
+        h2  = ROTL32(h2, 7);
+        h2 += h2 << 2; // h2 *= 5
+    }
+
+    h1 ^= h2 ^ h2 >> 13;
+
+    h1 += ROTL32(h2, 14);
+    h2 ^= h1; h2 += ROTL32(h1, 26);
+    h1 ^= h2; h1 += ROTL32(h2, 5);
+    h2 ^= h1; h2 += ROTL32(h1, 24);
+
+    return h2;
+}
+
 static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
 static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
 static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
@@ -227,6 +261,12 @@ static void PairAAT( const void * in, const size_t len, const seed_t seed, void 
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
 template <bool bswap>
+static void PairAAT_B( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint32_t h = PairAAT_impl_B<bswap>((const uint8_t *)in, len, (uint64_t)seed);
+
+    PUT_U32<bswap>(h, (uint8_t *)out, 0);
+}
+template <bool bswap>
 static void PairAAT64( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint64_t h = PairAAT64_impl<bswap>((const uint8_t *)in, len, (uint64_t)seed);
 
@@ -258,6 +298,20 @@ REGISTER_HASH(PairAAT,
    $.verification_BE = 0xF884A602,
    $.hashfn_native   = PairAAT<false>,
    $.hashfn_bswap    = PairAAT<true>
+ );
+
+REGISTER_HASH(PairAAT_B,
+   $.desc       = "PairAAT (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
+   $.hash_flags = 0,
+   $.impl_flags =
+         FLAG_IMPL_ROTATE       |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_VERY_SLOW,
+   $.bits = 32,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = PairAAT_B<false>,
+   $.hashfn_bswap    = PairAAT_B<true>
  );
 
 REGISTER_HASH(PairAAT64,
