@@ -106,7 +106,7 @@ static uint32_t PairAAT_impl( const uint8_t * str, size_t len, uint32_t seed ) {
 
           0     1     2     3     4     5     6     7     8     9    10    11    12
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         2347   605   283   150    76    27    20    11     3     3     0     2     0
+         2421   591   269   117    71    33    13     8     0     1     3     0     0
 
          13    14    15    16    17    18    19    20    21    22    23    24    25+
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
@@ -117,13 +117,13 @@ Summary for: PairAAT-B
 Overall result: pass            ( 186 / 186 passed)
 
 ----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 245.005694 seconds
+Verification value is 0x00000001 - Testing took 244.413047 seconds
 */
 template <bool bswap>
 static uint32_t PairAAT_impl_B( const uint8_t * str, size_t len, uint64_t seed ) {
     const uint8_t * const end = str + len - 1;
     uint64_t h1 = seed + 0x3C79AC492BA7B653UL;
-    uint64_t h2 = seed ^ ROTL64(seed, 17) ^ ROTL64(seed, 47) ^ len;
+    uint64_t h2 = seed ^ ROTL64(seed, 17) ^ ROTL64(seed, 47);
 
     for (; str < end; str+= 2) {
         h1 += GET_U16<bswap>(str, 0);
@@ -328,8 +328,8 @@ REGISTER_HASH(PairAAT_B,
          FLAG_IMPL_LICENSE_MIT  |
          FLAG_IMPL_VERY_SLOW,
    $.bits = 32,
-   $.verification_LE = 0xDB8D6F84,
-   $.verification_BE = 0x3EB0CCE2,
+   $.verification_LE = 0xF6422FB0,
+   $.verification_BE = 0x240FA851,
    $.hashfn_native   = PairAAT_B<false>,
    $.hashfn_bswap    = PairAAT_B<true>
  );
