@@ -122,23 +122,23 @@ Verification value is 0x00000001 - Testing took 245.005694 seconds
 template <bool bswap>
 static uint32_t PairAAT_impl_B( const uint8_t * str, size_t len, uint64_t seed ) {
     const uint8_t * const end = str + len - 1;
-    uint64_t h1 = seed + A;
+    uint64_t h1 = seed + 0x3C79AC492BA7B653UL;
     uint64_t h2 = seed ^ ROTL64(seed, 17) ^ ROTL64(seed, 47) ^ len;
 
     for (; str < end; str+= 2) {
         h1 += GET_U16<bswap>(str, 0);
-        h1 += h1 << 3; // h1 *= 9
+        h1 += h1 << 3;
         h2 += h1;
         h2  = ROTL64(h2, 7);
-        h2 += h2 << 2; // h2 *= 5
+        h2 += h2 << 2;
     }
 
     if ((len & 1) == 1) {
-        h1 += end[0] + PHI;
-        h1 += h1 << 3; // h1 *= 9
+        h1 += end[0] + 0x9E3779B97F4A7C15UL;
+        h1 += h1 << 3;
         h2 += h1;
         h2  = ROTL64(h2, 7);
-        h2 += h2 << 2; // h2 *= 5
+        h2 += h2 << 2;
     }
 
     h1 ^= h2 ^ h2 >> 27;
@@ -321,21 +321,21 @@ REGISTER_HASH(PairAAT,
  );
 
 REGISTER_HASH(PairAAT_B,
-   $.desc       = "PairAAT (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
+   $.desc       = "PairAAT B (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
    $.hash_flags = 0,
    $.impl_flags =
          FLAG_IMPL_ROTATE       |
          FLAG_IMPL_LICENSE_MIT  |
          FLAG_IMPL_VERY_SLOW,
    $.bits = 32,
-   $.verification_LE = 0,
-   $.verification_BE = 0,
+   $.verification_LE = 0xDB8D6F84,
+   $.verification_BE = 0x3EB0CCE2,
    $.hashfn_native   = PairAAT_B<false>,
    $.hashfn_bswap    = PairAAT_B<true>
  );
 
 REGISTER_HASH(PairAAT64,
-   $.desc       = "PairAAT64 (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
+   $.desc       = "PairAAT64 (Small 16-bit-AAT, mostly by funny-falcon)",
    $.hash_flags = 0,
    $.impl_flags =
          FLAG_IMPL_ROTATE       |
@@ -343,14 +343,14 @@ REGISTER_HASH(PairAAT64,
          FLAG_IMPL_LICENSE_MIT  |
          FLAG_IMPL_VERY_SLOW,
    $.bits = 64,
-   $.verification_LE = 0,
-   $.verification_BE = 0,
+   $.verification_LE = 0x267B0FEB,
+   $.verification_BE = 0xF631506D,
    $.hashfn_native   = PairAAT64<false>,
    $.hashfn_bswap    = PairAAT64<true>
  );
 
 REGISTER_HASH(PairAAT64_B,
-   $.desc       = "PairAAT64 B (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
+   $.desc       = "PairAAT64 B (Small 16-bit-AAT, mostly by funny-falcon)",
    $.hash_flags = 0,
    $.impl_flags =
          FLAG_IMPL_ROTATE       |
