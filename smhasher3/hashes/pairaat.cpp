@@ -217,18 +217,18 @@ static uint64_t PairAAT64_impl( const uint8_t * str, size_t len, uint64_t seed )
 
           0     1     2     3     4     5     6     7     8     9    10    11    12
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4386  1309   605   298   151    71    33    21     8     6     0     1     0
+         4308  1303   654   289   178    88    32    18    11     4     0     2     0
 
          13    14    15    16    17    18    19    20    21    22    23    24    25+
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            0     0     0     0     0     0     0     0     0     0     0     0     0
+            2     0     0     0     0     0     0     0     0     0     0     0     0
 
 ----------------------------------------------------------------------------------------------
 Summary for: PairAAT64-B
 Overall result: pass            ( 186 / 186 passed)
 
 ----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 382.012772 seconds
+Verification value is 0x00000001 - Testing took 385.763824 seconds
  */
 template <bool bswap>
 static uint64_t PairAAT64_impl_B( const uint8_t * str, size_t len, uint64_t seed ) {
@@ -240,7 +240,7 @@ static uint64_t PairAAT64_impl_B( const uint8_t * str, size_t len, uint64_t seed
     constexpr int R2 = 13;
 
     const uint8_t * const end = str + len - 1;
-    uint64_t x = seed ^ ROTL64(seed, R0) ^ ROTL64(seed, R1) ^ len;
+    uint64_t x = seed ^ ROTL64(seed, R0) ^ ROTL64(seed, R1) ^ PHI;
 
     for (; str < end; str+= 2) {
         // h1 += GET_U16<bswap>(str, 0) + 0xBEA225F9EB34556DUL;//h1 -= h1 << 31;//h1 *= 0xBEA225F9EB34556DUL;
@@ -358,8 +358,8 @@ REGISTER_HASH(PairAAT64_B,
          FLAG_IMPL_LICENSE_MIT  |
          FLAG_IMPL_VERY_SLOW,
    $.bits = 64,
-   $.verification_LE = 0x01F2824F,
-   $.verification_BE = 0x904572ED,
+   $.verification_LE = 0x9E76660B,
+   $.verification_BE = 0x666360A1,
    $.hashfn_native   = PairAAT64_B<false>,
    $.hashfn_bswap    = PairAAT64_B<true>
  );
