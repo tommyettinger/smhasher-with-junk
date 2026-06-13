@@ -28,6 +28,26 @@
 #include "Hashlib.h"
 
 // work in progress!
+
+static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
+static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
+static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
+static const uint64_t PHI = UINT64_C(0x9E3779B97F4A7C15);
+// Moremur unary hash, by Pelle Evensen
+// https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
+static uint64_t moremur(uint64_t x) {
+    constexpr int R0 = 27;
+    constexpr int R1 = 33;
+    constexpr int R2 = 27;
+    x ^= x >> R0;
+    x *= A;
+    x ^= x >> R1;
+    x *= B;
+    x ^= x >> R2;
+    return x;
+}
+
+
 /*
 ----------------------------------------------------------------------------------------------
 -log2(p-value) summary:
@@ -84,52 +104,34 @@ static uint32_t PairAAT_impl( const uint8_t * str, size_t len, uint32_t seed ) {
 template <bool bswap>
 static uint32_t PairAAT_impl_B( const uint8_t * str, size_t len, uint64_t seed ) {
     const uint8_t * const end = str + len - 1;
-    uint32_t h1 = (uint32_t)seed + 0x3b5db7f9u;
-    uint32_t h2 = (uint32_t)(seed>>32);
-    h2 ^= ROTL32(h2, 10) ^ ROTL32(h2, 23);
+    uint64_t h1 = seed + A;
+    uint64_t h2 = seed ^ ROTL64(seed, 17) ^ ROTL64(seed, 47) ^ len;
 
     for (; str < end; str+= 2) {
         h1 += GET_U16<bswap>(str, 0);
         h1 += h1 << 3; // h1 *= 9
         h2 += h1;
-        h2  = ROTL32(h2, 7);
+        h2  = ROTL64(h2, 7);
         h2 += h2 << 2; // h2 *= 5
     }
 
     if ((len & 1) == 1) {
-        h1 += end[0] + 0x9e3779b9u;
+        h1 += end[0] + PHI;
         h1 += h1 << 3; // h1 *= 9
         h2 += h1;
-        h2  = ROTL32(h2, 7);
+        h2  = ROTL64(h2, 7);
         h2 += h2 << 2; // h2 *= 5
     }
 
-    h1 ^= h2 ^ h2 >> 13;
+    h1 ^= h2 ^ h2 >> 27;
 
-    h1 += ROTL32(h2, 14);
-    h2 ^= h1; h2 += ROTL32(h1, 26);
-    h1 ^= h2; h1 += ROTL32(h2, 5);
-    h2 ^= h1; h2 += ROTL32(h1, 24);
-
+    h1 += ROTL64(h2, 25);
+    h2 ^= h1; h2 += ROTL64(h1, 53);
+    h1 ^= h2; h1 += ROTL64(h2, 11);
+    h2 ^= h1; h2 += ROTL64(h1, 46);
+    h1 ^= h2; h1 += ROTL64(h2, 37);
+    h2 ^= h1; h2 += ROTL64(h1, 19);
     return h2;
-}
-
-static const uint64_t A = UINT64_C(0x3C79AC492BA7B653);
-static const uint64_t B = UINT64_C(0x1C69B3F74AC4AE35);
-static const uint64_t C = UINT64_C(0xBEA225F9EB34556D);
-static const uint64_t PHI = UINT64_C(0x9E3779B97F4A7C15);
-// Moremur unary hash, by Pelle Evensen
-// https://mostlymangling.blogspot.com/2019/12/stronger-better-morer-moremur-better.html
-static uint64_t moremur(uint64_t x) {
-    constexpr int R0 = 27;
-    constexpr int R1 = 33;
-    constexpr int R2 = 27;
-    x ^= x >> R0;
-    x *= A;
-    x ^= x >> R1;
-    x *= B;
-    x ^= x >> R2;
-    return x;
 }
 
 /*
