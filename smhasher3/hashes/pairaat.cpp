@@ -292,6 +292,27 @@ Overall result: pass            ( 186 / 186 passed)
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 296.780160 seconds
  */
+
+// using only the low 32 bits of output:
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         2365   579   264   147    78    43    22    11     9     5     2     0     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     1     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: PairAAT-C
+Overall result: pass            ( 186 / 186 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 247.482652 seconds
+ */
 template <bool bswap>
 static uint64_t PairAAT64_impl_C( const uint8_t * str, size_t len, uint64_t seed ) {
     const uint8_t * const end = str + len - 1;
@@ -335,6 +356,12 @@ static void PairAAT( const void * in, const size_t len, const seed_t seed, void 
 template <bool bswap>
 static void PairAAT_B( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint32_t h = PairAAT_impl_B<bswap>((const uint8_t *)in, len, (uint64_t)seed);
+
+    PUT_U32<bswap>(h, (uint8_t *)out, 0);
+}
+template <bool bswap>
+static void PairAAT_C( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint32_t h = PairAAT64_impl_C<bswap>((const uint8_t *)in, len, (uint64_t)seed);
 
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
@@ -392,6 +419,20 @@ REGISTER_HASH(PairAAT_B,
    $.hashfn_bswap    = PairAAT_B<true>
  );
 
+REGISTER_HASH(PairAAT_C,
+   $.desc       = "PairAAT C (Small non-multiplicative 16-bit-AAT, mostly by funny-falcon)",
+   $.hash_flags = 0,
+   $.impl_flags =
+         FLAG_IMPL_ROTATE       |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_VERY_SLOW,
+   $.bits = 32,
+   $.verification_LE = 0x7304BB5F,
+   $.verification_BE = 0x5329173D,
+   $.hashfn_native   = PairAAT_C<false>,
+   $.hashfn_bswap    = PairAAT_C<true>
+ );
+
 REGISTER_HASH(PairAAT64,
    $.desc       = "PairAAT64 (Small 16-bit-AAT, mostly by funny-falcon)",
    $.hash_flags = 0,
@@ -430,8 +471,8 @@ REGISTER_HASH(PairAAT64_C,
          FLAG_IMPL_LICENSE_MIT  |
          FLAG_IMPL_VERY_SLOW,
    $.bits = 64,
-   $.verification_LE = 0,
-   $.verification_BE = 0,
+   $.verification_LE = 0x05C53179,
+   $.verification_BE = 0x991681F9,
    $.hashfn_native   = PairAAT64_C<false>,
    $.hashfn_bswap    = PairAAT64_C<true>
  );
