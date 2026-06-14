@@ -279,7 +279,7 @@ static uint64_t PairAAT64_impl_B( const uint8_t * str, size_t len, uint64_t seed
 
           0     1     2     3     4     5     6     7     8     9    10    11    12
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         4401  1269   616   284   148    87    43    18    12     8     0     1     2
+         4394  1282   595   294   167    81    41    14     9     7     3     2     0
 
          13    14    15    16    17    18    19    20    21    22    23    24    25+
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
@@ -290,7 +290,7 @@ Summary for: PairAAT64-C
 Overall result: pass            ( 186 / 186 passed)
 
 ----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 296.780160 seconds
+Verification value is 0x00000001 - Testing took 296.247018 seconds
  */
 
 // using only the low 32 bits of output:
@@ -300,18 +300,18 @@ Verification value is 0x00000001 - Testing took 296.780160 seconds
 
           0     1     2     3     4     5     6     7     8     9    10    11    12
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-         2365   579   264   147    78    43    22    11     9     5     2     0     1
+         2352   591   282   140    76    42    23     9     6     3     1     2     0
 
          13    14    15    16    17    18    19    20    21    22    23    24    25+
         ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-            0     1     0     0     0     0     0     0     0     0     0     0     0
+            0     0     0     0     0     0     0     0     0     0     0     0     0
 
 ----------------------------------------------------------------------------------------------
 Summary for: PairAAT-C
 Overall result: pass            ( 186 / 186 passed)
 
 ----------------------------------------------------------------------------------------------
-Verification value is 0x00000001 - Testing took 247.482652 seconds
+Verification value is 0x00000001 - Testing took 248.055665 seconds
  */
 template <bool bswap>
 static uint64_t PairAAT64_impl_C( const uint8_t * str, size_t len, uint64_t seed ) {
@@ -335,7 +335,7 @@ static uint64_t PairAAT64_impl_C( const uint8_t * str, size_t len, uint64_t seed
         h2 += h2 << 2;
     }
 
-    h1 ^= h2 ^ h2 >> 27;
+    h1 ^= h2;
 
     h1 += ROTL64(h2, 25);
     h2 ^= h1; h2 += ROTL64(h1, 53);
@@ -427,8 +427,8 @@ REGISTER_HASH(PairAAT_C,
          FLAG_IMPL_LICENSE_MIT  |
          FLAG_IMPL_VERY_SLOW,
    $.bits = 32,
-   $.verification_LE = 0x7304BB5F,
-   $.verification_BE = 0x5329173D,
+   $.verification_LE = 0x466B6A20,
+   $.verification_BE = 0x4F8B6DD2,
    $.hashfn_native   = PairAAT_C<false>,
    $.hashfn_bswap    = PairAAT_C<true>
  );
@@ -471,8 +471,8 @@ REGISTER_HASH(PairAAT64_C,
          FLAG_IMPL_LICENSE_MIT  |
          FLAG_IMPL_VERY_SLOW,
    $.bits = 64,
-   $.verification_LE = 0x05C53179,
-   $.verification_BE = 0x991681F9,
+   $.verification_LE = 0x5307B629,
+   $.verification_BE = 0x57D3428C,
    $.hashfn_native   = PairAAT64_C<false>,
    $.hashfn_bswap    = PairAAT64_C<true>
  );
