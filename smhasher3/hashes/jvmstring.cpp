@@ -845,6 +845,66 @@ static void jvmstring3( const void * in, const size_t len, const seed_t seed, vo
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
 
+/*
+Initial results: not good.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         1584   335   160    61    52    31     9     7     6     1     4     2     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            4     1     1     3     1     0     3     1     0     1     2     2   476
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring4
+Overall result: FAIL            ( 112 / 187 passed)
+Failures:
+    BIC                 : [8]
+    Sparse              : [3/8, 3/9, 3/10, 3/12, 3/14, 20/3, 9/4, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [numbers without commas, numbers with commas, FooooooBaaaaarXXXX, FooooooooooBaaaaaaaaarXXXX]
+    TwoBytes            : [20, 32]
+    Bitflip             : [3, 4, 8]
+    SeedZeroes          : [1280, 8448]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 277.442588 seconds
+*/
+template <bool bswap>
+static void jvmstring4( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint32_t h = (uint32_t)(seed + len);
+    const uint8_t* data = (const uint8_t*)in;
+    size_t i = 3;
+    h = (h ^ 7) * 555555555;
+    h += h * h | 91199;
+    h ^= h >> 14;
+    h += h * h | 19911;
+    h ^= h >> 13;
+
+    for (; i < len; i += 4, data += 4) {
+        h ^= GET_U32<bswap>(data, 0);
+        h += h * h | 19191;
+        h ^= h >> 15;
+    }
+    i -= 3;
+    for (; i < len; i++, data++) {
+        h ^= data[0];
+        h += h * h | 19191;
+        h ^= h >> 15;
+    }
+    h += h * h | 99911;
+    h ^= h >> 15;
+    h += h * h | 11999;
+    h ^= h >> 14;
+
+    PUT_U32<bswap>(h, (uint8_t *)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(jvmstring,
    $.src_url    = "https://github.com/aappleby/smhasher/blob/master/src/Hashes.cpp",
@@ -894,4 +954,19 @@ REGISTER_HASH(jvmstring3,
    $.verification_BE = 0,
    $.hashfn_native   = jvmstring3<false>,
    $.hashfn_bswap    = jvmstring3<true>
+ );
+
+REGISTER_HASH(jvmstring4,
+   $.desc       = "jvmstring4",
+   $.hash_flags =
+         FLAG_HASH_SMALL_SEED,
+   $.impl_flags =
+         FLAG_IMPL_MULTIPLY     |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_SLOW,
+   $.bits = 32,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = jvmstring4<false>,
+   $.hashfn_bswap    = jvmstring4<true>
  );
