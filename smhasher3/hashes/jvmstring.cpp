@@ -815,6 +815,35 @@ static void jvmstring2( const void * in, const size_t len, const seed_t seed, vo
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
 
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         1707   383   193   114    41    22    13     6     7     7     1     2     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            1     0     1     0     0     0     1     1     0     0     1     1   245
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring3
+Overall result: FAIL            ( 154 / 187 passed)
+Failures:
+    BIC                 : [8]
+    Sparse              : [20/3, 5/9]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [numbers with commas, FooooooooBaaaaaaarXXXX]
+    TwoBytes            : [20, 32]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 4, 8]
+    SeedZeroes          : [1280, 8448]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 187.796886 seconds
+ */
 template <bool bswap>
 static void jvmstring3( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint32_t h = (uint32_t)(seed + len);
