@@ -99,4 +99,5 @@ set(HASH_SRC_FILES
   hashes/gxhash.cpp
   hashes/rust-rapidhash.cpp
   hashes/pairaat.cpp
+  hashes/rhymehash.cpp
 )
