@@ -934,10 +934,40 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 210.802545 seconds
+
+
+Not really much better... It looks like QOA is not a great tool here.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         1558   335   175    96    54    35    17     7     7     3     2     4     6
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            3     3     1     0     0     1     0     1     2     1     0     0   436
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring4
+Overall result: FAIL            ( 116 / 187 passed)
+Failures:
+    Sparse              : [4/5, 3/8, 3/9, 3/10, 3/12, 3/14, 20/3, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [numbers with commas]
+    TwoBytes            : [20, 32]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 8]
+    SeedZeroes          : [1280, 8448]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 286.772139 seconds
 */
 template <bool bswap>
 static void jvmstring4( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint32_t s = seed, h = (uint32_t)(s + len);
+    uint32_t h = (uint32_t)(seed + len);
     const uint8_t* data = (const uint8_t*)in;
     size_t i = 3;
     h = (h ^ 7) * 555555555;
@@ -947,17 +977,16 @@ static void jvmstring4( const void * in, const size_t len, const seed_t seed, vo
     h ^= h >> 13;
 
     for (; i < len; i += 4, data += 4) {
-        h += GET_U32<bswap>(data, 0) ^ s;
+        h += GET_U32<bswap>(data, 0);
+        h += h * h | 9191;
         h ^= h >> 15;
-        s += s * s | 9191;
     }
     i -= 3;
     for (; i < len; i++, data++) {
-        h += data[0] ^ s;
+        h += data[0];
+        h += h * h | 9191;
         h ^= h >> 15;
-        s += s * s | 9191;
     }
-    h += s;
     h += h * h | 9911;
     h ^= h >> 15;
     h += h * h | 1199;
