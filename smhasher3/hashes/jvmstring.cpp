@@ -903,33 +903,67 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 277.442588 seconds
+
+With the change to have s run independently, it's worse!
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         1201   295   129    59    52    11    16     8     3     2     1     5     2
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            1     6     2     1     1     3     2     2     0     1     1     1   942
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring4
+Overall result: FAIL            ( 82 / 187 passed)
+Failures:
+    Avalanche           : [3]
+    BIC                 : [3, 8, 11, 15]
+    Cyclic              : [4 cycles of 3 bytes, 4 cycles of 4 bytes, 4 cycles of 8 bytes, 8 cycles of 3 bytes, 8 cycles of 4 bytes, 8 cycles of 8 bytes, 12 cycles of 4 bytes, 16 cycles of 3 bytes, 16 cycles of 4 bytes]
+    Sparse              : [6/2, 4/3, 4/5, 3/6, 3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 10/2, 20/3, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [dictionary, numbers without commas, numbers with commas, FBXXXX, FooBarXXXX, FooooBaaarXXXX, FooooooBaaaaarXXXX, FooooooooBaaaaaaarXXXX, FooooooooooBaaaaaaaaarXXXX, Words alnum 1-4, Words alnum 5-8, Words alnum 1-16, Words alnum 1-32, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32, 1024, 2048, 4096]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 8]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [2, 3]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 210.802545 seconds
 */
 template <bool bswap>
 static void jvmstring4( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint32_t h = (uint32_t)(seed + len);
+    uint32_t s = seed, h = (uint32_t)(s + len);
     const uint8_t* data = (const uint8_t*)in;
     size_t i = 3;
     h = (h ^ 7) * 555555555;
-    h += h * h | 91199;
+    h += h * h | 9199;
     h ^= h >> 14;
-    h += h * h | 19911;
+    h += h * h | 1911;
     h ^= h >> 13;
 
     for (; i < len; i += 4, data += 4) {
-        h ^= GET_U32<bswap>(data, 0);
-        h += h * h | 19191;
+        h += GET_U32<bswap>(data, 0) ^ s;
         h ^= h >> 15;
+        s += s * s | 9191;
     }
     i -= 3;
     for (; i < len; i++, data++) {
-        h ^= data[0];
-        h += h * h | 19191;
+        h += data[0] ^ s;
         h ^= h >> 15;
+        s += s * s | 9191;
     }
-    h += h * h | 99911;
+    h += s;
+    h += h * h | 9911;
     h ^= h >> 15;
-    h += h * h | 11999;
+    h += h * h | 1199;
     h ^= h >> 14;
+    h += h * h | 9119;
+    h ^= h >> 15;
 
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
