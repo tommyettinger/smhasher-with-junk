@@ -964,35 +964,62 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 286.772139 seconds
+
+Multiplying h and the absorbed value... with a random-ish rotation... doesn't work well either.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         1454   288   144    81    44    30    16     7     4     5     5     8     2
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     3     3     3     7     1     0     5     0     3     2     4   628
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring4
+Overall result: FAIL            ( 97 / 187 passed)
+Failures:
+    BIC                 : [8]
+    Sparse              : [4/5, 3/6, 3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 9/4, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [numbers with commas, FXXXXB, FBXXXX, FooXXXXBar, FooBarXXXX, FooooXXXXBaaar, FooooBaaarXXXX, FooooooXXXXBaaaaar, FooooooBaaaaarXXXX, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, FooooooooooXXXXBaaaaaaaaar, Words alnum 5-8, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32, 1024, 2048, 4096]
+    PerlinNoise         : [2]
+    Bitflip             : [4, 8]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [1, 2, 3, 5]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 204.218807 seconds
+
 */
 template <bool bswap>
 static void jvmstring4( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint32_t h = (uint32_t)(seed + len);
     const uint8_t* data = (const uint8_t*)in;
     size_t i = 3;
+    h ^= h >> 15;
     h = (h ^ 7) * 555555555;
-    h += h * h | 9199;
     h ^= h >> 14;
-    h += h * h | 1911;
+    h = (h ^ 7) * 555555555;
     h ^= h >> 13;
 
     for (; i < len; i += 4, data += 4) {
-        h += GET_U32<bswap>(data, 0);
-        h += h * h | 9191;
-        h ^= h >> 15;
+        h = (h + GET_U32<bswap>(data, 0)) * 555555555;
+        h = ROTL32(h, i & 31);
     }
     i -= 3;
     for (; i < len; i++, data++) {
-        h += data[0];
-        h += h * h | 9191;
-        h ^= h >> 15;
+        h = (h + data[0]) * 555555555;
+        h = ROTL32(h, 14 + i);
     }
-    h += h * h | 9911;
     h ^= h >> 15;
-    h += h * h | 1199;
+    h = (h ^ 7) * 555555555;
     h ^= h >> 14;
-    h += h * h | 9119;
-    h ^= h >> 15;
+    h = (h ^ 7) * 555555555;
+    h ^= h >> 13;
 
     PUT_U32<bswap>(h, (uint8_t *)out, 0);
 }
