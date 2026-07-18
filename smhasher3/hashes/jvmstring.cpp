@@ -1101,6 +1101,33 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 200.492680 seconds
+
+Using just addition instead of mixing XOR with addition is faster, but still fails.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         2057   481   264   105    69    33    12    10     8     3     2     0     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     3     0     0     0     1     0     0     0     0     2   449
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring5
+Overall result: FAIL            ( 105 / 187 passed)
+Failures:
+    Cyclic              : [16 cycles of 8 bytes]
+    Sparse              : [4/5, 3/6, 3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE]]
+    Text                : [dictionary, numbers without commas, numbers with commas, FXXXXB, FBXXXX, FooXXXXBar, FooBarXXXX, FooooXXXXBaaar, FooooBaaarXXXX, FooooooXXXXBaaaaar, FooooooBaaaaarXXXX, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, FooooooooooXXXXBaaaaaaaaar, FooooooooooBaaaaaaaaarXXXX, Words alnum 5-8, Words alnum 1-16, Words alnum 1-32, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32, 1024, 2048, 4096]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 171.868624 seconds
 */
 template <bool bswap>
 static void jvmstring5( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -1112,11 +1139,11 @@ static void jvmstring5( const void * in, const size_t len, const seed_t seed, vo
     h ^= ROTL64(h, 11) ^ ROTL64(h, 51);
 
     for (; i < len; data += 4) {
-        h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0)) ^ (i += 4);
+        h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0) + (i += 4));
     }
     i -= 3;
     for (; i < len; data++) {
-        h = (ROTL64(h, 41) + data[0]) ^ ++i;
+        h = (ROTL64(h, 41) + data[0] + ++i);
     }
     h ^= h >> 31;
     h += h * h | 0x65535UL;
