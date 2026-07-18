@@ -1073,6 +1073,59 @@ static void jvmstring4( const void * in, const size_t len, const seed_t seed, vo
 
     PUT_U32<bswap>((uint32_t)h, (uint8_t *)out, 0);
 }
+/*
+Getting rid of big multipliers per-word doesn't help at all.
+Well, it is faster.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         2048   504   229   107    74    34    20    13     5     4     0     0     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     1     0     0     0     0     0     0   459
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring5
+Overall result: FAIL            ( 105 / 187 passed)
+Failures:
+    Sparse              : [4/5, 3/6, 3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE]]
+    Text                : [dictionary, numbers without commas, numbers with commas, FXXXXB, FBXXXX, FooXXXXBar, FooBarXXXX, FooooXXXXBaaar, FooooBaaarXXXX, FooooooXXXXBaaaaar, FooooooBaaaaarXXXX, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, FooooooooooXXXXBaaaaaaaaar, FooooooooooBaaaaaaaaarXXXX, Words alnum 5-8, Words alnum 1-16, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32, 1024, 2048, 4096]
+    SeedZeroes          : [1280, 8448]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 200.492680 seconds
+*/
+template <bool bswap>
+static void jvmstring5( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint64_t h = (uint64_t)(seed + len);
+    const uint8_t* data = (const uint8_t*)in;
+    size_t i = 3;
+    h ^= 1111111111111111111UL;
+    h *= 5555555555555555555UL;
+    h ^= ROTL64(h, 11) ^ ROTL64(h, 51);
+
+    for (; i < len; data += 4) {
+        h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0)) ^ (i += 4);
+    }
+    i -= 3;
+    for (; i < len; data++) {
+        h = (ROTL64(h, 41) + data[0]) ^ ++i;
+    }
+    h ^= h >> 31;
+    h += h * h | 0x65535UL;
+    h ^= h >> 29;
+    h += h * h | 0x65535UL;
+    h ^= h >> 27;
+
+    PUT_U32<bswap>((uint32_t)h, (uint8_t *)out, 0);
+}
 
 //------------------------------------------------------------
 REGISTER_FAMILY(jvmstring,
@@ -1131,6 +1184,7 @@ REGISTER_HASH(jvmstring4,
          0,
    $.impl_flags =
          FLAG_IMPL_MULTIPLY     |
+         FLAG_IMPL_ROTATE       |
          FLAG_IMPL_LICENSE_MIT  |
          FLAG_IMPL_SLOW,
    $.bits = 32,
@@ -1138,4 +1192,20 @@ REGISTER_HASH(jvmstring4,
    $.verification_BE = 0,
    $.hashfn_native   = jvmstring4<false>,
    $.hashfn_bswap    = jvmstring4<true>
+ );
+
+REGISTER_HASH(jvmstring5,
+   $.desc       = "jvmstring5",
+   $.hash_flags =
+         0,
+   $.impl_flags =
+         FLAG_IMPL_MULTIPLY     |
+         FLAG_IMPL_ROTATE       |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_SLOW,
+   $.bits = 32,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = jvmstring5<false>,
+   $.hashfn_bswap    = jvmstring5<true>
  );
