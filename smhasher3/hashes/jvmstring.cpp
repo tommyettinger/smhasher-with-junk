@@ -1029,6 +1029,25 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 258.224990 seconds
 
+It passes all tests!
+This also uses a 64-bit seed.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         2367   578   276   148    58    35    20    13     2     2     0     0     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring4
+Overall result: pass            ( 187 / 187 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 283.981081 seconds
 */
 template <bool bswap>
 static void jvmstring4( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -1037,17 +1056,14 @@ static void jvmstring4( const void * in, const size_t len, const seed_t seed, vo
     size_t i = 3;
     h ^= 1111111111111111111UL;
     h *= 5555555555555555555UL;
-    h += h * h | 0x65535UL;
-    h ^= h >> 29;
-    h += h * h | 0x65535UL;
-    h ^= h >> 27;
+    h ^= ROTL64(h, 11) ^ ROTL64(h, 51);
 
-    for (; i < len; i += 4, data += 4) {
-        h = (ROTL32(h, 41) + GET_U32<bswap>(data, 0)) * 5555555555555555555UL;
+    for (; i < len; data += 4) {
+        h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0)) * 5555555555555555555UL + (i += 4);
     }
     i -= 3;
-    for (; i < len; i++, data++) {
-        h = (ROTL32(h, 41) + data[0]) * 5555555555555555555UL;
+    for (; i < len; data++) {
+        h = (ROTL64(h, 41) + data[0]) * 5555555555555555555UL + ++i;
     }
     h ^= h >> 31;
     h += h * h | 0x65535UL;
