@@ -994,34 +994,68 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 204.218807 seconds
 
+Trying as simple as we can in iterations, but it's not very good...
+This uses a 64-bit seed.
+
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         1243   324   160    79    50    25    16    16    10     2     4     7     8
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            3     3     4     5     3     2     1     3     4     3     5     4  1515
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring4
+Overall result: FAIL            ( 54 / 187 passed)
+Failures:
+    Cyclic              : [4 cycles of 4 bytes, 4 cycles of 5 bytes, 4 cycles of 8 bytes, 8 cycles of 4 bytes, 8 cycles of 5 bytes, 8 cycles of 8 bytes, 12 cycles of 3 bytes, 12 cycles of 4 bytes, 12 cycles of 5 bytes, 12 cycles of 8 bytes, 16 cycles of 3 bytes, 16 cycles of 4 bytes, 16 cycles of 5 bytes, 16 cycles of 8 bytes]
+    Sparse              : [4/5, 3/6, 3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; BE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [dictionary, numbers without commas, numbers with commas, FXXXXB, FBXXXX, FooXXXXBar, FooBarXXXX, FooooXXXXBaaar, FooooBaaarXXXX, FooooooXXXXBaaaaar, FooooooBaaaaarXXXX, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, FooooooooooXXXXBaaaaaaaaar, FooooooooooBaaaaaaaaarXXXX, Words alnum 1-4, Words alnum 5-8, Words alnum 1-16, Words alnum 1-32, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32, 1024, 2048, 4096]
+    PerlinNoise         : [2]
+    Bitflip             : [8]
+    SeedZeroes          : [1280, 8448]
+    SeedSparse          : [2, 3, 6, 15, 18, 31, 52, 80, 200, 1025]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+    Seed                : [2, 3, 6, 15, 18, 31, 52, 80, 200, 1025]
+    SeedBitflip         : [3, 4, 8]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 258.224990 seconds
+
 */
 template <bool bswap>
 static void jvmstring4( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint32_t h = (uint32_t)(seed + len);
+    uint64_t h = (uint64_t)(seed + len);
     const uint8_t* data = (const uint8_t*)in;
     size_t i = 3;
-    h ^= h >> 15;
-    h = (h ^ 7) * 555555555;
-    h ^= h >> 14;
-    h = (h ^ 7) * 555555555;
-    h ^= h >> 13;
+    h ^= 1111111111111111111UL;
+    h *= 5555555555555555555UL;
+    h += h * h | 0x65535UL;
+    h ^= h >> 29;
+    h += h * h | 0x65535UL;
+    h ^= h >> 27;
 
     for (; i < len; i += 4, data += 4) {
-        h = (h + GET_U32<bswap>(data, 0)) * 555555555;
-        h = ROTL32(h, i & 31);
+        h = (ROTL32(h, 41) + GET_U32<bswap>(data, 0)) * 5555555555555555555UL;
     }
     i -= 3;
     for (; i < len; i++, data++) {
-        h = (h + data[0]) * 555555555;
-        h = ROTL32(h, 14 + i);
+        h = (ROTL32(h, 41) + data[0]) * 5555555555555555555UL;
     }
-    h ^= h >> 15;
-    h = (h ^ 7) * 555555555;
-    h ^= h >> 14;
-    h = (h ^ 7) * 555555555;
-    h ^= h >> 13;
+    h ^= h >> 31;
+    h += h * h | 0x65535UL;
+    h ^= h >> 29;
+    h += h * h | 0x65535UL;
+    h ^= h >> 27;
 
-    PUT_U32<bswap>(h, (uint8_t *)out, 0);
+    PUT_U32<bswap>((uint32_t)h, (uint8_t *)out, 0);
 }
 
 //------------------------------------------------------------
@@ -1078,7 +1112,7 @@ REGISTER_HASH(jvmstring3,
 REGISTER_HASH(jvmstring4,
    $.desc       = "jvmstring4",
    $.hash_flags =
-         FLAG_HASH_SMALL_SEED,
+         0,
    $.impl_flags =
          FLAG_IMPL_MULTIPLY     |
          FLAG_IMPL_LICENSE_MIT  |
