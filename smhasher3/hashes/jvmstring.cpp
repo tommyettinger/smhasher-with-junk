@@ -1128,23 +1128,55 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 171.868624 seconds
+
+Reading in 64 bits at a time and multiplying helps some... Still fails lots of tests.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         2214   554   262   123    57    38    21    13     7     0     2     2     2
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            2     1     1     1     1     0     1     0     0     0     0     0   197
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring5
+Overall result: FAIL            ( 146 / 187 passed)
+Failures:
+    Sparse              : [3/12, 3/14, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Text                : [Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32, 1024, 2048, 4096]
+    SeedBlockLen        : [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [3]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 199.816799 seconds
+
 */
 template <bool bswap>
 static void jvmstring5( const void * in, const size_t len, const seed_t seed, void * out ) {
     uint64_t h = (uint64_t)(seed + len);
     const uint8_t* data = (const uint8_t*)in;
-    size_t i = 3;
+    size_t i = 7;
     h ^= 1111111111111111111UL;
     h *= 5555555555555555555UL;
     h ^= ROTL64(h, 11) ^ ROTL64(h, 51);
 
-    for (; i < len; data += 4) {
-        h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0) + (i += 4));
+    for (; i < len; data += 8) {
+        h = (ROTL64(h, 41) + GET_U64<bswap>(data, 0)) * 5555555555555555555UL + (i += 8);
     }
-    i -= 3;
-    for (; i < len; data++) {
-        h = (ROTL64(h, 41) + data[0] + ++i);
+    switch (len & 7) {
+        case 1: h = (ROTL64(h, 41) + data[0]) * 5555555555555555555UL + 1; break;
+        case 2: h = (ROTL64(h, 41) + GET_U16<bswap>(data, 0)) * 5555555555555555555UL + 2; break;
+        case 3: h = (ROTL64(h, 41) + GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16)) * 5555555555555555555UL + 3; break;
+        case 4: h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0)) * 5555555555555555555UL + 4; break;
+        case 5: h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0) + ((uint64_t)data[4] << 32)) * 5555555555555555555UL + 5; break;
+        case 6: h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32)) * 5555555555555555555UL + 6; break;
+        case 7: h = (ROTL64(h, 41) + GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32) + ((uint64_t)data[6] << 48)) * 5555555555555555555UL + 7; break;
     }
+
     h ^= h >> 31;
     h += h * h | 0x65535UL;
     h ^= h >> 29;
