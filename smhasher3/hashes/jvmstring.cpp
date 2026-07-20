@@ -1426,6 +1426,27 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 280.182771 seconds
 
+This one only fails seed-related tests!
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4246  1295   599   300   147    80    37    11     8     7     4     6     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     1     1     1     0     1     0     1     1     0     1     0   122
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring6
+Overall result: FAIL            ( 162 / 187 passed)
+Failures:
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [4]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 295.653378 seconds
  */
 template <bool bswap>
 static void jvmstring6( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -1438,7 +1459,7 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
 
     for (; i < len; data += 8, i += 8) {
         h += GET_U64<bswap>(data, 0);
-        h = (h ^ ROTL64(h, 23) ^ ROTL64(h, 50)) * 5555555555555555555UL;
+        h = (h ^ ROTL64(h, 23) ^ ROTL64(h, 50)) * 5555555555555555555UL + i;
     }
     switch (len & 7) {
         case 1: h += (data[0]); break;
@@ -1449,7 +1470,7 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
         case 6: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32)); break;
         case 7: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32) + ((uint64_t)data[6] << 48)); break;
     }
-    h = (h ^ ROTL64(h, 23) ^ ROTL64(h, 50)) * 5555555555555555555UL;
+    h = (h ^ ROTL64(h, 23) ^ ROTL64(h, 50)) * 5555555555555555555UL + len;
 
     h ^= h >> 32;
     h *= 0xBEA225F9EB34556DUL;
