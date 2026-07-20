@@ -1252,10 +1252,34 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 294.198065 seconds
 
+Still struggling...
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4241  1247   583   263   137    72    33    20    12     6    10     9     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            2     2     2     1     1     2     1     2     0     2     5     0   215
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring6
+Overall result: FAIL            ( 149 / 187 passed)
+Failures:
+    Sparse              : [4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    TwoBytes            : [20, 32]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [3, 4]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 295.372662 seconds
+
  */
 template <bool bswap>
 static void jvmstring6( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint64_t h = (seed + 1234567890987654321UL + len);
+    uint64_t h = (seed + 1234567890987654321UL + len) * 5555555555555555555UL;
     const uint8_t* data = (const uint8_t*)in;
     size_t i = 7;
 
@@ -1266,7 +1290,6 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
         h = (h ^ h >> 29) * 5555555555555555555UL + i;
     }
     switch (len & 7) {
-        case 0: goto NO_EXTRA;
         case 1: h += (data[0]); break;
         case 2: h += (GET_U16<bswap>(data, 0)); break;
         case 3: h += (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16)); break;
@@ -1277,7 +1300,7 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
     }
 
     h = (h ^ h >> 29) * 5555555555555555555UL + len;
-NO_EXTRA:
+
     h ^= h >> 31;
     h += h * h | 0x65535UL;
     h ^= h >> 29 ^ len;
