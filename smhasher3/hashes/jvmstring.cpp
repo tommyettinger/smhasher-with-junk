@@ -1276,10 +1276,35 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 295.372662 seconds
 
+Out of the frying pan...
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4104  1257   612   261   146    71    42    23    11    10     7     2     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            3     3     3     0     2     4     1     2     2     1     4     1   296
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring6
+Overall result: FAIL            ( 143 / 187 passed)
+Failures:
+    Sparse              : [4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    TwoBytes            : [20, 32]
+    SeedZeroes          : [1280, 8448]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 294.142857 seconds
+
  */
 template <bool bswap>
 static void jvmstring6( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint64_t h = (seed + 1234567890987654321UL + len) * 5555555555555555555UL;
+    uint64_t h = (seed + len) * 5555555555555555555UL + 1234567890987654321UL;
     const uint8_t* data = (const uint8_t*)in;
     size_t i = 7;
 
@@ -1290,6 +1315,7 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
         h = (h ^ h >> 29) * 5555555555555555555UL + i;
     }
     switch (len & 7) {
+        case 0: goto NO_EXTRA;
         case 1: h += (data[0]); break;
         case 2: h += (GET_U16<bswap>(data, 0)); break;
         case 3: h += (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16)); break;
@@ -1298,12 +1324,11 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
         case 6: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32)); break;
         case 7: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32) + ((uint64_t)data[6] << 48)); break;
     }
-
     h = (h ^ h >> 29) * 5555555555555555555UL + len;
-
+NO_EXTRA:
     h ^= h >> 31;
     h += h * h | 0x65535UL;
-    h ^= h >> 29 ^ len;
+    h ^= h >> 29;
     h += h * h | 0x65535UL;
     h ^= h >> 27;
 
