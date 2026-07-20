@@ -1205,6 +1205,62 @@ static void jvmstring5( const void * in, const size_t len, const seed_t seed, vo
     PUT_U32<bswap>((uint32_t)h, (uint8_t *)out, 0);
 }
 
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4260  1214   649   313   160    74    37    22    11     5     4     1     2
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            2     0     2     0     0     0     1     0     0     0     0     0   112
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring6
+Overall result: FAIL            ( 172 / 187 passed)
+Failures:
+    BIC                 : [3, 11, 15]
+    Sparse              : [4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    TwoBytes            : [20, 32]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 279.743789 seconds
+
+ */
+template <bool bswap>
+static void jvmstring6( const void * in, const size_t len, const seed_t seed, void * out ) {
+    uint64_t h = (seed + 1234567890987654321UL + len);
+    const uint8_t* data = (const uint8_t*)in;
+    size_t i = 7;
+
+    h ^= ROTL64(h, 11) ^ ROTL64(h, 51);
+
+    for (; i < len; data += 8, i += 8) {
+        h = (h ^ h >> 29) * 5555555555555555555UL + i;
+        h += GET_U64<bswap>(data, 0);
+    }
+    h = (h ^ h >> 29) * 5555555555555555555UL + len;
+    switch (len & 7) {
+        case 1: h += (data[0]); break;
+        case 2: h += (GET_U16<bswap>(data, 0)); break;
+        case 3: h += (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16)); break;
+        case 4: h += (GET_U32<bswap>(data, 0)); break;
+        case 5: h += (GET_U32<bswap>(data, 0) + ((uint64_t)data[4] << 32)); break;
+        case 6: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32)); break;
+        case 7: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32) + ((uint64_t)data[6] << 48)); break;
+    }
+
+    h ^= h >> 31;
+    h += h * h | 0x65535UL;
+    h ^= h >> 29 ^ len;
+    h += h * h | 0x65535UL;
+    h ^= h >> 27;
+
+    PUT_U64<bswap>(h, (uint8_t *)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(jvmstring,
    $.src_url    = "https://github.com/aappleby/smhasher/blob/master/src/Hashes.cpp",
@@ -1286,4 +1342,20 @@ REGISTER_HASH(jvmstring5,
    $.verification_BE = 0,
    $.hashfn_native   = jvmstring5<false>,
    $.hashfn_bswap    = jvmstring5<true>
+ );
+
+REGISTER_HASH(jvmstring6,
+   $.desc       = "jvmstring6",
+   $.hash_flags =
+         0,
+   $.impl_flags =
+         FLAG_IMPL_MULTIPLY     |
+         FLAG_IMPL_ROTATE       |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_SLOW,
+   $.bits = 64,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = jvmstring6<false>,
+   $.hashfn_bswap    = jvmstring6<true>
  );
