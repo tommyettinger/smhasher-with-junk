@@ -1352,10 +1352,35 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 266.310456 seconds
 
+Still about the same at quality, but MX3 is faster (for small keys) as a finalizer.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4168  1263   559   292   125    85    44    20    15     9     2     2    10
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            3     1     3     2     2     2     0     0     4     3     2     1   252
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring6
+Overall result: FAIL            ( 145 / 187 passed)
+Failures:
+    Sparse              : [3/12, 3/14, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 high+low bits; BE]]
+    TwoBytes            : [20, 32]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [3, 4]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 265.942385 seconds
+
  */
 template <bool bswap>
 static void jvmstring6( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint64_t h = (seed ^ len) * 5555555555555555555UL + 1234567890987654321UL;
+    uint64_t h = (seed + 1234567890987654321UL ^ len) * 5555555555555555555UL;
     const uint8_t* data = (const uint8_t*)in;
     size_t i = 7;
 
@@ -1376,13 +1401,13 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
     }
     h = (h ^ ROTL64(h, 25) ^ ROTL64(h, 47)) + len;
 
-    h ^= h >> 31;
-    h += h * h | 0x65535UL;
-    h ^= h >> 28;
-    h += h * h | 0x65535UL;
+    h ^= h >> 32;
+    h *= 0xBEA225F9EB34556DUL;
     h ^= h >> 29;
-    h += h * h | 0x65535UL;
-    h ^= h >> 27;
+    h *= 0xBEA225F9EB34556DUL;
+    h ^= h >> 32;
+    h *= 0xBEA225F9EB34556DUL;
+    h ^= h >> 29;
 
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
 }
