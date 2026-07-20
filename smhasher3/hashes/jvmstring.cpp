@@ -1301,6 +1301,31 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 294.142857 seconds
 
+No multiplication in the bulk loop makes this faster in bulk, but...
+Yeah, it still fails quite a few tests.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4149  1224   572   314   137    65    33    19     8    11     3     1     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            4     0     2     0     0     0     0     0     1     0     1     0   324
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring6
+Overall result: FAIL            ( 142 / 187 passed)
+Failures:
+    BIC                 : [3, 8, 11, 15]
+    Sparse              : [3/10, 3/12, 3/14, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    TwoBytes            : [20, 32]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [4]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 267.513107 seconds
  */
 template <bool bswap>
 static void jvmstring6( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -1312,10 +1337,9 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
 
     for (; i < len; data += 8, i += 8) {
         h += GET_U64<bswap>(data, 0);
-        h = (h ^ h >> 29) * 5555555555555555555UL + i;
+        h = (h ^ ROTL64(h, 25) ^ ROTL64(h, 50)) + i;
     }
     switch (len & 7) {
-        case 0: goto NO_EXTRA;
         case 1: h += (data[0]); break;
         case 2: h += (GET_U16<bswap>(data, 0)); break;
         case 3: h += (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16)); break;
@@ -1324,8 +1348,8 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
         case 6: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32)); break;
         case 7: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32) + ((uint64_t)data[6] << 48)); break;
     }
-    h = (h ^ h >> 29) * 5555555555555555555UL + len;
-NO_EXTRA:
+    h = (h ^ ROTL64(h, 25) ^ ROTL64(h, 50)) + len;
+
     h ^= h >> 31;
     h += h * h | 0x65535UL;
     h ^= h >> 29;
