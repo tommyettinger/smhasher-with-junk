@@ -1377,18 +1377,43 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 265.942385 seconds
 
+Without incorporating i or len per-iteration, it's faster but no better on quality.
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4124  1242   574   283   136    66    35    18    13     7     7     6     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            3     1     1     0     0     0     0     1     1     0     0     0   351
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring6
+Overall result: FAIL            ( 143 / 187 passed)
+Failures:
+    Sparse              : [3/12, 3/14, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 high+low bits; BE]]
+    TwoBytes            : [20, 32, 1024, 2048, 4096]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [4]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 244.042758 seconds
  */
 template <bool bswap>
 static void jvmstring6( const void * in, const size_t len, const seed_t seed, void * out ) {
-    uint64_t h = (seed + 1234567890987654321UL ^ len) * 5555555555555555555UL;
+    uint64_t h = seed ^ 1234567890987654321UL;
     const uint8_t* data = (const uint8_t*)in;
     size_t i = 7;
+    h = h * 5555555555555555555UL + len;
 
     h ^= ROTL64(h, 11) ^ ROTL64(h, 51);
 
     for (; i < len; data += 8, i += 8) {
         h += GET_U64<bswap>(data, 0);
-        h = (h ^ ROTL64(h, 25) ^ ROTL64(h, 47)) + i;
+        h = (h ^ ROTL64(h, 25) ^ ROTL64(h, 47));
     }
     switch (len & 7) {
         case 1: h += (data[0]); break;
@@ -1399,7 +1424,7 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
         case 6: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32)); break;
         case 7: h += (GET_U32<bswap>(data, 0) + ((uint64_t)GET_U16<bswap>(data, 4) << 32) + ((uint64_t)data[6] << 48)); break;
     }
-    h = (h ^ ROTL64(h, 25) ^ ROTL64(h, 47)) + len;
+    h = (h ^ ROTL64(h, 25) ^ ROTL64(h, 47));
 
     h ^= h >> 32;
     h *= 0xBEA225F9EB34556DUL;
