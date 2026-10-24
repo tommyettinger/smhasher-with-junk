@@ -97,6 +97,44 @@ constexpr uint64_t TABLE[256] = {
 
 //------------------------------------------------------------
 static uint64_t TableOAAT_impl( const uint8_t * data, size_t len, uint64_t seed ) {
+
+    /*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         2201   607   309   165    84    62    30    11    14    10     6     9     3
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            6     3     3     5     6     4     4     6     4     4     2     2  3329
+
+----------------------------------------------------------------------------------------------
+Summary for: TableOAAT
+Overall result: FAIL            ( 64 / 186 passed)
+Failures:
+    Avalanche           : [3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 64, 128]
+    BIC                 : [3, 8, 11, 15]
+    Cyclic              : [16 cycles of 4 bytes]
+    Sparse              : [4/3, 4/5, 3/9, 3/10, 3/12, 3/14, 20/3, 9/4, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [Long alnum last 1968-2128, Long alnum last 4016-4176, Long alnum last 8112-8272]
+    TwoBytes            : [8]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 4, 8]
+    SeedZeroes          : [1280, 8448]
+    SeedSparse          : [2, 3, 6, 15, 18, 31, 52, 80, 200]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [0, 1, 2, 3, 4, 5]
+    Seed                : [2, 3, 6, 15, 18, 31, 52, 80, 200]
+    SeedAvalanche       : [4, 8, 16, 24, 32, 64, 128]
+    SeedBIC             : [3, 8, 11, 15]
+    SeedBitflip         : [3, 4, 8]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 333.465743 seconds
+     */
     uint64_t h = seed ^ ROTL64(seed, 25) ^ ROTL64(seed, 50) ^ TABLE[len & 255];
 
     for (size_t i = 0; i < len; i++) {
