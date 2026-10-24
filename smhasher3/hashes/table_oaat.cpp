@@ -382,18 +382,55 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 359.015566 seconds
     */
+    // uint64_t h = seed;
+    // h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
+    // h = h * 0xBEA225F9EB34556DUL;
+    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    //
+    // for (size_t i = 0; i < len; i++) {
+    //     h = (data[i] + i) * 0x2127599BF4325C37UL - ROTL64(h, 11);
+    // }
+    // h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
+    // h *= 0xBEA225F9EB34556DUL;
+    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    // return h;
+
+    // Fails different tests... no table here.
+    /*
+    ----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4355  1326   598   261   114    76    42    18    16    11     0     3     5
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            2     3     4     5     0     1     1     0     0     1     0     2    45
+
+----------------------------------------------------------------------------------------------
+Summary for: TableOAAT
+Overall result: FAIL            ( 171 / 186 passed)
+Failures:
+    Zeroes              : []
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 646.282891 seconds
+    */
     uint64_t h = seed;
     h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
     h = h * 0xBEA225F9EB34556DUL;
     h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
 
     for (size_t i = 0; i < len; i++) {
-        h = (data[i] + i) * 0x2127599BF4325C37UL - ROTL64(h, 11);
+        h = (data[i] - ROTL64(h, 11)) * (0x2127599BF4325C37UL + i * i + i);
     }
     h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
     h *= 0xBEA225F9EB34556DUL;
     h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
     return h;
+
 }
 
 //------------------------------------------------------------
