@@ -344,13 +344,51 @@ Overall result: pass            ( 186 / 186 passed)
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 350.574168 seconds
     */
+    // uint64_t h = seed;
+    // h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
+    // h = h * 0xBEA225F9EB34556DUL;
+    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    //
+    // for (size_t i = 0; i < len; i++) {
+    //     h = TABLE[(data[i] + i) & 255] - ROTL64(h, 11);
+    // }
+    // h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
+    // h *= 0xBEA225F9EB34556DUL;
+    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    // return h;
+
+    // Replacing the table with a multiply doesn't work.
+    /*
+    ----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4117  1098   551   291   140    75    33    18     8    14     2     8     1
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            2     1     0     1     2     0     1     0     1     0     0     0   525
+
+----------------------------------------------------------------------------------------------
+Summary for: TableOAAT
+Overall result: FAIL            ( 131 / 186 passed)
+Failures:
+    Sparse              : [3/7, 3/8, 3/9, 3/10, 3/12, 3/14, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Text                : [dictionary, numbers without commas, numbers with commas, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [8, 1024, 2048, 4096]
+    SeedBlockLen        : [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 359.015566 seconds
+    */
     uint64_t h = seed;
     h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
     h = h * 0xBEA225F9EB34556DUL;
     h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
 
     for (size_t i = 0; i < len; i++) {
-        h = TABLE[(data[i] + i) & 255] - ROTL64(h, 11);
+        h = (data[i] + i) * 0x2127599BF4325C37UL - ROTL64(h, 11);
     }
     h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
     h *= 0xBEA225F9EB34556DUL;
