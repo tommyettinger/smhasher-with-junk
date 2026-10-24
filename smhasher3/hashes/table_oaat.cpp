@@ -164,11 +164,51 @@ Overall result: pass            ( 186 / 186 passed)
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 628.196754 seconds
     */
+    // uint64_t h = seed ^ (TABLE[len & 255] + TABLE[len >> 8 & 255] + TABLE[len >> 16 & 255] + TABLE[len >> 24 & 255]);
+    // h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
+    //
+    // for (size_t i = 0; i < len; i++) {
+    //     h = ROTL64(h, 11) * 0xBEA225F9EB34556DUL + TABLE[data[i]];
+    // }
+    // h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
+    // h *= 0xBEA225F9EB34556DUL;
+    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    // return h;
+
+
+    // Fails some tests, but is much faster...
+    /*
+    ----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         3389  1086   544   288   188   107    73    58    44    31    20    23     9
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+           12    34    10     9     3    13     6     9     3     5    10     3   912
+
+----------------------------------------------------------------------------------------------
+Summary for: TableOAAT
+Overall result: FAIL            ( 159 / 186 passed)
+Failures:
+    Cyclic              : [16 cycles of 4 bytes]
+    PerlinNoise         : [2]
+    SeedSparse          : [2, 3, 6, 15, 18, 31]
+    Seed                : [2, 3, 6, 15, 18, 31, 52]
+    SeedAvalanche       : [4, 8, 16, 24, 32]
+    SeedBIC             : [3, 8, 11, 15]
+    SeedBitflip         : [3, 4, 8]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 336.754661 seconds
+     */
     uint64_t h = seed ^ (TABLE[len & 255] + TABLE[len >> 8 & 255] + TABLE[len >> 16 & 255] + TABLE[len >> 24 & 255]);
     h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
 
     for (size_t i = 0; i < len; i++) {
-        h = ROTL64(h, 11) * 0xBEA225F9EB34556DUL + TABLE[data[i]];
+        h = TABLE[data[i]] - ROTL64(h, 11);
     }
     h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
     h *= 0xBEA225F9EB34556DUL;
