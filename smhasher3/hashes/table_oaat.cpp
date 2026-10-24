@@ -235,9 +235,42 @@ Overall result: pass            ( 186 / 186 passed)
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 341.576793 seconds
     */
-    uint64_t h = seed ^ (TABLE[len & 255] + TABLE[len >> 8 & 255] + TABLE[len >> 16 & 255] + TABLE[len >> 24 & 255]);
+    // uint64_t h = seed ^ (TABLE[len & 255] + TABLE[len >> 8 & 255] + TABLE[len >> 16 & 255] + TABLE[len >> 24 & 255]);
+    // h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
+    // h *= 0xBEA225F9EB34556DUL;
+    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    //
+    // for (size_t i = 0; i < len; i++) {
+    //     h = TABLE[(data[i] + i) & 255] - ROTL64(h, 11);
+    // }
+    // h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
+    // h *= 0xBEA225F9EB34556DUL;
+    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    // return h;
+
+    // Passes everything, similar but not quite as good...
+    /*
+    ----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4424  1322   593   258   132    81    35    17     6     8     2     4     2
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            2     1     2     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: TableOAAT
+Overall result: pass            ( 186 / 186 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 340.474856 seconds
+     */
+    uint64_t h = seed;
     h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
-    h *= 0xBEA225F9EB34556DUL;
+    h = h * 0xBEA225F9EB34556DUL + len;
     h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
 
     for (size_t i = 0; i < len; i++) {
