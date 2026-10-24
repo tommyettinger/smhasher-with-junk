@@ -100,4 +100,5 @@ set(HASH_SRC_FILES
   hashes/rust-rapidhash.cpp
   hashes/pairaat.cpp
   hashes/rhymehash.cpp
+  hashes/table_oaat.cpp
 )
