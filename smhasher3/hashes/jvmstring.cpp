@@ -1523,6 +1523,26 @@ Failures:
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 299.963300 seconds
 */
+// But, changing h to ROTL64(h, 11) in the bulk loop...
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4362  1288   592   291   176    78    34    25    11     8     1     2     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            1     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring7
+Overall result: pass            ( 187 / 187 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 329.118076 seconds
+*/
 template <bool bswap>
 static void jvmstring7( const void * in, const size_t len, const seed_t seed, void * out ) {
     const uint8_t* data = (const uint8_t*)in;
@@ -1533,7 +1553,7 @@ static void jvmstring7( const void * in, const size_t len, const seed_t seed, vo
 
     size_t i = 3;
     for (; i < len; i += 4, data += 4) {
-        h = (GET_U32<bswap>(data, 0) - h) * 0x2127599BF4325C37UL;
+        h = (GET_U32<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL;
     }
     i -= 3;
     for (; i < len; i++, data++) {
