@@ -1502,6 +1502,27 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
 }
 
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4303  1339   574   324   143    80    44    19     5     7     3     4     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            0     0     0     0     0     0     0     0     0     0     0     0    24
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring7
+Overall result: FAIL            ( 185 / 187 passed)
+Failures:
+    Permutation         : [4-bytes [0, high bit; LE], 8-bytes [0, high bit; LE]]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 299.963300 seconds
+*/
 template <bool bswap>
 static void jvmstring7( const void * in, const size_t len, const seed_t seed, void * out ) {
     const uint8_t* data = (const uint8_t*)in;
