@@ -1565,6 +1565,58 @@ static void jvmstring7( const void * in, const size_t len, const seed_t seed, vo
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
 }
 
+// Loading 64 bits at a time doesn't work here.
+/*
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4032  1137   569   286   142    71    30    16    12     7     2     5     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            1     4     1     0     1     1     1     2     0     0     1     1   547
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring8
+Overall result: FAIL            ( 129 / 187 passed)
+Failures:
+    Avalanche           : [8, 9, 10, 12, 16, 20, 64, 128]
+    BIC                 : [8, 11, 15]
+    Sparse              : [3/10, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE]]
+    Text                : [FooooooXXXXBaaaaar, Long alnum first 1968-2128, Long alnum last 1968-2128, Long alnum first 4016-4176, Long alnum last 4016-4176, Long alnum first 8112-8272, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32, 1024, 2048, 4096]
+    Bitflip             : [8]
+    SeedBlockLen        : [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    SeedBlockOffset     : [5]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 260.369522 seconds
+ */
+template <bool bswap>
+static void jvmstring8( const void * in, const size_t len, const seed_t seed, void * out ) {
+    const uint8_t* data = (const uint8_t*)in;
+    uint64_t h = seed;
+    h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
+    h = h * 0xBEA225F9EB34556DUL + len;
+    h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+
+    size_t i = 7;
+    for (; i < len; i += 8, data += 8) {
+        h = (GET_U64<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL;
+    }
+    i -= 7;
+    for (; i < len; i++, data++) {
+        h = (data[0] - h) * 0x2127599BF4325C37UL;
+    }
+    h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
+    h *= 0xBEA225F9EB34556DUL;
+    h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    PUT_U64<bswap>(h, (uint8_t *)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(jvmstring,
    $.src_url    = "https://github.com/aappleby/smhasher/blob/master/src/Hashes.cpp",
@@ -1678,4 +1730,20 @@ REGISTER_HASH(jvmstring7,
    $.verification_BE = 0,
    $.hashfn_native   = jvmstring7<false>,
    $.hashfn_bswap    = jvmstring7<true>
+ );
+
+REGISTER_HASH(jvmstring8,
+   $.desc       = "jvmstring8",
+   $.hash_flags =
+         0,
+   $.impl_flags =
+         FLAG_IMPL_MULTIPLY     |
+         FLAG_IMPL_ROTATE       |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_SLOW,
+   $.bits = 64,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = jvmstring8<false>,
+   $.hashfn_bswap    = jvmstring8<true>
  );
