@@ -1502,6 +1502,28 @@ static void jvmstring6( const void * in, const size_t len, const seed_t seed, vo
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
 }
 
+template <bool bswap>
+static void jvmstring7( const void * in, const size_t len, const seed_t seed, void * out ) {
+    const uint8_t* data = (const uint8_t*)in;
+    uint64_t h = seed;
+    h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
+    h = h * 0xBEA225F9EB34556DUL + len;
+    h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+
+    size_t i = 3;
+    for (; i < len; i += 4, data += 4) {
+        h = (GET_U32<bswap>(data, 0) - h) * 0x2127599BF4325C37UL;
+    }
+    i -= 3;
+    for (; i < len; i++, data++) {
+        h = (data[0] - h) * 0x2127599BF4325C37UL;
+    }
+    h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
+    h *= 0xBEA225F9EB34556DUL;
+    h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    PUT_U64<bswap>(h, (uint8_t *)out, 0);
+}
+
 //------------------------------------------------------------
 REGISTER_FAMILY(jvmstring,
    $.src_url    = "https://github.com/aappleby/smhasher/blob/master/src/Hashes.cpp",
@@ -1599,4 +1621,20 @@ REGISTER_HASH(jvmstring6,
    $.verification_BE = 0,
    $.hashfn_native   = jvmstring6<false>,
    $.hashfn_bswap    = jvmstring6<true>
+ );
+
+REGISTER_HASH(jvmstring7,
+   $.desc       = "jvmstring7",
+   $.hash_flags =
+         0,
+   $.impl_flags =
+         FLAG_IMPL_MULTIPLY     |
+         FLAG_IMPL_ROTATE       |
+         FLAG_IMPL_LICENSE_MIT  |
+         FLAG_IMPL_SLOW,
+   $.bits = 64,
+   $.verification_LE = 0,
+   $.verification_BE = 0,
+   $.hashfn_native   = jvmstring7<false>,
+   $.hashfn_bswap    = jvmstring7<true>
  );
