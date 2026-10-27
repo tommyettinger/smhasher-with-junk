@@ -1542,6 +1542,25 @@ Overall result: pass            ( 187 / 187 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 329.118076 seconds
+
+With switch at the end, which is faster for short keys:
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4295  1301   625   306   152    88    45    31    11     8     3     3     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            1     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring7
+Overall result: pass            ( 187 / 187 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 317.625343 seconds
 */
 template <bool bswap>
 static void jvmstring7( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -1555,9 +1574,10 @@ static void jvmstring7( const void * in, const size_t len, const seed_t seed, vo
     for (; i < len; i += 4, data += 4) {
         h = (GET_U32<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL;
     }
-    i -= 3;
-    for (; i < len; i++, data++) {
-        h = (data[0] - h) * 0x2127599BF4325C37UL;
+    switch (len & 3) {
+        case 1: h = (data[0] - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+        case 2: h = (GET_U16<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+        case 3: h = (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
     }
     h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
     h *= 0xBEA225F9EB34556DUL;
