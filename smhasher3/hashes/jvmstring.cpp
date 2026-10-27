@@ -1725,6 +1725,92 @@ Failures:
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 319.629891 seconds
+
+With switch at the end but without rotations in it, and the XRXR lines back:
+
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         4382  1257   623   283   161    79    41    20    11     7     2     2     0
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            1     0     0     0     0     0     0     0     0     0     0     0     0
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring7
+Overall result: pass            ( 187 / 187 passed)
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 317.881499 seconds
+
+And speed for above...
+
+[[[ Speed Tests ]]]
+
+Small key speed test - [1, 31]-byte keys
+   1-byte keys -    11.56 cycles/hash
+   2-byte keys -     9.32 cycles/hash
+   3-byte keys -     9.47 cycles/hash
+   4-byte keys -     5.03 cycles/hash
+   5-byte keys -     7.22 cycles/hash
+   6-byte keys -     7.34 cycles/hash
+   7-byte keys -     7.89 cycles/hash
+   8-byte keys -     7.80 cycles/hash
+   9-byte keys -    10.06 cycles/hash
+  10-byte keys -    10.06 cycles/hash
+  11-byte keys -    10.63 cycles/hash
+  12-byte keys -    10.76 cycles/hash
+  13-byte keys -    12.99 cycles/hash
+  14-byte keys -    13.00 cycles/hash
+  15-byte keys -    13.54 cycles/hash
+  16-byte keys -    13.55 cycles/hash
+  17-byte keys -    15.89 cycles/hash
+  18-byte keys -    15.89 cycles/hash
+  19-byte keys -    16.66 cycles/hash
+  20-byte keys -    16.44 cycles/hash
+  21-byte keys -    18.77 cycles/hash
+  22-byte keys -    18.74 cycles/hash
+  23-byte keys -    19.51 cycles/hash
+  24-byte keys -    19.63 cycles/hash
+  25-byte keys -    21.67 cycles/hash
+  26-byte keys -    21.69 cycles/hash
+  27-byte keys -    22.28 cycles/hash
+  28-byte keys -    22.25 cycles/hash
+  29-byte keys -    24.52 cycles/hash
+  30-byte keys -    24.50 cycles/hash
+  31-byte keys -    25.29 cycles/hash
+Average        -    14.97 cycles/hash
+ rnd-byte keys -    14.88 cycles/hash
+
+Bulk speed test - 262144-byte keys
+Alignment   7 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   6 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   5 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   4 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   3 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   2 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   1 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   0 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Average       -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment rnd -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+
+Bulk speed test - [262017, 262144]-byte keys
+Alignment   7 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   6 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   5 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   4 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   3 -  1.39 bytes/cycle -  4.53 GiB/sec @ 3.5 ghz
+Alignment   2 -  1.39 bytes/cycle -  4.53 GiB/sec @ 3.5 ghz
+Alignment   1 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   0 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Average       -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment rnd -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+
+Verification value is 0x00000001 - Testing took 24.355605 seconds
+
 */
 template <bool bswap>
 static void jvmstring7( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -1732,7 +1818,7 @@ static void jvmstring7( const void * in, const size_t len, const seed_t seed, vo
     uint64_t h = seed;
     h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
     h = h * 0xBEA225F9EB34556DUL + len;
-    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44); // don't remove this XRXR!
+    h ^= ROTL64(h, 21) ^ ROTL64(h, 44); // don't remove this XRXR!
 
     size_t i = 3;
     for (; i < len; i += 4, data += 4) {
@@ -1743,11 +1829,11 @@ static void jvmstring7( const void * in, const size_t len, const seed_t seed, vo
         // h = (data[0] - h) * 0x2127599BF4325C37UL;
     // }
     switch (len & 3) {
-    case 1: h = (data[0] - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
-    case 2: h = (GET_U16<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
-    case 3: h = (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    case 1: h = (data[0] - h) * 0x2127599BF4325C37UL; break;
+    case 2: h = (GET_U16<bswap>(data, 0) - h) * 0x2127599BF4325C37UL; break;
+    case 3: h = (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16) - h) * 0x2127599BF4325C37UL; break;
     }
-    // h ^= ROTL64(h, 23) ^ ROTL64(h, 47); // don't remove this XRXR!
+    h ^= ROTL64(h, 23) ^ ROTL64(h, 47); // don't remove this XRXR!
     h *= 0xBEA225F9EB34556DUL;
     h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
