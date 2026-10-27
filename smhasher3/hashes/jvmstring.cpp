@@ -1543,6 +1543,71 @@ Overall result: pass            ( 187 / 187 passed)
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 329.118076 seconds
 
+Using a loop for the last few bytes:
+
+[[[ Speed Tests ]]]
+
+Small key speed test - [1, 31]-byte keys
+   1-byte keys -    14.05 cycles/hash
+   2-byte keys -    17.36 cycles/hash
+   3-byte keys -    20.87 cycles/hash
+   4-byte keys -     8.60 cycles/hash
+   5-byte keys -    11.69 cycles/hash
+   6-byte keys -    11.90 cycles/hash
+   7-byte keys -    11.85 cycles/hash
+   8-byte keys -     7.85 cycles/hash
+   9-byte keys -    10.13 cycles/hash
+  10-byte keys -    12.44 cycles/hash
+  11-byte keys -    14.85 cycles/hash
+  12-byte keys -    10.79 cycles/hash
+  13-byte keys -    13.05 cycles/hash
+  14-byte keys -    15.47 cycles/hash
+  15-byte keys -    17.67 cycles/hash
+  16-byte keys -    13.61 cycles/hash
+  17-byte keys -    16.11 cycles/hash
+  18-byte keys -    18.27 cycles/hash
+  19-byte keys -    20.59 cycles/hash
+  20-byte keys -    16.62 cycles/hash
+  21-byte keys -    19.19 cycles/hash
+  22-byte keys -    21.28 cycles/hash
+  23-byte keys -    23.51 cycles/hash
+  24-byte keys -    19.43 cycles/hash
+  25-byte keys -    21.76 cycles/hash
+  26-byte keys -    24.12 cycles/hash
+  27-byte keys -    26.41 cycles/hash
+  28-byte keys -    22.33 cycles/hash
+  29-byte keys -    24.69 cycles/hash
+  30-byte keys -    27.04 cycles/hash
+  31-byte keys -    29.29 cycles/hash
+Average        -    17.51 cycles/hash
+ rnd-byte keys -    16.62 cycles/hash
+
+Bulk speed test - 262144-byte keys
+Alignment   7 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   6 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   5 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment   4 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   3 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   2 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   1 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   0 -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Average       -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment rnd -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+
+Bulk speed test - [262017, 262144]-byte keys
+Alignment   7 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   6 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   5 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   4 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   3 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   2 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   1 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   0 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Average       -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment rnd -  1.37 bytes/cycle -  4.47 GiB/sec @ 3.5 ghz
+
+Verification value is 0x00000001 - Testing took 24.530428 seconds
+
 With switch at the end, which is faster for short keys:
 ----------------------------------------------------------------------------------------------
 -log2(p-value) summary:
@@ -1561,6 +1626,70 @@ Overall result: pass            ( 187 / 187 passed)
 
 ----------------------------------------------------------------------------------------------
 Verification value is 0x00000001 - Testing took 317.625343 seconds
+
+With switch:
+[[[ Speed Tests ]]]
+
+Small key speed test - [1, 31]-byte keys
+   1-byte keys -    14.20 cycles/hash
+   2-byte keys -    14.22 cycles/hash
+   3-byte keys -    15.34 cycles/hash
+   4-byte keys -     8.69 cycles/hash
+   5-byte keys -    12.56 cycles/hash
+   6-byte keys -    12.72 cycles/hash
+   7-byte keys -    13.51 cycles/hash
+   8-byte keys -    12.66 cycles/hash
+   9-byte keys -    12.70 cycles/hash
+  10-byte keys -    10.67 cycles/hash
+  11-byte keys -    11.20 cycles/hash
+  12-byte keys -    10.70 cycles/hash
+  13-byte keys -    13.62 cycles/hash
+  14-byte keys -    13.60 cycles/hash
+  15-byte keys -    14.06 cycles/hash
+  16-byte keys -    13.52 cycles/hash
+  17-byte keys -    16.68 cycles/hash
+  18-byte keys -    16.58 cycles/hash
+  19-byte keys -    17.02 cycles/hash
+  20-byte keys -    16.39 cycles/hash
+  21-byte keys -    19.34 cycles/hash
+  22-byte keys -    19.34 cycles/hash
+  23-byte keys -    20.03 cycles/hash
+  24-byte keys -    19.63 cycles/hash
+  25-byte keys -    22.23 cycles/hash
+  26-byte keys -    22.23 cycles/hash
+  27-byte keys -    22.86 cycles/hash
+  28-byte keys -    22.20 cycles/hash
+  29-byte keys -    25.12 cycles/hash
+  30-byte keys -    25.20 cycles/hash
+  31-byte keys -    25.75 cycles/hash
+Average        -    16.60 cycles/hash
+ rnd-byte keys -    15.26 cycles/hash
+
+Bulk speed test - 262144-byte keys
+Alignment   7 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   6 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   5 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   4 -  1.39 bytes/cycle -  4.52 GiB/sec @ 3.5 ghz
+Alignment   3 -  1.39 bytes/cycle -  4.52 GiB/sec @ 3.5 ghz
+Alignment   2 -  1.39 bytes/cycle -  4.52 GiB/sec @ 3.5 ghz
+Alignment   1 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Alignment   0 -  1.38 bytes/cycle -  4.49 GiB/sec @ 3.5 ghz
+Average       -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment rnd -  1.38 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+
+Bulk speed test - [262017, 262144]-byte keys
+Alignment   7 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   6 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   5 -  1.39 bytes/cycle -  4.52 GiB/sec @ 3.5 ghz
+Alignment   4 -  1.38 bytes/cycle -  4.51 GiB/sec @ 3.5 ghz
+Alignment   3 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   2 -  1.37 bytes/cycle -  4.48 GiB/sec @ 3.5 ghz
+Alignment   1 -  1.39 bytes/cycle -  4.52 GiB/sec @ 3.5 ghz
+Alignment   0 -  1.38 bytes/cycle -  4.51 GiB/sec @ 3.5 ghz
+Average       -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
+Alignment rnd -  1.37 bytes/cycle -  4.47 GiB/sec @ 3.5 ghz
+
+Verification value is 0x00000001 - Testing took 24.578312 seconds
 */
 template <bool bswap>
 static void jvmstring7( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -1574,11 +1703,15 @@ static void jvmstring7( const void * in, const size_t len, const seed_t seed, vo
     for (; i < len; i += 4, data += 4) {
         h = (GET_U32<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL;
     }
-    switch (len & 3) {
-        case 1: h = (data[0] - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
-        case 2: h = (GET_U16<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
-        case 3: h = (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    i -= 3;
+    for (; i < len; i++, data++) {
+        h = (data[0] - h) * 0x2127599BF4325C37UL;
     }
+    // switch (len & 3) {
+    //     case 1: h = (data[0] - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    //     case 2: h = (GET_U16<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    //     case 3: h = (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    // }
     h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
     h *= 0xBEA225F9EB34556DUL;
     h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
