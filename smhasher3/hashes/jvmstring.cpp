@@ -1690,6 +1690,41 @@ Average       -  1.38 bytes/cycle -  4.50 GiB/sec @ 3.5 ghz
 Alignment rnd -  1.37 bytes/cycle -  4.47 GiB/sec @ 3.5 ghz
 
 Verification value is 0x00000001 - Testing took 24.578312 seconds
+
+Commenting out the two marked xor-rotate-xor-rotate lines makes this fail a lot of tests.
+It's only a tiny bit faster on short keys...
+----------------------------------------------------------------------------------------------
+-log2(p-value) summary:
+
+          0     1     2     3     4     5     6     7     8     9    10    11    12
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+         2368   682   322   161    89    47    19    17     9     8     2    12    14
+
+         13    14    15    16    17    18    19    20    21    22    23    24    25+
+        ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+            5     2     2     1     4     2     2     1     1     0     3     1  3095
+
+----------------------------------------------------------------------------------------------
+Summary for: jvmstring7
+Overall result: FAIL            ( 76 / 187 passed)
+Failures:
+    Avalanche           : [3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 64, 128]
+    BIC                 : [3, 8, 11, 15]
+    Sparse              : [6/2, 4/3, 4/4, 4/5, 3/7, 3/8, 3/10, 3/12, 3/14, 10/2, 20/3, 9/4, 5/9, 4/14, 4/16, 3/32, 3/48, 3/64, 3/96, 2/128, 2/256, 2/512, 2/1024, 2/1280]
+    Permutation         : [4-bytes [3 low bits; LE], 4-bytes [3 low bits; BE], 4-bytes [3 high bits; LE], 4-bytes [3 high bits; BE], 4-bytes [3 high+low bits; LE], 4-bytes [3 high+low bits; BE], 4-bytes [0, low bit; LE], 4-bytes [0, low bit; BE], 4-bytes [0, high bit; LE], 4-bytes [0, high bit; BE], 8-bytes [0, low bit; LE], 8-bytes [0, low bit; BE], 8-bytes [0, high bit; LE], 8-bytes [0, high bit; BE]]
+    Text                : [numbers without commas, numbers with commas, FXXXXB, FBXXXX, XXXXFB, FooXXXXBar, FooBarXXXX, XXXXFooBar, FooooXXXXBaaar, FooooBaaarXXXX, XXXXFooooBaaar, FooooooXXXXBaaaaar, FooooooBaaaaarXXXX, XXXXFooooooBaaaaar, FooooooooXXXXBaaaaaaar, FooooooooBaaaaaaarXXXX, FooooooooooXXXXBaaaaaaaaar, FooooooooooBaaaaaaaaarXXXX, XXXXFooooooooooBaaaaaaaaar, Words alnum 1-4, Long alnum last 1968-2128, Long alnum last 4016-4176, Long alnum last 8112-8272]
+    TwoBytes            : [20, 32]
+    PerlinNoise         : [2]
+    Bitflip             : [3, 4, 8]
+    SeedSparse          : [2, 3, 6, 15, 18, 31]
+    SeedBlockOffset     : [0, 1]
+    Seed                : [2, 3, 6, 15, 18, 31, 52]
+    SeedAvalanche       : [4, 8, 16, 24, 32]
+    SeedBIC             : [3, 8, 11, 15]
+    SeedBitflip         : [3, 4, 8]
+
+----------------------------------------------------------------------------------------------
+Verification value is 0x00000001 - Testing took 319.629891 seconds
 */
 template <bool bswap>
 static void jvmstring7( const void * in, const size_t len, const seed_t seed, void * out ) {
@@ -1697,22 +1732,22 @@ static void jvmstring7( const void * in, const size_t len, const seed_t seed, vo
     uint64_t h = seed;
     h ^= ROTL64(h, 25) ^ ROTL64(h, 50);
     h = h * 0xBEA225F9EB34556DUL + len;
-    h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
+    // h ^= ROTL64(h, 21) ^ ROTL64(h, 44); // don't remove this XRXR!
 
     size_t i = 3;
     for (; i < len; i += 4, data += 4) {
         h = (GET_U32<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL;
     }
-    i -= 3;
-    for (; i < len; i++, data++) {
-        h = (data[0] - h) * 0x2127599BF4325C37UL;
-    }
-    // switch (len & 3) {
-    //     case 1: h = (data[0] - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
-    //     case 2: h = (GET_U16<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
-    //     case 3: h = (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    // i -= 3;
+    // for (; i < len; i++, data++) {
+        // h = (data[0] - h) * 0x2127599BF4325C37UL;
     // }
-    h ^= ROTL64(h, 23) ^ ROTL64(h, 47);
+    switch (len & 3) {
+    case 1: h = (data[0] - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    case 2: h = (GET_U16<bswap>(data, 0) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    case 3: h = (GET_U16<bswap>(data, 0) + ((uint64_t)data[2] << 16) - ROTL64(h, 11)) * 0x2127599BF4325C37UL; break;
+    }
+    // h ^= ROTL64(h, 23) ^ ROTL64(h, 47); // don't remove this XRXR!
     h *= 0xBEA225F9EB34556DUL;
     h ^= ROTL64(h, 21) ^ ROTL64(h, 44);
     PUT_U64<bswap>(h, (uint8_t *)out, 0);
