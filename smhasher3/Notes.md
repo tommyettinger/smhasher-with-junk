@@ -10,6 +10,10 @@ The timing data is likely quite wrong due to a simultaneous MT test running.
 // OR
 ./prospector -q 25 -s -p xorr:16,qoa,xorr:17,qoa,xorr:13
 
+./prospector -Eep xorr:17,qoa:6c83,xorr:18,qoa:1b3d,xorr:13
+bias      = 0.03159441027605394
+speed     = 0.142 nsec / hash
+
 ./prospector -Eep xorr:16,qoa:76c9,xorr:18,qoa:9f9,xorr:13
 bias      = 0.032924386375746129
 speed     = 0.143 nsec / hash
@@ -20,6 +24,10 @@ speed     = 0.141 nsec / hash
 
 ./prospector -Eep xorr:16,qoa:2f75,xorr:18,qoa:39f,xorr:13
 bias      = 0.033100874701374738
+speed     = 0.142 nsec / hash
+
+./prospector -Eep xorr:16,qoa:4509,xorr:18,qoa:491,xorr:13
+bias      = 0.033845357091982269
 speed     = 0.142 nsec / hash
 
 ./prospector -Eep xorr:17,qoa:7f15,xorr:18,qoa:6db,xorr:13
