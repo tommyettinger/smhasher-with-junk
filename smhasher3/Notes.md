@@ -10,17 +10,53 @@ The timing data is likely quite wrong due to a simultaneous MT test running.
 // OR
 ./prospector -q 25 -s -p xorr:16,qoa,xorr:17,qoa,xorr:13
 
+./prospector -Eep xorr:16,qoa:76c9,xorr:18,qoa:9f9,xorr:13
+bias      = 0.032924386375746129
+speed     = 0.143 nsec / hash
+
+./prospector -Eep xorr:16,qoa:9f45,xorr:19,qoa:e91,xorr:13
+bias      = 0.033059079942352701
+speed     = 0.141 nsec / hash
+
 ./prospector -Eep xorr:16,qoa:2f75,xorr:18,qoa:39f,xorr:13
 bias      = 0.033100874701374738
 speed     = 0.142 nsec / hash
+
+./prospector -Eep xorr:17,qoa:7f15,xorr:18,qoa:6db,xorr:13
+bias      = 0.034031864705608657
+speed     = 0.142 nsec / hash
+
+./prospector -Eep xorr:16,qoa:2e37,xorr:19,qoa:e41,xorr:13
+bias      = 0.034127767806189716
+speed     = 0.142 nsec / hash
+
+./prospector -Eep xorr:16,qoa:1501,xorr:18,qoa:bb9,xorr:13
+bias      = 0.034886693335949868
+speed     = 0.143 nsec / hash
+
+./prospector -Eep xorr:16,qoa:aa5d,xorr:19,qoa:95,xorr:13
+bias      = 0.035060747758997125
+speed     = 0.144 nsec / hash
 
 ./prospector -Eep xorr:16,qoa:97,xorr:18,qoa:2bd,xorr:13
 bias      = 0.035942157628005095
 speed     = 0.143 nsec / hash
 
+./prospector -Eep xorr:15,qoa:cfd3,xorr:18,qoa:19f5,xorr:13
+bias      = 0.036119284404139765
+speed     = 0.142 nsec / hash
+
 ./prospector -Eep xorr:16,qoa:49e3,xorr:17,qoa:179,xorr:13
 bias      = 0.036397266308061241
 speed     = 0.142 nsec / hash
+
+./prospector -Eep xorr:16,qoa:a6c5,xorr:18,qoa:e9d,xorr:13
+bias      = 0.037079086728575482
+speed     = 0.142 nsec / hash
+
+./prospector -Eep xorr:16,qoa:a26f,xorr:19,qoa:17b,xorr:13
+bias      = 0.038785503009264005
+speed     = 0.144 nsec / hash
 
 /prospector -Eep xorr:16,qoa:168d,xorr:17,qoa:18d1,xorr:13
 bias      = 0.038949476399362623
@@ -29,6 +65,10 @@ speed     = 0.141 nsec / hash
 ./prospector -Eep xorr:16,qoa:8697,xorr:15,qoa:409f,xorr:15
 bias      = 0.039329847364410392
 speed     = 0.144 nsec / hash
+
+./prospector -Eep xorr:16,qoa:e411,xorr:18,qoa:79,xorr:13
+bias      = 0.03945712367564698
+speed     = 0.143 nsec / hash
 
 ./prospector -Eep xorr:16,qoa:6295,xorr:15,qoa:a91,xorr:15
 bias      = 0.039683978647342522
